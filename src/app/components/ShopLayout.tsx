@@ -50,7 +50,7 @@ function Sidebar({ visible }: { visible: boolean }) {
         {/* Brand logo */}
         <div className="p-6">
           <Image
-            src="/FP_Borderless.png?v=2"
+            src="/FP_Borderless.png"
             alt="Frathouse Picasso"
             width={180}
             height={60}
@@ -326,7 +326,7 @@ export default function ShopLayout({ visible }: ShopLayoutProps) {
             {/* Brand */}
             <div>
               <Image
-                src="/FP_Borderless.png?v=2"
+                src="/FP_Borderless.png"
                 alt="Frathouse Picasso"
                 width={160}
                 height={53}

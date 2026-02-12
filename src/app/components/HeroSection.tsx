@@ -40,7 +40,7 @@ const HeroSection = forwardRef<HTMLDivElement, HeroSectionProps>(
         >
           {/* Placeholder logo image — replace /logo-placeholder.svg with your real logo */}
           <Image
-            src="/FP_Borderless.png?v=2"
+            src="/FP_Borderless.png"
             alt="Frathouse Picasso"
             width={500}
             height={167}
