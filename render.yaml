@@ -3,12 +3,8 @@ services:
     runtime: node
     name: frathouse-picasso
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npx next start -p $PORT -H 0.0.0.0
+    buildCommand: npm ci && npm run build
+    startCommand: npm start -- -p $PORT -H 0.0.0.0
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "10000"
-      - key: HOSTNAME
-        value: "0.0.0.0"
