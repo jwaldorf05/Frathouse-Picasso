@@ -3,30 +3,12 @@
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
-
-// ─── Mock product data ──────────────────────────────────────────────
-
-const mockProducts = [
-  { id: "1", name: "NEON DRIP TEE", price: "$65", image: null },
-  { id: "2", name: "SPLATTER HOODIE", price: "$120", image: null },
-  { id: "3", name: "TAGGED CREWNECK", price: "$95", image: null },
-  { id: "4", name: "STENCIL CAP", price: "$45", image: null },
-  { id: "5", name: "MURAL JOGGERS", price: "$85", image: null },
-  { id: "6", name: "CANVAS JACKET", price: "$180", image: null },
-  { id: "7", name: "THROW-UP SHORTS", price: "$55", image: null },
-  { id: "8", name: "WILDSTYLE TANK", price: "$50", image: null },
-];
-
-const collectionItems = [
-  { label: "All", href: "#" },
-  { label: "Harvard Collection", href: "#" },
-];
-
-const footerNavItems = [
-  { label: "About", href: "#" },
-  { label: "All", href: "#" },
-  { label: "Harvard Collection", href: "#" },
-];
+import {
+  collectionItems,
+  footerNavItems,
+  inventoryProducts,
+  type InventoryProduct,
+} from "@/lib/shopData";
 
 // ─── Sidebar ────────────────────────────────────────────────────────
 
@@ -187,7 +169,7 @@ function Sidebar({ visible }: { visible: boolean }) {
 function ProductCard({
   product,
 }: {
-  product: { id: string; name: string; price: string; image: string | null };
+  product: InventoryProduct;
 }) {
   return (
     <div className="flex-shrink-0 w-[220px] md:w-[260px] group cursor-pointer">
@@ -270,7 +252,7 @@ function ProductCarousel() {
       {/* Carousel viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-4">
-          {mockProducts.map((product) => (
+          {inventoryProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
