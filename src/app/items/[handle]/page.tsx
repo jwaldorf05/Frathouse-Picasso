@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import {
   getInventoryProductByHandle,
   inventoryProducts,
@@ -27,5 +28,9 @@ export default async function ItemPage({ params }: ItemPageProps) {
     .filter((item) => item.handle !== product.handle)
     .slice(0, 3);
 
-  return <ItemDisplayClient product={product} relatedItems={relatedItems} />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ItemDisplayClient product={product} relatedItems={relatedItems} />
+    </Suspense>
+  );
 }
