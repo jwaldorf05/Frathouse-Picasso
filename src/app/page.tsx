@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSearchParams } from "next/navigation";
 import HeroSection from "./components/HeroSection";
 import ScrollTextSection from "./components/ScrollTextSection";
 import ShopLayout from "./components/ShopLayout";
@@ -14,6 +15,8 @@ export default function Home() {
   const heroOverlayRef = useRef<HTMLDivElement>(null);
   const heroDimRef = useRef<HTMLDivElement>(null);
   const scrollTextRef = useRef<HTMLDivElement>(null);
+  const shopLayoutRef = useRef<HTMLDivElement>(null);
+  const searchParams = useSearchParams();
   const [shopVisible, setShopVisible] = useState(false);
 
   useEffect(() => {
@@ -72,6 +75,26 @@ export default function Home() {
     return () => ctx.revert();
   }, []);
 
+  useEffect(() => {
+    if (searchParams.get("shop") !== "1") return;
+
+    queueMicrotask(() => setShopVisible(true));
+
+    if (heroBackgroundRef.current) {
+      heroBackgroundRef.current.style.display = "none";
+    }
+    if (heroOverlayRef.current) {
+      heroOverlayRef.current.style.display = "none";
+    }
+    if (heroDimRef.current) {
+      heroDimRef.current.style.opacity = "0";
+    }
+
+    requestAnimationFrame(() => {
+      shopLayoutRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
+    });
+  }, [searchParams]);
+
   return (
     <main className="relative">
       {/* Fixed hero: background image + overlay (logo, tagline, scroll indicator) */}
@@ -84,7 +107,9 @@ export default function Home() {
       <ScrollTextSection ref={scrollTextRef} />
 
       {/* Shop layout: sidebar + hero banner + carousel */}
-      <ShopLayout visible={shopVisible} />
+      <div ref={shopLayoutRef}>
+        <ShopLayout visible={shopVisible} />
+      </div>
     </main>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import {
   collectionItems,
@@ -172,7 +173,11 @@ function ProductCard({
   product: InventoryProduct;
 }) {
   return (
-    <div className="flex-shrink-0 w-[220px] md:w-[260px] group cursor-pointer">
+    <Link
+      href={`/items/${product.handle}`}
+      className="flex-shrink-0 w-[220px] md:w-[260px] group cursor-pointer block"
+      aria-label={`View ${product.name}`}
+    >
       {/* Image placeholder */}
       <div className="aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] relative">
         <div className="absolute inset-0 flex items-center justify-center">
@@ -186,9 +191,9 @@ function ProductCard({
         {product.name}
       </h3>
       <p className="font-[family-name:var(--font-body)] text-text-secondary text-sm mt-1">
-        {product.price}
+        {product.defaultPrice}
       </p>
-    </div>
+    </Link>
   );
 }
 
@@ -211,7 +216,7 @@ function ProductCarousel() {
 
   useEffect(() => {
     if (!emblaApi) return;
-    onSelect();
+    queueMicrotask(onSelect);
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
     return () => {
