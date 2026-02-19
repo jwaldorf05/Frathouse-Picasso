@@ -10,12 +10,12 @@ export default defineConfig({
   test: {
     // Enforce co-location: only match .test.ts files that live next to source
     // Explicitly exclude __tests__ directories to enforce co-location
-    include: ["src/**/*.test.ts"],
+    include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
     exclude: ["**/__tests__/**", "**/node_modules/**"],
     environment: "node",
     coverage: {
       provider: "v8",
-      include: ["src/lib/**/*.ts"],
+      include: ["src/lib/**/*.ts", "src/app/page.tsx"],
       exclude: [
         "src/lib/shopify/types.ts",
         "src/lib/shopify/fragments.ts",

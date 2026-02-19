@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useSearchParams } from "next/navigation";
@@ -10,6 +10,8 @@ import ShopLayout from "./components/ShopLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 
+const SHOP_INTRO_SEEN_KEY = "fhp-shop-intro-seen";
+
 export default function Home() {
   const heroBackgroundRef = useRef<HTMLDivElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
@@ -18,8 +20,39 @@ export default function Home() {
   const shopLayoutRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const [shopVisible, setShopVisible] = useState(false);
+  const [introCompleted, setIntroCompleted] = useState(false);
+
+  const showShopView = useCallback((scrollToShop: boolean) => {
+    queueMicrotask(() => setShopVisible(true));
+
+    if (heroBackgroundRef.current) {
+      heroBackgroundRef.current.style.display = "none";
+    }
+    if (heroOverlayRef.current) {
+      heroOverlayRef.current.style.display = "none";
+    }
+    if (heroDimRef.current) {
+      heroDimRef.current.style.opacity = "0";
+    }
+
+    if (scrollToShop) {
+      requestAnimationFrame(() => {
+        shopLayoutRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
+      });
+    }
+  }, []);
+
+  const completeIntro = useCallback((scrollToShop: boolean) => {
+    localStorage.setItem(SHOP_INTRO_SEEN_KEY, "1");
+    queueMicrotask(() => setIntroCompleted(true));
+    showShopView(scrollToShop);
+  }, [showShopView]);
 
   useEffect(() => {
+    if (introCompleted) {
+      return;
+    }
+
     const ctx = gsap.context(() => {
       // ── 1. Fade out hero overlay (logo, tagline, scroll indicator)
       //    as soon as the scroll text section enters the viewport.
@@ -44,14 +77,7 @@ export default function Home() {
           trigger: scrollTextRef.current,
           start: "bottom top",
           onEnter: () => {
-            setShopVisible(true);
-            // Hide the fixed hero layer completely so it can't bleed through
-            if (heroBackgroundRef.current) {
-              heroBackgroundRef.current.style.display = "none";
-            }
-            if (heroOverlayRef.current) {
-              heroOverlayRef.current.style.display = "none";
-            }
+            completeIntro(false);
           },
           onLeaveBack: () => {
             // Restore fixed hero when scrolling back up
@@ -73,38 +99,33 @@ export default function Home() {
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [completeIntro, introCompleted]);
 
   useEffect(() => {
-    if (searchParams.get("shop") !== "1") return;
+    const deepLinkedToShop = searchParams.get("shop") === "1";
+    const introAlreadySeen = localStorage.getItem(SHOP_INTRO_SEEN_KEY) === "1";
 
-    queueMicrotask(() => setShopVisible(true));
-
-    if (heroBackgroundRef.current) {
-      heroBackgroundRef.current.style.display = "none";
-    }
-    if (heroOverlayRef.current) {
-      heroOverlayRef.current.style.display = "none";
-    }
-    if (heroDimRef.current) {
-      heroDimRef.current.style.opacity = "0";
+    if (!deepLinkedToShop && !introAlreadySeen) {
+      return;
     }
 
-    requestAnimationFrame(() => {
-      shopLayoutRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
-    });
-  }, [searchParams]);
+    completeIntro(true);
+  }, [completeIntro, searchParams]);
 
   return (
     <main className="relative">
-      {/* Fixed hero: background image + overlay (logo, tagline, scroll indicator) */}
-      <HeroSection heroBackgroundRef={heroBackgroundRef} heroDimRef={heroDimRef} ref={heroOverlayRef} />
+      {!introCompleted && (
+        <>
+          {/* Fixed hero: background image + overlay (logo, tagline, scroll indicator) */}
+          <HeroSection heroBackgroundRef={heroBackgroundRef} heroDimRef={heroDimRef} ref={heroOverlayRef} />
 
-      {/* 100vh spacer so hero is fully visible on initial load */}
-      <div className="relative z-[1] h-screen" />
+          {/* 100vh spacer so hero is fully visible on initial load */}
+          <div className="relative z-[1] h-screen" />
 
-      {/* Scroll text floating over the fixed hero — NO background */}
-      <ScrollTextSection ref={scrollTextRef} />
+          {/* Scroll text floating over the fixed hero — NO background */}
+          <ScrollTextSection ref={scrollTextRef} />
+        </>
+      )}
 
       {/* Shop layout: sidebar + hero banner + carousel */}
       <div ref={shopLayoutRef}>
