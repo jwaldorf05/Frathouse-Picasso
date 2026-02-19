@@ -30,7 +30,7 @@ const ScrollTextSection = forwardRef<HTMLDivElement>(
               ease: "none",
               scrollTrigger: {
                 trigger: el,
-                start: "top 90%",
+                start: "top 100%",
                 end: "top 55%",
                 scrub: true,
               },
