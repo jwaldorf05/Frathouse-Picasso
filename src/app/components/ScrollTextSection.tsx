@@ -7,14 +7,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const scrollLines = [
-  "1,600 nits of wearable art",
-  "Born from the culture",
-  "Every piece one of one",
-  "Spray paint meets streetwear",
-  "No rules. No limits.",
-  "Designed for the bold",
-  "Hand-finished originals",
-  "Drip is permanent",
+  "Beautifully crafted, custom made",
+  "Where did we get them? Don't worry about it.",
 ];
 
 const ScrollTextSection = forwardRef<HTMLDivElement>(
@@ -36,7 +30,7 @@ const ScrollTextSection = forwardRef<HTMLDivElement>(
               ease: "none",
               scrollTrigger: {
                 trigger: el,
-                start: "top 90%",
+                start: "top 100%",
                 end: "top 55%",
                 scrub: true,
               },

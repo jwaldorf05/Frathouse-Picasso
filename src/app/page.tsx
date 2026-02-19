@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useSearchParams } from "next/navigation";
@@ -12,7 +12,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const SHOP_INTRO_SEEN_KEY = "fhp-shop-intro-seen";
 
-export default function Home() {
+function HomeContent() {
   const heroBackgroundRef = useRef<HTMLDivElement>(null);
   const heroOverlayRef = useRef<HTMLDivElement>(null);
   const heroDimRef = useRef<HTMLDivElement>(null);
@@ -132,5 +132,13 @@ export default function Home() {
         <ShopLayout visible={shopVisible} />
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
