@@ -1,81 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateCartLines, removeFromCart } from "@/lib/shopify";
-import type { CartLineUpdateInput } from "@/lib/shopify";
+import {
+  getCartItemCount,
+  readCartFromCookieHeader,
+  removeCartLine,
+  serializeCartCookie,
+  updateCartLineQuantity,
+} from "@/lib/cart";
 
-// PUT /api/cart/lines — update line quantities
-// Body: { cartId: string, lines: CartLineUpdateInput[] }
+interface UpdateCartLineBody {
+  lineId?: string;
+  quantity?: number;
+}
+
+interface DeleteCartLineBody {
+  lineId?: string;
+}
+
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { cartId, lines } = body as {
-      cartId?: string;
-      lines?: CartLineUpdateInput[];
-    };
+    const body = (await request.json()) as UpdateCartLineBody;
+    const { lineId, quantity } = body;
 
-    if (!cartId) {
-      return NextResponse.json(
-        { error: "Missing cartId" },
-        { status: 400 }
-      );
+    if (!lineId || typeof lineId !== "string") {
+      return NextResponse.json({ error: "Missing cart line id." }, { status: 400 });
     }
 
-    if (!lines || !Array.isArray(lines) || lines.length === 0) {
-      return NextResponse.json(
-        { error: "Missing or empty lines array" },
-        { status: 400 }
-      );
+    if (!quantity || !Number.isInteger(quantity) || quantity < 1) {
+      return NextResponse.json({ error: "Quantity must be a positive integer." }, { status: 400 });
     }
 
-    for (const line of lines) {
-      if (!line.id || !line.merchandiseId || typeof line.quantity !== "number") {
-        return NextResponse.json(
-          {
-            error:
-              "Each line must have id (string), merchandiseId (string), and quantity (number)",
-          },
-          { status: 400 }
-        );
-      }
+    const currentCart = readCartFromCookieHeader(request.headers.get("cookie"));
+    const lineExists = currentCart.items.some((line) => line.id === lineId);
+
+    if (!lineExists) {
+      return NextResponse.json({ error: "Cart line not found." }, { status: 404 });
     }
 
-    const cart = await updateCartLines(cartId, lines);
-    return NextResponse.json(cart);
+    const updatedCart = updateCartLineQuantity(currentCart, lineId, quantity);
+    const response = NextResponse.json(
+      {
+        items: updatedCart.items,
+        totalQuantity: getCartItemCount(updatedCart),
+      },
+      { status: 200 }
+    );
+    response.headers.set("Set-Cookie", serializeCartCookie(updatedCart));
+
+    return response;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to update cart lines";
+    const message = error instanceof Error ? error.message : "Unable to update cart line.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-// DELETE /api/cart/lines — remove lines from cart
-// Body: { cartId: string, lineIds: string[] }
 export async function DELETE(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { cartId, lineIds } = body as {
-      cartId?: string;
-      lineIds?: string[];
-    };
+    const body = (await request.json()) as DeleteCartLineBody;
+    const { lineId } = body;
 
-    if (!cartId) {
-      return NextResponse.json(
-        { error: "Missing cartId" },
-        { status: 400 }
-      );
+    if (!lineId || typeof lineId !== "string") {
+      return NextResponse.json({ error: "Missing cart line id." }, { status: 400 });
     }
 
-    if (!lineIds || !Array.isArray(lineIds) || lineIds.length === 0) {
-      return NextResponse.json(
-        { error: "Missing or empty lineIds array" },
-        { status: 400 }
-      );
+    const currentCart = readCartFromCookieHeader(request.headers.get("cookie"));
+    const lineExists = currentCart.items.some((line) => line.id === lineId);
+
+    if (!lineExists) {
+      return NextResponse.json({ error: "Cart line not found." }, { status: 404 });
     }
 
-    const cart = await removeFromCart(cartId, lineIds);
-    return NextResponse.json(cart);
+    const updatedCart = removeCartLine(currentCart, lineId);
+    const response = NextResponse.json(
+      {
+        items: updatedCart.items,
+        totalQuantity: getCartItemCount(updatedCart),
+      },
+      { status: 200 }
+    );
+    response.headers.set("Set-Cookie", serializeCartCookie(updatedCart));
+
+    return response;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to remove cart lines";
+    const message = error instanceof Error ? error.message : "Unable to remove cart line.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getProductByHandle } from "@/lib/shopify";
+import { getInventoryProductByHandle } from "@/lib/shopData";
 
 export async function GET(
   _request: Request,
@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { handle } = await params;
-    const product = await getProductByHandle(handle);
+    const product = getInventoryProductByHandle(handle);
 
     if (!product) {
       return NextResponse.json(

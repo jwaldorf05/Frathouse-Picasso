@@ -1,74 +1,91 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createCart, getCart, addToCart } from "@/lib/shopify";
-import type { CartLineInput } from "@/lib/shopify";
+import { getInventoryProductByHandle, getProductPrice } from "@/lib/shopData";
+import {
+  addItemToCart,
+  getCartItemCount,
+  readCartFromCookieHeader,
+  serializeCartCookie,
+} from "@/lib/cart";
 
-// GET /api/cart?cartId=...
-export async function GET(request: NextRequest) {
-  try {
-    const cartId = new URL(request.url).searchParams.get("cartId");
-
-    if (!cartId) {
-      return NextResponse.json(
-        { error: "Missing cartId query parameter" },
-        { status: 400 }
-      );
-    }
-
-    const cart = await getCart(cartId);
-
-    if (!cart) {
-      return NextResponse.json({ error: "Cart not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(cart);
-  } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to fetch cart";
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+interface AddCartItemBody {
+  handle?: string;
+  quantity?: number;
+  selectedSize?: string | null;
 }
 
-// POST /api/cart — create a new cart or add lines to an existing cart
-// Body: { cartId?: string, lines: CartLineInput[] }
+function jsonCartResponse(cartHeader: string | null) {
+  const cart = readCartFromCookieHeader(cartHeader);
+
+  return {
+    items: cart.items,
+    totalQuantity: getCartItemCount(cart),
+  };
+}
+
+export async function GET(request: NextRequest) {
+  return NextResponse.json(jsonCartResponse(request.headers.get("cookie")));
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { cartId, lines } = body as {
-      cartId?: string;
-      lines?: CartLineInput[];
-    };
+    const body = (await request.json()) as AddCartItemBody;
+    const { handle, quantity, selectedSize } = body;
 
-    if (!lines || !Array.isArray(lines) || lines.length === 0) {
-      return NextResponse.json(
-        { error: "Missing or empty lines array" },
-        { status: 400 }
-      );
+    if (!handle || typeof handle !== "string") {
+      return NextResponse.json({ error: "Missing product handle." }, { status: 400 });
     }
 
-    // Validate each line
-    for (const line of lines) {
-      if (!line.merchandiseId || typeof line.quantity !== "number") {
+    if (!quantity || !Number.isInteger(quantity) || quantity < 1) {
+      return NextResponse.json({ error: "Quantity must be a positive integer." }, { status: 400 });
+    }
+
+    const product = getInventoryProductByHandle(handle);
+
+    if (!product) {
+      return NextResponse.json({ error: `Product not found: ${handle}` }, { status: 404 });
+    }
+
+    if (product.sizeOptions?.length) {
+      if (!selectedSize) {
         return NextResponse.json(
-          {
-            error:
-              "Each line must have a merchandiseId (string) and quantity (number)",
-          },
+          { error: "Please select a size before adding to cart." },
+          { status: 400 }
+        );
+      }
+
+      const sizeExists = product.sizeOptions.some((option) => option.size === selectedSize);
+
+      if (!sizeExists) {
+        return NextResponse.json(
+          { error: "Selected size is not available for this product." },
           { status: 400 }
         );
       }
     }
 
-    let cart;
-    if (cartId) {
-      cart = await addToCart(cartId, lines);
-    } else {
-      cart = await createCart(lines);
-    }
+    const currentCart = readCartFromCookieHeader(request.headers.get("cookie"));
+    const unitPrice = getProductPrice(product, selectedSize);
+    const updatedCart = addItemToCart(currentCart, {
+      handle: product.handle,
+      name: product.name,
+      selectedSize: selectedSize ?? null,
+      quantity,
+      unitPrice,
+      image: product.image,
+    });
 
-    return NextResponse.json(cart, { status: cartId ? 200 : 201 });
+    const response = NextResponse.json(
+      {
+        items: updatedCart.items,
+        totalQuantity: getCartItemCount(updatedCart),
+      },
+      { status: 201 }
+    );
+    response.headers.set("Set-Cookie", serializeCartCookie(updatedCart));
+
+    return response;
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Failed to create/update cart";
+    const message = error instanceof Error ? error.message : "Unable to update cart.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

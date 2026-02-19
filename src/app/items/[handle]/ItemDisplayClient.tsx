@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   getProductPrice,
   type InventoryProduct,
@@ -18,10 +19,15 @@ export default function ItemDisplayClient({
   product,
   relatedItems,
 }: ItemDisplayClientProps) {
+  const searchParams = useSearchParams();
   const hasSizes = (product.sizeOptions?.length ?? 0) > 0;
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [cartMessage, setCartMessage] = useState<string | null>(null);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [isCartLoading, setIsCartLoading] = useState(false);
 
   const galleryFrames = useMemo<ProductGalleryImage[]>(
     () =>
@@ -33,8 +39,10 @@ export default function ItemDisplayClient({
 
   const activeFrame = galleryFrames[activeImageIndex] ?? galleryFrames[0];
   const activePrice = getProductPrice(product, selectedSize);
+  const checkoutStatus = searchParams.get("checkout");
 
   const canAddToCart = !hasSizes || selectedSize !== null;
+  const isRedirectingToStripe = isCheckoutLoading;
 
   const decreaseQuantity = () => {
     setQuantity((previous) => Math.max(1, previous - 1));
@@ -42,6 +50,76 @@ export default function ItemDisplayClient({
 
   const increaseQuantity = () => {
     setQuantity((previous) => previous + 1);
+  };
+
+  const addToCart = async (shouldCheckout: boolean) => {
+    if (!canAddToCart || isCartLoading || isCheckoutLoading) {
+      return;
+    }
+
+    setCheckoutError(null);
+    setCartMessage(null);
+    setIsCartLoading(true);
+
+    try {
+      const cartResponse = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          handle: product.handle,
+          quantity,
+          selectedSize,
+        }),
+      });
+
+      const cartData = (await cartResponse.json()) as {
+        error?: string;
+        totalQuantity?: number;
+      };
+
+      if (!cartResponse.ok) {
+        throw new Error(cartData.error ?? "Unable to add item to cart.");
+      }
+
+      if (!shouldCheckout) {
+        setCartMessage(
+          `Added to cart${typeof cartData.totalQuantity === "number" ? ` • ${cartData.totalQuantity} item(s) total` : ""}.`
+        );
+        return;
+      }
+
+      setIsCheckoutLoading(true);
+
+      const checkoutResponse = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fromCart: true,
+        }),
+      });
+
+      const checkoutData = (await checkoutResponse.json()) as {
+        url?: string;
+        error?: string;
+      };
+
+      if (!checkoutResponse.ok || !checkoutData.url) {
+        throw new Error(checkoutData.error ?? "Unable to start Stripe checkout.");
+      }
+
+      window.location.href = checkoutData.url;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to update cart right now.";
+      setCheckoutError(message);
+      setIsCheckoutLoading(false);
+    } finally {
+      setIsCartLoading(false);
+    }
   };
 
   return (
@@ -66,7 +144,7 @@ export default function ItemDisplayClient({
         <section className="mt-6 grid grid-cols-1 gap-8 md:mt-8 md:grid-cols-[1.1fr_1fr] md:gap-10">
           <div>
             <div className="rounded-xl border border-[#1c1c1c] bg-[#0d0d0d] p-3">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
                 {activeFrame.image ? (
                   <Image
                     src={activeFrame.image}
@@ -105,7 +183,7 @@ export default function ItemDisplayClient({
                     }}
                     aria-label={`Show ${frame.title.toLowerCase()} image`}
                   >
-                    <div className="relative aspect-[5/6] overflow-hidden rounded-md bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+                    <div className="relative aspect-[5/6] overflow-hidden rounded-md bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
                       {frame.image ? (
                         <Image
                           src={frame.image}
@@ -212,13 +290,49 @@ export default function ItemDisplayClient({
             </div>
 
             <div className="mt-8">
-              <button
-                type="button"
-                disabled={!canAddToCart}
-                className="w-full rounded-md bg-[#ff4d4d] px-5 py-3 text-sm font-bold uppercase tracking-[1.4px] text-white transition-colors hover:bg-[#ff6666] disabled:cursor-not-allowed disabled:bg-[#6a2b2b]"
-              >
-                Add to cart · {quantity}
-              </button>
+              {isRedirectingToStripe && (
+                <div className="mb-3 rounded-md border border-[#3b2222] bg-[#1a1111] px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[1.4px] text-[#ffb4b4]">
+                    Redirecting to secure Stripe checkout...
+                  </p>
+                  <p className="mt-1 text-xs text-text-secondary">
+                    Your cart is locked in. You&apos;ll return here automatically after payment.
+                  </p>
+                </div>
+              )}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
+                  onClick={() => addToCart(false)}
+                  className="w-full rounded-md border border-[#3a3a3a] bg-transparent px-5 py-3 text-xs font-bold uppercase tracking-[1.3px] text-white transition-colors hover:border-[#666] hover:bg-[#111] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isCartLoading && !isCheckoutLoading ? "Adding..." : `Add to Cart · ${quantity}`}
+                </button>
+                <button
+                  type="button"
+                  disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
+                  onClick={() => addToCart(true)}
+                  className="w-full rounded-md border border-[#a74343] bg-gradient-to-r from-[#7f2f2f] to-[#9f3b3b] px-5 py-3 text-xs font-bold uppercase tracking-[1.3px] text-white transition-all hover:from-[#944040] hover:to-[#b04a4a] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isCheckoutLoading ? "Redirecting..." : `Checkout Now · ${quantity}`}
+                </button>
+              </div>
+              <p className="mt-2 text-xs text-text-secondary">
+                Secure payment powered by Stripe. Card details are handled directly by Stripe.
+              </p>
+              {cartMessage && <p className="mt-2 text-xs text-emerald-400">{cartMessage}</p>}
+              {checkoutStatus === "success" && (
+                <p className="mt-2 text-xs text-emerald-400">
+                  Payment completed. You should receive a receipt from Stripe shortly.
+                </p>
+              )}
+              {checkoutStatus === "cancel" && (
+                <p className="mt-2 text-xs text-[#ffb366]">
+                  Checkout canceled. You can update quantity/size and try again.
+                </p>
+              )}
+              {checkoutError && <p className="mt-2 text-xs text-[#ff6b6b]">{checkoutError}</p>}
             </div>
 
             <div className="mt-8 rounded-xl border border-[#1a1a1a] bg-[#0d0d0d] p-5">
@@ -262,7 +376,7 @@ export default function ItemDisplayClient({
                 href={`/items/${item.handle}`}
                 className="group rounded-xl border border-[#1a1a1a] bg-[#0d0d0d] p-4 transition-colors hover:border-[#2a2a2a]"
               >
-                <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-gradient-to-br from-[#1a1a2e] to-[#16213e]">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
                   {item.image ? (
                     <Image
                       src={item.image}

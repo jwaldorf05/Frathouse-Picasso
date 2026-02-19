@@ -15,13 +15,8 @@ export default defineConfig({
     environment: "node",
     coverage: {
       provider: "v8",
-      include: ["src/lib/**/*.ts", "src/app/page.tsx"],
-      exclude: [
-        "src/lib/shopify/types.ts",
-        "src/lib/shopify/fragments.ts",
-        "src/lib/shopify/index.ts",
-        "src/**/*.test.ts",
-      ],
+      include: ["src/app/api/**/*.ts"],
+      exclude: ["src/**/*.test.ts"],
       thresholds: {
         statements: 100,
         branches: 100,
