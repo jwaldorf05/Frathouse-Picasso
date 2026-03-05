@@ -80,12 +80,12 @@ export default function AboutPage() {
                   Beautiful
                 </span>
                 <img 
-                  src="/images/about/checkmark_yellow.png"
+                  src="/images/Checkmark_Yellow.png"
                   alt="Checkmark"
-                  className="h-[0.9em] w-auto flex-shrink-0"
+                  className="h-[6em] md:h-[7em] lg:h-[8em] w-auto flex-shrink-0"
                   style={{
                     objectFit: 'contain',
-                    filter: 'drop-shadow(0 0 12px rgba(204, 255, 0, 0.6))'
+                    filter: 'drop-shadow(0 0 20px rgba(204, 255, 0, 0.5)) drop-shadow(0 0 40px rgba(204, 255, 0, 0.3))'
                   }}
                 />
               </div>
@@ -102,12 +102,12 @@ export default function AboutPage() {
                   Legal
                 </span>
                 <img 
-                  src="/images/about/question_pink.png"
+                  src="/images/Question_Pink.png"
                   alt="Question mark"
-                  className="h-[0.9em] w-auto flex-shrink-0"
+                  className="h-[6em] md:h-[7em] lg:h-[8em] w-auto flex-shrink-0"
                   style={{
                     objectFit: 'contain',
-                    filter: 'drop-shadow(0 0 12px rgba(255, 0, 127, 0.6))'
+                    filter: 'drop-shadow(0 0 20px rgba(255, 0, 127, 0.5)) drop-shadow(0 0 40px rgba(255, 0, 127, 0.3))'
                   }}
                 />
               </div>
