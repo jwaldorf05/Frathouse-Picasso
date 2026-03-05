@@ -112,6 +112,10 @@ function HomeContent() {
     completeIntro(true);
   }, [completeIntro, searchParams]);
 
+  const collection = searchParams.get("collection") || undefined;
+  // Only show banner on true homepage (no collection param), not on "All" collection
+  const showHeroBanner = !collection;
+
   return (
     <main className="relative">
       {!introCompleted && (
@@ -129,7 +133,7 @@ function HomeContent() {
 
       {/* Shop layout: sidebar + hero banner + carousel */}
       <div ref={shopLayoutRef}>
-        <ShopLayout visible={shopVisible} />
+        <ShopLayout visible={shopVisible} collection={collection} showHeroBanner={showHeroBanner} />
       </div>
     </main>
   );

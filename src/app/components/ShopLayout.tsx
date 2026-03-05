@@ -8,19 +8,38 @@ import {
   collectionItems,
   footerNavItems,
   inventoryProducts,
+  getProductsByCollection,
   type InventoryProduct,
 } from "@/lib/shopData";
 import { getSprayPlacements } from "@/lib/sprays";
 
 export const dynamic = 'force-dynamic';
 
-// ─── Sidebar ────────────────────────────────────────────────────────
-
 interface SidebarProps {
   visible: boolean;
   cartCount: number;
   onCartClick: () => void;
   isMounted: boolean;
+}
+
+interface ShopLayoutProps {
+  collection?: string;
+  showHeroBanner?: boolean;
+}
+
+function getCollectionTitle(collectionSlug?: string): string {
+  if (!collectionSlug || collectionSlug === 'all') {
+    return 'All Signs';
+  }
+  
+  const titleMap: Record<string, string> = {
+    'new-releases': 'New Releases',
+    'best-sellers': 'Best Sellers',
+    'fraternity': 'Fraternity Collection',
+    'harvard': 'Harvard Collection',
+  };
+  
+  return titleMap[collectionSlug] || 'All Signs';
 }
 
 function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
@@ -59,7 +78,7 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
           style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
         />
         {/* Brand logo */}
-        <div className="p-6 relative z-[110]" style={{ background: 'radial-gradient(circle at 40% 50%, rgba(10,10,10,1) 0%, rgba(10,10,10,0.85) 55%, rgba(10,10,10,0) 100%)' }}>
+        <div className="p-6 relative z-[110]">
           <Image
             src="/FP_Borderless.png"
             alt="Frathouse Picasso"
@@ -71,17 +90,21 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
 
         {/* Nav */}
         <nav className="flex-1 px-3 relative z-[110]">
+          {/* Home */}
+          <a
+            href="/?shop=1"
+            className="block w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
+          >
+            Home
+          </a>
+          
           {/* About */}
-          <button
-            onClick={() => setActiveNav("About")}
-            className="w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors"
-            style={{
-              color: activeNav === "About" ? "#fff" : "#999",
-              background: activeNav === "About" ? "#1e1e1e" : "transparent",
-            }}
+          <a
+            href="/about"
+            className="block w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
           >
             About
-          </button>
+          </a>
 
           {/* Collections accordion */}
           <button
@@ -103,17 +126,13 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
           {collectionsOpen && (
             <div className="pl-4">
               {collectionItems.map((item) => (
-                <button
+                <a
                   key={item.label}
-                  onClick={() => setActiveNav(item.label)}
-                  className="w-full text-left px-3 py-2 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1px] transition-colors"
-                  style={{
-                    color: activeNav === item.label ? "#fff" : "#999",
-                    background: activeNav === item.label ? "#1e1e1e" : "transparent",
-                  }}
+                  href={item.href}
+                  className="block w-full text-left px-3 py-2 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1px] transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
                 >
                   {item.label}
-                </button>
+                </a>
               ))}
             </div>
           )}
@@ -505,7 +524,7 @@ function ProductCard({
 
 // ─── Carousel ───────────────────────────────────────────────────────
 
-function ProductCarousel() {
+function ProductCarousel({ products, collectionTitle, showTitle }: { products: InventoryProduct[]; collectionTitle: string; showTitle: boolean }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -533,37 +552,39 @@ function ProductCarousel() {
 
   return (
     <div className="relative">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 px-1">
-        <h2 className="font-[family-name:var(--font-body)] font-bold text-white text-2xl md:text-3xl">
-          HOTTEST RIGHT NOW
-        </h2>
-        <div className="flex gap-2">
-          <button
-            onClick={() => emblaApi?.scrollPrev()}
-            disabled={!canScrollPrev}
-            className="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => emblaApi?.scrollNext()}
-            disabled={!canScrollNext}
-            className="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
+      {/* Header - only show on homepage */}
+      {showTitle && (
+        <div className="flex items-center justify-between mb-6 px-1">
+          <h2 className="font-[family-name:var(--font-body)] font-bold text-white text-2xl md:text-3xl">
+            Hottest Right Now
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={() => emblaApi?.scrollPrev()}
+              disabled={!canScrollPrev}
+              className="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => emblaApi?.scrollNext()}
+              disabled={!canScrollNext}
+              className="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Carousel viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-4">
-          {inventoryProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -579,14 +600,14 @@ function ProductCarousel() {
 
 // ─── ShopLayout (main export) ───────────────────────────────────────
 
-interface ShopLayoutProps {
-  visible: boolean;
-}
-
-export default function ShopLayout({ visible }: ShopLayoutProps) {
+export default function ShopLayout({ visible, collection, showHeroBanner = true }: ShopLayoutProps & { visible: boolean }) {
   const [cartCount, setCartCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  
+  const displayProducts = getProductsByCollection(collection);
+  const collectionTitle = getCollectionTitle(collection);
+  const pageSeed = collection ? collection.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : 42;
 
   useEffect(() => {
     setIsMounted(true);
@@ -646,7 +667,7 @@ export default function ShopLayout({ visible }: ShopLayoutProps) {
         style={{ background: "#0a0a0a" }}
       >
         {/* Background graffiti sprays */}
-        {isMounted && getSprayPlacements(9, 42).map((spray, i) => (
+        {isMounted && getSprayPlacements(9, pageSeed).map((spray, i) => (
           <img
             key={i}
             src={spray.src}
@@ -662,23 +683,34 @@ export default function ShopLayout({ visible }: ShopLayoutProps) {
           />
         ))}
         <div className="px-6 md:px-10 relative z-[3]">
-          {/* Hero banner — same horizontal alignment as carousel content */}
-          <div
-            className="w-full relative overflow-hidden rounded-lg mt-6"
-            style={{ height: "45vh", minHeight: 300 }}
-          >
-            <Image
-              src="/FP_Background.jpeg"
-              alt="Frathouse Picasso"
-              fill
-              className="object-cover"
-              sizes="(min-width: 768px) calc(100vw - 240px), 100vw"
-            />
-          </div>
+          {/* Hero banner — only show on homepage */}
+          {showHeroBanner && (
+            <div
+              className="w-full relative overflow-hidden rounded-lg mt-6"
+              style={{ height: "45vh", minHeight: 300 }}
+            >
+              <Image
+                src="/FP_Background.jpeg"
+                alt="Frathouse Picasso"
+                fill
+                className="object-cover"
+                sizes="(min-width: 768px) calc(100vw - 240px), 100vw"
+              />
+            </div>
+          )}
+
+          {/* Collection Title */}
+          {!showHeroBanner && (
+            <div className="mt-8 mb-6">
+              <h1 className="font-[family-name:var(--font-body)] font-bold text-white text-3xl md:text-4xl">
+                {collectionTitle}
+              </h1>
+            </div>
+          )}
 
           {/* Carousel section */}
-          <div className="py-10 md:py-14">
-            <ProductCarousel />
+          <div className={showHeroBanner ? "py-10 md:py-14" : "pb-10 md:pb-14"}>
+            <ProductCarousel products={displayProducts} collectionTitle={collectionTitle} showTitle={showHeroBanner} />
           </div>
         </div>
 

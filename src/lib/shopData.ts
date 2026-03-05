@@ -25,6 +25,8 @@ export interface InventoryProduct {
   shortDescription: string;
   description: string;
   materials: string[];
+  // Collections this product belongs to
+  collections: string[];
   // Optional size matrix. Set `price` only when a size should cost more/less than defaultPrice.
   sizeOptions?: ProductSizeOption[];
   // Optional gallery driving thumbnail labels and image order on the item page.
@@ -48,6 +50,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Neon Drip Tee is cut from a heavyweight jersey and hand-marked in studio, so every piece lands a little different. Designed for daily wear with gallery-level detail.",
     materials: ["100% cotton", "Screen printed front", "Hand-painted accents"],
+    collections: ["All", "Best Sellers", "New Releases"],
     sizeOptions: [
       { size: "S" },
       { size: "M" },
@@ -71,6 +74,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "Built with a relaxed fit and dense fleece body, the Splatter Hoodie balances comfort with statement texture. Each finish pass is done by hand for one-of-one character.",
     materials: ["80/20 cotton blend fleece", "Rib cuffs and hem", "Hand-finished splatter"],
+    collections: ["All", "Best Sellers"],
     sizeOptions: [
       { size: "S" },
       { size: "M" },
@@ -94,6 +98,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Tagged Crewneck combines clean lines with custom typography rooted in street lettering. Versatile enough for layering and cut for an easy everyday silhouette.",
     materials: ["Midweight French terry", "Direct-to-garment print", "Pre-shrunk fabric"],
+    collections: ["All", "Fraternity Collection"],
     sizeOptions: [
       { size: "S" },
       { size: "M" },
@@ -112,6 +117,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "An everyday cap with custom stitch work inspired by stencil walls and transit markings. Finished with an adjustable strap for a secure fit across head sizes.",
     materials: ["100% cotton twill", "Embroidered front logo", "Adjustable back strap"],
+    collections: ["All", "Harvard Collection"],
   },
   {
     id: "5",
@@ -124,6 +130,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Mural Joggers pair clean tailoring with painted panel motifs that nod to city walls after dark. Made for movement with a structured but comfortable feel.",
     materials: ["Cotton-poly fleece", "Elastic waistband", "Tapered leg opening"],
+    collections: ["All", "New Releases"],
     sizeOptions: [
       { size: "S" },
       { size: "M" },
@@ -142,6 +149,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "A heavyweight layer built from durable canvas and hand-tagged accents. The Canvas Jacket is made to wear in and age with character over time.",
     materials: ["Heavy cotton canvas", "Metal zip closure", "Interior utility pocket"],
+    collections: ["All", "Fraternity Collection"],
     sizeOptions: [
       { size: "M" },
       { size: "L", price: "$188" },
@@ -160,6 +168,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "Lightweight and breathable, the Throw-Up Shorts are built for warm-weather sets and studio sessions. Graphic placement keeps the look loud without compromising comfort.",
     materials: ["Breathable mesh shell", "Soft inner lining", "Drawcord waistband"],
+    collections: ["All", "Harvard Collection"],
     sizeOptions: [
       { size: "S" },
       { size: "M" },
@@ -178,6 +187,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Wildstyle Tank keeps things light with an athletic silhouette and high-impact lettering. It is designed to be worn solo or layered over long sleeves.",
     materials: ["100% ringspun cotton", "Curved hem", "Soft-wash finish"],
+    collections: ["All", "New Releases"],
     sizeOptions: [
       { size: "S" },
       { size: "M" },
@@ -212,9 +222,35 @@ export function getInventoryProductByHandle(
 }
 
 export const collectionItems: ShopNavItem[] = [
-  { label: "All", href: "#" },
-  { label: "Harvard Collection", href: "#" },
+  { label: "All", href: "/?shop=1&collection=all" },
+  { label: "New Releases", href: "/?shop=1&collection=new-releases" },
+  { label: "Best Sellers", href: "/?shop=1&collection=best-sellers" },
+  { label: "Fraternity Collection", href: "/?shop=1&collection=fraternity" },
+  { label: "Harvard Collection", href: "/?shop=1&collection=harvard" },
+  { label: "Custom Design", href: "/custom" },
 ];
+
+export function getProductsByCollection(collectionSlug?: string): InventoryProduct[] {
+  if (!collectionSlug || collectionSlug === 'all') {
+    return inventoryProducts;
+  }
+  
+  const collectionMap: Record<string, string> = {
+    'new-releases': 'New Releases',
+    'best-sellers': 'Best Sellers',
+    'fraternity': 'Fraternity Collection',
+    'harvard': 'Harvard Collection',
+  };
+  
+  const collectionName = collectionMap[collectionSlug];
+  if (!collectionName) {
+    return inventoryProducts;
+  }
+  
+  return inventoryProducts.filter(product => 
+    product.collections.includes(collectionName)
+  );
+}
 
 export const footerNavItems: ShopNavItem[] = [
   { label: "About", href: "#" },
