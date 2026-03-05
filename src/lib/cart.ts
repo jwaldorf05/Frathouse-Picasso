@@ -2,6 +2,13 @@ import { parsePriceToCents } from "@/lib/checkout";
 
 export const CART_COOKIE_NAME = "fhp-cart";
 
+export interface ProductCustomization {
+  customText?: string;
+  fontStyle?: string;
+  color?: string;
+  [key: string]: string | undefined;
+}
+
 export interface CartItem {
   id: string;
   handle: string;
@@ -10,6 +17,7 @@ export interface CartItem {
   quantity: number;
   unitPrice: string;
   image: string | null;
+  customization?: ProductCustomization;
 }
 
 export interface CartState {
@@ -65,7 +73,8 @@ export function readCartFromCookieHeader(cookieHeader: string | null): CartState
           (item.selectedSize === null || typeof item.selectedSize === "string") &&
           typeof item.quantity === "number" &&
           item.quantity > 0 &&
-          typeof item.unitPrice === "string"
+          typeof item.unitPrice === "string" &&
+          (item.customization === undefined || typeof item.customization === "object")
       ),
     };
   } catch {
@@ -74,7 +83,21 @@ export function readCartFromCookieHeader(cookieHeader: string | null): CartState
 }
 
 export function serializeCartCookie(cart: CartState): string {
-  return `${CART_COOKIE_NAME}=${encodeURIComponent(JSON.stringify(cart))}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000`;
+  const isProduction = process.env.NODE_ENV === 'production';
+  const secureFlag = isProduction ? '; Secure' : '';
+  return `${CART_COOKIE_NAME}=${encodeURIComponent(JSON.stringify(cart))}; Path=/; HttpOnly; SameSite=Lax${secureFlag}; Max-Age=2592000`;
+}
+
+function customizationMatches(a?: ProductCustomization, b?: ProductCustomization): boolean {
+  if (!a && !b) return true;
+  if (!a || !b) return false;
+  
+  const keysA = Object.keys(a).sort();
+  const keysB = Object.keys(b).sort();
+  
+  if (keysA.length !== keysB.length) return false;
+  
+  return keysA.every((key) => a[key] === b[key]);
 }
 
 export function addItemToCart(
@@ -85,7 +108,8 @@ export function addItemToCart(
     (line) =>
       line.handle === item.handle &&
       line.selectedSize === item.selectedSize &&
-      line.unitPrice === item.unitPrice
+      line.unitPrice === item.unitPrice &&
+      customizationMatches(line.customization, item.customization)
   );
 
   if (existing) {
@@ -131,18 +155,30 @@ export function getCartItemCount(cart: CartState): number {
 }
 
 export function toStripeLineItems(cart: CartState) {
-  return cart.items.map((item) => ({
-    quantity: item.quantity,
-    price_data: {
-      currency: "usd",
-      unit_amount: parsePriceToCents(item.unitPrice),
-      product_data: {
-        name: item.selectedSize ? `${item.name} (${item.selectedSize})` : item.name,
-        metadata: {
-          handle: item.handle,
-          ...(item.selectedSize ? { size: item.selectedSize } : {}),
+  return cart.items.map((item) => {
+    const metadata: Record<string, string> = {
+      handle: item.handle,
+      ...(item.selectedSize ? { size: item.selectedSize } : {}),
+    };
+
+    if (item.customization) {
+      Object.entries(item.customization).forEach(([key, value]) => {
+        if (value !== undefined) {
+          metadata[`custom_${key}`] = value;
+        }
+      });
+    }
+
+    return {
+      quantity: item.quantity,
+      price_data: {
+        currency: "usd",
+        unit_amount: parsePriceToCents(item.unitPrice),
+        product_data: {
+          name: item.selectedSize ? `${item.name} (${item.selectedSize})` : item.name,
+          metadata,
         },
       },
-    },
-  }));
+    };
+  });
 }

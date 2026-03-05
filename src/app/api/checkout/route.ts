@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
+import type Stripe from "stripe";
 import {
   getInventoryProductByHandle,
   getProductPrice,
   type InventoryProduct,
 } from "@/lib/shopData";
 import { parsePriceToCents, resolveCheckoutOrigin } from "@/lib/checkout";
-import { readCartFromCookieHeader, toStripeLineItems } from "@/lib/cart";
+import { readCartFromCookieHeader, toStripeLineItems, type ProductCustomization } from "@/lib/cart";
+import { getStripeInstance } from "@/lib/stripe";
+
+export const dynamic = 'force-dynamic';
 
 interface CheckoutRequestBody {
   fromCart?: boolean;
   handle?: string;
   quantity?: number;
   selectedSize?: string | null;
+  customization?: ProductCustomization;
 }
 
 function validateSizeSelection(product: InventoryProduct, selectedSize?: string | null): string | null {
@@ -36,18 +40,9 @@ function validateSizeSelection(product: InventoryProduct, selectedSize?: string 
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as CheckoutRequestBody;
-    const { fromCart = false, handle, quantity, selectedSize } = body;
+    const { fromCart = false, handle, quantity, selectedSize, customization } = body;
 
-    const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-
-    if (!stripeSecretKey) {
-      return NextResponse.json(
-        { error: "Missing Stripe configuration. Set STRIPE_SECRET_KEY." },
-        { status: 500 }
-      );
-    }
-
-    const stripe = new Stripe(stripeSecretKey);
+    const stripe = getStripeInstance();
 
     const requestUrl = new URL(request.url);
     const origin = resolveCheckoutOrigin(requestUrl.origin);
@@ -97,6 +92,19 @@ export async function POST(request: Request) {
       const unitAmount = parsePriceToCents(activePrice);
       const productUrl = `${origin}/items/${product.handle}?shop=1`;
 
+      const productMetadata: Record<string, string> = {
+        handle: product.handle,
+        ...(selectedSize ? { size: selectedSize } : {}),
+      };
+
+      if (customization) {
+        Object.entries(customization).forEach(([key, value]) => {
+          if (value !== undefined) {
+            productMetadata[`custom_${key}`] = value;
+          }
+        });
+      }
+
       lineItems = [
         {
           quantity,
@@ -106,10 +114,7 @@ export async function POST(request: Request) {
             product_data: {
               name: product.name,
               description: product.shortDescription,
-              metadata: {
-                handle: product.handle,
-                ...(selectedSize ? { size: selectedSize } : {}),
-              },
+              metadata: productMetadata,
             },
           },
         },
@@ -122,16 +127,30 @@ export async function POST(request: Request) {
         quantity: String(quantity),
         ...(selectedSize ? { size: selectedSize } : {}),
       };
+
+      if (customization) {
+        Object.entries(customization).forEach(([key, value]) => {
+          if (value !== undefined) {
+            metadata[`custom_${key}`] = value;
+          }
+        });
+      }
     }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
       metadata,
+      payment_intent_data: {
+        metadata,
+      },
       success_url: successUrl,
       cancel_url: cancelUrl,
       allow_promotion_codes: true,
       billing_address_collection: "auto",
+      shipping_address_collection: {
+        allowed_countries: ["US", "CA"],
+      },
     });
 
     if (!session.url) {

@@ -51,7 +51,7 @@ const HeroSection = forwardRef<HTMLDivElement, HeroSectionProps>(
             className="font-[family-name:var(--font-body)] text-white text-hero-shadow mt-6 tracking-[0.3em] uppercase text-center font-medium"
             style={{ fontSize: "clamp(0.85rem, 2.5vw, 1.4rem)" }}
           >
-            Art That Hits Different
+            Urban Aesthetics Redefined
           </p>
 
           {/* Scroll indicator */}

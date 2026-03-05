@@ -11,9 +11,18 @@ import {
   type InventoryProduct,
 } from "@/lib/shopData";
 
+export const dynamic = 'force-dynamic';
+
 // ─── Sidebar ────────────────────────────────────────────────────────
 
-function Sidebar({ visible }: { visible: boolean }) {
+interface SidebarProps {
+  visible: boolean;
+  cartCount: number;
+  onCartClick: () => void;
+  isMounted: boolean;
+}
+
+function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
   const [activeNav, setActiveNav] = useState("All");
   const [collectionsOpen, setCollectionsOpen] = useState(true);
 
@@ -21,7 +30,7 @@ function Sidebar({ visible }: { visible: boolean }) {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between z-50 will-change-transform"
+        className="hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between z-50 will-change-transform overflow-hidden"
         style={{
           width: 240,
           background: "#0a0a0a",
@@ -30,8 +39,30 @@ function Sidebar({ visible }: { visible: boolean }) {
           transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
+        {/* Graffiti stickers */}
+        <Image
+          src="/stickers/Caution Tape 1.png"
+          alt=""
+          width={180}
+          height={80}
+          className="absolute top-12 -left-8 rotate-[-15deg] opacity-70 pointer-events-none z-10"
+        />
+        <Image
+          src="/stickers/Wizard Spraypaint.png"
+          alt=""
+          width={120}
+          height={120}
+          className="absolute top-[35%] right-2 opacity-60 pointer-events-none z-10"
+        />
+        <Image
+          src="/stickers/Caution Tape 2.png"
+          alt=""
+          width={160}
+          height={70}
+          className="absolute bottom-32 -right-6 rotate-12 opacity-65 pointer-events-none z-10"
+        />
         {/* Brand logo */}
-        <div className="p-6">
+        <div className="p-6 relative z-20">
           <Image
             src="/FP_Borderless.png"
             alt="Frathouse Picasso"
@@ -42,7 +73,7 @@ function Sidebar({ visible }: { visible: boolean }) {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3">
+        <nav className="flex-1 px-3 relative z-20">
           {/* About */}
           <button
             onClick={() => setActiveNav("About")}
@@ -92,8 +123,14 @@ function Sidebar({ visible }: { visible: boolean }) {
         </nav>
 
         {/* Cart */}
-        <div className="p-6 border-t border-[#1a1a1a]">
-          <button className="flex items-center gap-2 font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase text-text-secondary hover:text-white transition-colors">
+        <div className="p-6 border-t border-[#1a1a1a] relative z-20">
+          <button 
+            onClick={() => {
+              console.log('Desktop cart button clicked! Count:', cartCount);
+              onCartClick();
+            }}
+            className="flex items-center gap-2 font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase text-text-secondary hover:text-white transition-colors"
+          >
             <svg
               className="w-5 h-5"
               fill="none"
@@ -109,7 +146,7 @@ function Sidebar({ visible }: { visible: boolean }) {
             </svg>
             CART
             <span className="ml-auto bg-accent text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-              0
+              {isMounted ? cartCount : 0}
             </span>
           </button>
         </div>
@@ -142,7 +179,13 @@ function Sidebar({ visible }: { visible: boolean }) {
             {item.label}
           </button>
         ))}
-        <button className="relative">
+        <button 
+          onClick={() => {
+            console.log('Mobile cart button clicked! Count:', cartCount);
+            onCartClick();
+          }}
+          className="relative"
+        >
           <svg
             className="w-5 h-5 text-text-secondary"
             fill="none"
@@ -157,10 +200,176 @@ function Sidebar({ visible }: { visible: boolean }) {
             />
           </svg>
           <span className="absolute -top-1 -right-1 bg-accent text-white text-[8px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">
-            0
+            {isMounted ? cartCount : 0}
           </span>
         </button>
       </nav>
+    </>
+  );
+}
+
+// ─── Cart Panel ─────────────────────────────────────────────────────
+
+interface CartPanelProps {
+  isOpen: boolean;
+  onClose: () => void;
+  cartCount: number;
+}
+
+function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  console.log('CartPanel render - isOpen:', isOpen, 'cartCount:', cartCount);
+
+  useEffect(() => {
+    console.log('CartPanel useEffect - isOpen:', isOpen);
+    if (!isOpen) return;
+
+    const loadCart = async () => {
+      console.log('Loading cart items...');
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/cart');
+        const data = await response.json();
+        console.log('Cart panel loaded items:', data.items);
+        setCartItems(data.items || []);
+      } catch (error) {
+        console.error('Failed to load cart:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadCart();
+  }, [isOpen, cartCount]);
+
+  const handleCheckout = async () => {
+    console.log('Checkout button clicked');
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fromCart: true }),
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Checkout failed:', error);
+    }
+  };
+
+  if (!isOpen) {
+    console.log('CartPanel not rendering - isOpen is false');
+    return null;
+  }
+
+  console.log('CartPanel rendering with', cartItems.length, 'items');
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 bg-black/60 z-[100]"
+        onClick={onClose}
+      />
+      
+      {/* Panel */}
+      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-[#0a0a0a] z-[110] border-l border-[#1a1a1a] flex flex-col overflow-hidden">
+        {/* Graffiti stickers */}
+        <Image
+          src="/stickers/Caution Tape 3.png"
+          alt=""
+          width={200}
+          height={90}
+          className="absolute top-16 -right-10 rotate-[25deg] opacity-60 pointer-events-none z-10"
+        />
+        <Image
+          src="/stickers/SEND Spraypaint.png"
+          alt=""
+          width={140}
+          height={140}
+          className="absolute top-[30%] -left-8 opacity-50 pointer-events-none z-10"
+        />
+        <Image
+          src="/stickers/Three Way Spray.png"
+          alt=""
+          width={130}
+          height={130}
+          className="absolute bottom-[25%] right-4 opacity-55 pointer-events-none z-10"
+        />
+        <Image
+          src="/stickers/Caution Tape 1.png"
+          alt=""
+          width={180}
+          height={80}
+          className="absolute bottom-12 -left-12 rotate-[-20deg] opacity-65 pointer-events-none z-10"
+        />
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-[#1a1a1a] relative z-20">
+          <h2 className="font-[family-name:var(--font-body)] text-xl font-bold text-white">
+            YOUR CART ({cartCount})
+          </h2>
+          <button 
+            onClick={onClose}
+            className="text-text-secondary hover:text-white transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Cart Items */}
+        <div className="flex-1 overflow-y-auto p-6 relative z-20">
+          {isLoading ? (
+            <p className="text-text-secondary text-center">Loading...</p>
+          ) : cartItems.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-text-secondary mb-4">Your gallery is empty. Start your collection.</p>
+              <button 
+                onClick={onClose}
+                className="text-accent hover:text-white transition-colors text-sm uppercase tracking-wider"
+              >
+                Continue Shopping
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {cartItems.map((item: any) => (
+                <div key={item.id} className="flex gap-4 p-4 bg-[#0d0d0d] rounded-lg border border-[#1a1a1a]">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-md flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-[family-name:var(--font-body)] text-white text-sm font-bold">
+                      {item.name}
+                    </h3>
+                    {item.selectedSize && (
+                      <p className="text-text-secondary text-xs mt-1">Size: {item.selectedSize}</p>
+                    )}
+                    <p className="text-text-secondary text-xs mt-1">Qty: {item.quantity}</p>
+                    <p className="text-white text-sm font-bold mt-2">{item.unitPrice}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Checkout Button */}
+        {cartItems.length > 0 && (
+          <div className="p-6 border-t border-[#1a1a1a] relative z-20">
+            <button
+              onClick={handleCheckout}
+              className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 rounded-md transition-colors font-bold"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
+      </div>
     </>
   );
 }
@@ -172,6 +381,14 @@ function ProductCard({
 }: {
   product: InventoryProduct;
 }) {
+  const sprayStickerIndex = Math.abs(product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % 4;
+  const sprayStickers = [
+    '/stickers/Pledge Leash Spray.png',
+    '/stickers/SEND Spraypaint.png',
+    '/stickers/Three Way Spray.png',
+    '/stickers/Wizard Spraypaint.png'
+  ];
+  
   return (
     <Link
       href={`/items/${product.handle}`}
@@ -180,6 +397,13 @@ function ProductCard({
     >
       {/* Image placeholder */}
       <div className="aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] relative">
+        <Image
+          src={sprayStickers[sprayStickerIndex]}
+          alt=""
+          width={100}
+          height={100}
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-15 pointer-events-none"
+        />
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="font-[family-name:var(--font-body)] font-bold text-white/20 text-2xl text-center px-4">
             {product.name}
@@ -278,15 +502,97 @@ interface ShopLayoutProps {
 }
 
 export default function ShopLayout({ visible }: ShopLayoutProps) {
+  const [cartCount, setCartCount] = useState(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const syncCartCount = async () => {
+      try {
+        const response = await fetch('/api/cart');
+        console.log('Cart API response status:', response.ok);
+        if (!response.ok) {
+          setCartCount(0);
+          return;
+        }
+        const data = await response.json();
+        console.log('Cart API data:', data);
+        const totalItems = data.items?.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0) || 0;
+        console.log('Total cart items:', totalItems);
+        setCartCount(totalItems);
+      } catch (error) {
+        console.error('Cart API error:', error);
+        setCartCount(0);
+      }
+    };
+
+    syncCartCount();
+    const interval = setInterval(syncCartCount, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleCartUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      console.log('Cart update event received:', customEvent.detail);
+      if (customEvent.detail?.action === 'add') {
+        setIsCartOpen(true);
+      }
+    };
+
+    window.addEventListener('cart-updated', handleCartUpdate);
+    return () => window.removeEventListener('cart-updated', handleCartUpdate);
+  }, []);
+
+  const handleCartClick = () => {
+    console.log('handleCartClick called, current isCartOpen:', isCartOpen);
+    setIsCartOpen(!isCartOpen);
+    console.log('Setting isCartOpen to:', !isCartOpen);
+  };
+
   return (
     <>
-      <Sidebar visible={visible} />
+      <CartPanel isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartCount={cartCount} />
+      <Sidebar visible={visible} cartCount={cartCount} onCartClick={handleCartClick} isMounted={isMounted} />
 
       <div
-        className={`relative z-[2] shop-content ${visible ? "shop-content-visible" : ""}`}
+        className={`relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
         style={{ background: "#0a0a0a" }}
       >
-        <div className="px-6 md:px-10">
+        {/* Background graffiti stickers */}
+        <Image
+          src="/stickers/Pledge Leash Spray.png"
+          alt=""
+          width={180}
+          height={180}
+          className="absolute top-[15%] left-[10%] opacity-20 pointer-events-none z-0"
+        />
+        <Image
+          src="/stickers/Wizard Spraypaint.png"
+          alt=""
+          width={200}
+          height={200}
+          className="absolute top-[40%] right-[15%] opacity-15 pointer-events-none z-0"
+        />
+        <Image
+          src="/stickers/SEND Spraypaint.png"
+          alt=""
+          width={220}
+          height={220}
+          className="absolute bottom-[20%] left-[20%] opacity-18 pointer-events-none z-0"
+        />
+        <Image
+          src="/stickers/Three Way Spray.png"
+          alt=""
+          width={160}
+          height={160}
+          className="absolute top-[60%] right-[8%] opacity-20 pointer-events-none z-0"
+        />
+        <div className="px-6 md:px-10 relative z-[3]">
           {/* Hero banner — same horizontal alignment as carousel content */}
           <div
             className="w-full relative overflow-hidden rounded-lg mt-6"

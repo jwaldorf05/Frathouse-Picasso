@@ -16,12 +16,16 @@ export function parsePriceToCents(price: string): number {
 
 export function resolveCheckoutOrigin(requestOrigin: string): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
+    console.log('✓ Using NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
     return process.env.NEXT_PUBLIC_SITE_URL;
   }
 
   if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
+    const url = `https://${process.env.VERCEL_URL}`;
+    console.log('⚠ Using VERCEL_URL:', url);
+    return url;
   }
 
+  console.log('⚠ Falling back to request origin:', requestOrigin);
   return requestOrigin;
 }

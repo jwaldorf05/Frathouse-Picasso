@@ -7,6 +7,8 @@ import {
   updateCartLineQuantity,
 } from "@/lib/cart";
 
+export const dynamic = 'force-dynamic';
+
 interface UpdateCartLineBody {
   lineId?: string;
   quantity?: number;

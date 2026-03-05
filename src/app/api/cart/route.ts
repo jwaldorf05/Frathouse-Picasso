@@ -7,6 +7,8 @@ import {
   serializeCartCookie,
 } from "@/lib/cart";
 
+export const dynamic = 'force-dynamic';
+
 interface AddCartItemBody {
   handle?: string;
   quantity?: number;

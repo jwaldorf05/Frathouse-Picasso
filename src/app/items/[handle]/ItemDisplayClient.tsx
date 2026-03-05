@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -40,6 +40,12 @@ export default function ItemDisplayClient({
   const activeFrame = galleryFrames[activeImageIndex] ?? galleryFrames[0];
   const activePrice = getProductPrice(product, selectedSize);
   const checkoutStatus = searchParams.get("checkout");
+
+  useEffect(() => {
+    if (checkoutStatus === "success") {
+      document.cookie = "fhp-cart=; Path=/; Max-Age=0";
+    }
+  }, [checkoutStatus]);
 
   const canAddToCart = !hasSizes || selectedSize !== null;
   const isRedirectingToStripe = isCheckoutLoading;
@@ -87,6 +93,7 @@ export default function ItemDisplayClient({
         setCartMessage(
           `Added to cart${typeof cartData.totalQuantity === "number" ? ` • ${cartData.totalQuantity} item(s) total` : ""}.`
         );
+        window.dispatchEvent(new CustomEvent('cart-updated', { detail: { action: 'add' } }));
         return;
       }
 
