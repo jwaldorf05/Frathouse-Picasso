@@ -62,37 +62,56 @@ export default function AboutPage() {
         {/* Content */}
         <div className="prose prose-invert max-w-none">
           <div className="space-y-6 text-text-secondary leading-relaxed">
-            <p>
-              Fidget Newton was a peculiar inventor who lived in a cluttered workshop at the edge of town. 
-              His days were spent tinkering with springs, gears, and levers, creating contraptions that 
-              served no practical purpose but brought him endless joy.
+            <p className="text-lg md:text-xl">
+              This mission begun with a few college students who found a few street sings that fell off some poles and got an idea. Many shenanigans later, this hobby has become an obsession where we procured custom signage from our dorms to deliver to friends. We strive to bring an urban, sketchy aesthetic to dorms and frat houses around the world.
             </p>
 
-            <p>
-              One morning, while rummaging through a box of old parts, Fidget discovered a mysterious golden 
-              cog. It was unlike anything he had ever seen—perfectly smooth, warm to the touch, and humming 
-              with a faint energy. Intrigued, he decided to incorporate it into his latest invention: a 
-              mechanical bird designed to sing at sunrise.
-            </p>
-
-            <p>
-              As soon as Fidget attached the golden cog, the bird sprang to life. But instead of singing, 
-              it began to speak. "Thank you for freeing me," it chirped in a voice that sounded both ancient 
-              and kind. "I have been waiting for someone with a curious heart."
-            </p>
-
-            <p>
-              The bird explained that it was no ordinary creation—it was a guardian of forgotten dreams, 
-              tasked with finding those who still believed in the magic of imagination. Fidget, with his 
-              endless curiosity and love for the whimsical, had proven himself worthy.
-            </p>
-
-            <p>
-              From that day forward, Fidget and the mechanical bird became inseparable companions. Together, 
-              they traveled the world, collecting stories of wonder and sharing them with anyone willing to 
-              listen. And in every town they visited, they left behind a small golden cog—a reminder that 
-              magic still exists for those who dare to dream.
-            </p>
+            {/* Beautiful/Legal Tagline */}
+            <div className="mt-16 mb-12 flex flex-col items-center text-center">
+              {/* Line 1: Beautiful ✓ */}
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <span 
+                  className="font-[family-name:var(--font-body)] font-bold text-7xl md:text-8xl lg:text-9xl leading-none"
+                  style={{ 
+                    color: '#CCFF00',
+                    textShadow: '0 0 20px rgba(204, 255, 0, 0.5), 0 0 40px rgba(204, 255, 0, 0.3)'
+                  }}
+                >
+                  Beautiful
+                </span>
+                <img 
+                  src="/images/about/checkmark_yellow.png"
+                  alt="Checkmark"
+                  className="h-[0.9em] w-auto flex-shrink-0"
+                  style={{
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0 0 12px rgba(204, 255, 0, 0.6))'
+                  }}
+                />
+              </div>
+              
+              {/* Line 2: Legal ? */}
+              <div className="flex items-center justify-center gap-4">
+                <span 
+                  className="font-[family-name:var(--font-body)] font-bold text-7xl md:text-8xl lg:text-9xl leading-none"
+                  style={{ 
+                    color: '#FF007F',
+                    textShadow: '0 0 20px rgba(255, 0, 127, 0.5), 0 0 40px rgba(255, 0, 127, 0.3)'
+                  }}
+                >
+                  Legal
+                </span>
+                <img 
+                  src="/images/about/question_pink.png"
+                  alt="Question mark"
+                  className="h-[0.9em] w-auto flex-shrink-0"
+                  style={{
+                    objectFit: 'contain',
+                    filter: 'drop-shadow(0 0 12px rgba(255, 0, 127, 0.6))'
+                  }}
+                />
+              </div>
+            </div>
 
             <div className="mt-12 pt-8 border-t border-[#1a1a1a]">
               <h2 className="font-[family-name:var(--font-body)] font-bold text-white text-2xl mb-4">

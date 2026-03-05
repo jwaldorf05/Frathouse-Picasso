@@ -127,10 +127,10 @@ export default function CustomDesignPage() {
               </svg>
             </div>
             <h2 className="font-[family-name:var(--font-body)] font-bold text-white text-2xl md:text-3xl mb-4">
-              Request Received.
+              Your Picasso is in production.
             </h2>
             <p className="text-text-secondary text-lg leading-relaxed max-w-xl mx-auto">
-              Your Picasso is being drafted. Keep an eye on your inbox.
+              Keep an eye on your inbox for updates and next steps.
             </p>
             <button
               onClick={() => setSubmitStatus("idle")}

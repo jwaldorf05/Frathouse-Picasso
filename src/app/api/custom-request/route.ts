@@ -3,7 +3,15 @@ import { Resend } from "resend";
 
 export const dynamic = 'force-dynamic';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResendInstance(): Resend {
+  const apiKey = process.env.RESEND_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error("Missing RESEND_API_KEY environment variable");
+  }
+  
+  return new Resend(apiKey);
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -107,6 +115,7 @@ export async function POST(request: NextRequest) {
       </div>
     `;
 
+    const resend = getResendInstance();
     const { error: resendError } = await resend.emails.send({
       from: "Frathouse Picasso <onboarding@resend.dev>",
       to: ["jonathanwaldorf05@gmail.com"],

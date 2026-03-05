@@ -38,11 +38,6 @@ function validateSizeSelection(product: InventoryProduct, selectedSize?: string 
 }
 
 export async function POST(request: Request) {
-  // Log env var presence (not the actual key for security)
-  console.log('🔍 Checkout API called');
-  console.log('STRIPE_SECRET_KEY defined:', !!process.env.STRIPE_SECRET_KEY);
-  console.log('NODE_ENV:', process.env.NODE_ENV);
-  
   try {
     const body = (await request.json()) as CheckoutRequestBody;
     const { fromCart = false, handle, quantity, selectedSize, customization } = body;
