@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect } from "react";
+import { getSprayPlacements } from "@/lib/sprays";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -130,8 +131,24 @@ export default function ItemDisplayClient({
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="mx-auto w-full max-w-6xl px-6 pb-14 pt-8 md:px-10 md:pb-20 md:pt-10">
+    <main className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
+      {/* Background spray patterns */}
+      {getSprayPlacements(8, 97).map((spray, i) => (
+        <img
+          key={i}
+          src={spray.src}
+          alt=""
+          className="absolute pointer-events-none z-0"
+          style={{
+            ...spray.pos,
+            width: spray.size,
+            height: 'auto',
+            opacity: spray.opacity,
+            transform: `rotate(${spray.rotation}deg) scale(${spray.scale})`,
+          }}
+        />
+      ))}
+      <div className="mx-auto w-full max-w-6xl px-6 pb-14 pt-8 md:px-10 md:pb-20 md:pt-10 relative z-10">
         <Link
           href="/?shop=1"
           className="inline-flex items-center gap-2 text-sm tracking-[1.2px] uppercase text-text-secondary transition-colors hover:text-white"
@@ -150,8 +167,8 @@ export default function ItemDisplayClient({
 
         <section className="mt-6 grid grid-cols-1 gap-8 md:mt-8 md:grid-cols-[1.1fr_1fr] md:gap-10">
           <div>
-            <div className="rounded-xl border border-[#1c1c1c] bg-[#0d0d0d] p-3">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
+            <div className="rounded-xl border border-[#1c1c1c] bg-[#0d0d0d] p-3 relative z-20">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[#111]">
                 {activeFrame.image ? (
                   <Image
                     src={activeFrame.image}
@@ -190,7 +207,7 @@ export default function ItemDisplayClient({
                     }}
                     aria-label={`Show ${frame.title.toLowerCase()} image`}
                   >
-                    <div className="relative aspect-[5/6] overflow-hidden rounded-md bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
+                    <div className="relative aspect-[5/6] overflow-hidden rounded-md bg-[#111]">
                       {frame.image ? (
                         <Image
                           src={frame.image}
@@ -216,7 +233,7 @@ export default function ItemDisplayClient({
             </div>
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col relative z-20">
             <p className="font-[family-name:var(--font-body)] text-xs tracking-[2px] uppercase text-text-secondary">
               {product.category}
             </p>

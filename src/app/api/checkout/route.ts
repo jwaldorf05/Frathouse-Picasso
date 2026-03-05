@@ -42,7 +42,16 @@ export async function POST(request: Request) {
     const body = (await request.json()) as CheckoutRequestBody;
     const { fromCart = false, handle, quantity, selectedSize, customization } = body;
 
-    const stripe = getStripeInstance();
+    let stripe;
+    try {
+      stripe = getStripeInstance();
+    } catch (stripeError) {
+      const message = stripeError instanceof Error ? stripeError.message : "Stripe configuration error";
+      console.error("Failed to initialize Stripe:", message);
+      return NextResponse.json({ 
+        error: "Missing STRIPE_SECRET_KEY environment variable" 
+      }, { status: 500 });
+    }
 
     const requestUrl = new URL(request.url);
     const origin = resolveCheckoutOrigin(requestUrl.origin);

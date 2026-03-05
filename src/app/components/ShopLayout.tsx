@@ -10,6 +10,7 @@ import {
   inventoryProducts,
   type InventoryProduct,
 } from "@/lib/shopData";
+import { getSprayPlacements } from "@/lib/sprays";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,39 +31,35 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex fixed left-0 top-0 h-screen flex-col justify-between z-50 will-change-transform overflow-hidden"
+        className="hidden md:flex fixed left-0 top-0 h-screen w-60 flex-col justify-between z-50 will-change-transform overflow-x-hidden"
         style={{
-          width: 240,
           background: "#0a0a0a",
           borderRight: "1px solid #1a1a1a",
           transform: visible ? "translateX(0)" : "translateX(-100%)",
           transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        {/* Graffiti stickers */}
-        <Image
+        {/* Caution tape - edge to edge */}
+        <img
           src="/stickers/Caution Tape 1.png"
           alt=""
-          width={180}
-          height={80}
-          className="absolute top-12 -left-8 rotate-[-15deg] opacity-70 pointer-events-none z-10"
+          className="absolute top-14 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
+          style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
         />
-        <Image
-          src="/stickers/Wizard Spraypaint.png"
-          alt=""
-          width={120}
-          height={120}
-          className="absolute top-[35%] right-2 opacity-60 pointer-events-none z-10"
-        />
-        <Image
+        <img
           src="/stickers/Caution Tape 2.png"
           alt=""
-          width={160}
-          height={70}
-          className="absolute bottom-32 -right-6 rotate-12 opacity-65 pointer-events-none z-10"
+          className="absolute top-[44%] left-0 w-full h-auto pointer-events-none z-[1] opacity-65"
+          style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
+        />
+        <img
+          src="/stickers/Caution Tape 3.png"
+          alt=""
+          className="absolute bottom-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-60"
+          style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
         />
         {/* Brand logo */}
-        <div className="p-6 relative z-20">
+        <div className="p-6 relative z-[110]" style={{ background: 'radial-gradient(circle at 40% 50%, rgba(10,10,10,1) 0%, rgba(10,10,10,0.85) 55%, rgba(10,10,10,0) 100%)' }}>
           <Image
             src="/FP_Borderless.png"
             alt="Frathouse Picasso"
@@ -73,7 +70,7 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 relative z-20">
+        <nav className="flex-1 px-3 relative z-[110]">
           {/* About */}
           <button
             onClick={() => setActiveNav("About")}
@@ -123,7 +120,7 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
         </nav>
 
         {/* Cart */}
-        <div className="p-6 border-t border-[#1a1a1a] relative z-20">
+        <div className="p-6 border-t border-[#1a1a1a] relative z-[110] bg-[#0a0a0a]/80 backdrop-blur-sm">
           <button 
             onClick={() => {
               console.log('Desktop cart button clicked! Count:', cartCount);
@@ -279,37 +276,27 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
       
       {/* Panel */}
       <div className="fixed right-0 top-0 h-full w-full max-w-md bg-[#0a0a0a] z-[110] border-l border-[#1a1a1a] flex flex-col overflow-hidden">
-        {/* Graffiti stickers */}
-        <Image
-          src="/stickers/Caution Tape 3.png"
-          alt=""
-          width={200}
-          height={90}
-          className="absolute top-16 -right-10 rotate-[25deg] opacity-60 pointer-events-none z-10"
-        />
-        <Image
-          src="/stickers/SEND Spraypaint.png"
-          alt=""
-          width={140}
-          height={140}
-          className="absolute top-[30%] -left-8 opacity-50 pointer-events-none z-10"
-        />
-        <Image
-          src="/stickers/Three Way Spray.png"
-          alt=""
-          width={130}
-          height={130}
-          className="absolute bottom-[25%] right-4 opacity-55 pointer-events-none z-10"
-        />
-        <Image
+        {/* Caution tape - edge to edge */}
+        <img
           src="/stickers/Caution Tape 1.png"
           alt=""
-          width={180}
-          height={80}
-          className="absolute bottom-12 -left-12 rotate-[-20deg] opacity-65 pointer-events-none z-10"
+          className="absolute top-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-65"
+          style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
+        />
+        <img
+          src="/stickers/Caution Tape 2.png"
+          alt=""
+          className="absolute top-[40%] left-0 w-full h-auto pointer-events-none z-[1] opacity-60"
+          style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
+        />
+        <img
+          src="/stickers/Caution Tape 3.png"
+          alt=""
+          className="absolute bottom-32 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
+          style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
         />
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#1a1a1a] relative z-20">
+        <div className="flex items-center justify-between p-6 border-b border-[#1a1a1a] relative z-[110] bg-[#0a0a0a]/90 backdrop-blur-sm">
           <h2 className="font-[family-name:var(--font-body)] text-xl font-bold text-white">
             YOUR CART ({cartCount})
           </h2>
@@ -324,7 +311,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
         </div>
 
         {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto p-6 relative z-20">
+        <div className="flex-1 overflow-y-auto p-6 relative z-[110]">
           {isLoading ? (
             <p className="text-text-secondary text-center">Loading...</p>
           ) : cartItems.length === 0 ? (
@@ -360,7 +347,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
 
         {/* Checkout Button */}
         {cartItems.length > 0 && (
-          <div className="p-6 border-t border-[#1a1a1a] relative z-20">
+          <div className="p-6 border-t border-[#1a1a1a] relative z-[110]">
             <button
               onClick={handleCheckout}
               className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 rounded-md transition-colors font-bold"
@@ -396,14 +383,7 @@ function ProductCard({
       aria-label={`View ${product.name}`}
     >
       {/* Image placeholder */}
-      <div className="aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] relative">
-        <Image
-          src={sprayStickers[sprayStickerIndex]}
-          alt=""
-          width={100}
-          height={100}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-15 pointer-events-none"
-        />
+      <div className="aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-[#111] relative">
         <div className="absolute inset-0 flex items-center justify-center">
           <span className="font-[family-name:var(--font-body)] font-bold text-white/20 text-2xl text-center px-4">
             {product.name}
@@ -563,35 +543,22 @@ export default function ShopLayout({ visible }: ShopLayoutProps) {
         className={`relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
         style={{ background: "#0a0a0a" }}
       >
-        {/* Background graffiti stickers */}
-        <Image
-          src="/stickers/Pledge Leash Spray.png"
-          alt=""
-          width={180}
-          height={180}
-          className="absolute top-[15%] left-[10%] opacity-20 pointer-events-none z-0"
-        />
-        <Image
-          src="/stickers/Wizard Spraypaint.png"
-          alt=""
-          width={200}
-          height={200}
-          className="absolute top-[40%] right-[15%] opacity-15 pointer-events-none z-0"
-        />
-        <Image
-          src="/stickers/SEND Spraypaint.png"
-          alt=""
-          width={220}
-          height={220}
-          className="absolute bottom-[20%] left-[20%] opacity-18 pointer-events-none z-0"
-        />
-        <Image
-          src="/stickers/Three Way Spray.png"
-          alt=""
-          width={160}
-          height={160}
-          className="absolute top-[60%] right-[8%] opacity-20 pointer-events-none z-0"
-        />
+        {/* Background graffiti sprays */}
+        {isMounted && getSprayPlacements(9, 42).map((spray, i) => (
+          <img
+            key={i}
+            src={spray.src}
+            alt=""
+            className="absolute pointer-events-none z-0"
+            style={{
+              ...spray.pos,
+              width: spray.size,
+              height: 'auto',
+              opacity: spray.opacity,
+              transform: `rotate(${spray.rotation}deg) scale(${spray.scale})`,
+            }}
+          />
+        ))}
         <div className="px-6 md:px-10 relative z-[3]">
           {/* Hero banner — same horizontal alignment as carousel content */}
           <div
