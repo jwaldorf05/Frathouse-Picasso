@@ -216,6 +216,7 @@ interface CartPanelProps {
 function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
   console.log('CartPanel render - isOpen:', isOpen, 'cartCount:', cartCount);
 
@@ -243,6 +244,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
 
   const handleCheckout = async () => {
     console.log('Checkout button clicked');
+    setCheckoutError(null);
     try {
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -251,11 +253,67 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
       });
 
       const data = await response.json();
+      
+      if (!response.ok || data.error) {
+        throw new Error(data.error ?? 'Unable to start checkout');
+      }
+      
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received from server');
       }
     } catch (error) {
-      console.error('Checkout failed:', error);
+      const message = error instanceof Error ? error.message : 'Checkout failed';
+      console.error('Checkout failed:', message);
+      setCheckoutError(message);
+    }
+  };
+
+  const handleUpdateQuantity = async (lineId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      handleRemoveItem(lineId);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/cart/lines', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineId, quantity: newQuantity }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || data.error) {
+        throw new Error(data.error ?? 'Unable to update quantity');
+      }
+
+      setCartItems(data.items || []);
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: { action: 'update' } }));
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+    }
+  };
+
+  const handleRemoveItem = async (lineId: string) => {
+    try {
+      const response = await fetch('/api/cart/lines', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lineId }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok || data.error) {
+        throw new Error(data.error ?? 'Unable to remove item');
+      }
+
+      setCartItems(data.items || []);
+      window.dispatchEvent(new CustomEvent('cart-updated', { detail: { action: 'remove' } }));
+    } catch (error) {
+      console.error('Failed to remove item:', error);
     }
   };
 
@@ -327,8 +385,9 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
           ) : (
             <div className="space-y-4">
               {cartItems.map((item: any) => (
-                <div key={item.id} className="flex gap-4 p-4 bg-[#0d0d0d] rounded-lg border border-[#1a1a1a]">
+                <div key={item.id} className="flex items-center gap-4 p-4 bg-[#0d0d0d] rounded-lg border border-[#1a1a1a]">
                   <div className="w-20 h-20 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-md flex-shrink-0" />
+                  
                   <div className="flex-1">
                     <h3 className="font-[family-name:var(--font-body)] text-white text-sm font-bold">
                       {item.name}
@@ -336,9 +395,42 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
                     {item.selectedSize && (
                       <p className="text-text-secondary text-xs mt-1">Size: {item.selectedSize}</p>
                     )}
-                    <p className="text-text-secondary text-xs mt-1">Qty: {item.quantity}</p>
-                    <p className="text-white text-sm font-bold mt-2">{item.unitPrice}</p>
+                    
+                    {/* Quantity controls */}
+                    <div className="mt-2 flex items-center gap-3">
+                      <div className="inline-flex items-center border border-[#333] rounded-md overflow-hidden bg-[#0d0d0d]">
+                        <button
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                          className="px-3 py-1 text-white hover:bg-[#1a1a1a] transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </button>
+                        <span className="px-3 py-1 text-white text-sm min-w-[2rem] text-center border-x border-[#333]">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                          className="px-3 py-1 text-white hover:bg-[#1a1a1a] transition-colors"
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <p className="text-white text-sm font-bold">{item.unitPrice}</p>
+                    </div>
                   </div>
+
+                  {/* Remove button */}
+                  <button
+                    onClick={() => handleRemoveItem(item.id)}
+                    className="w-6 h-6 flex items-center justify-center text-text-secondary hover:text-white transition-colors flex-shrink-0"
+                    aria-label="Remove item"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
               ))}
             </div>
@@ -348,6 +440,16 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
         {/* Checkout Button */}
         {cartItems.length > 0 && (
           <div className="p-6 border-t border-[#1a1a1a] relative z-[110]">
+            {checkoutError && (
+              <div className="mb-3 rounded-md border border-[#3b2222] bg-[#1a1111] px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[1.4px] text-[#ffb4b4]">
+                  Checkout Error
+                </p>
+                <p className="mt-1 text-xs text-text-secondary">
+                  {checkoutError}
+                </p>
+              </div>
+            )}
             <button
               onClick={handleCheckout}
               className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 rounded-md transition-colors font-bold"
