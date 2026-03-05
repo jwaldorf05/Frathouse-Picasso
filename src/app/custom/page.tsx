@@ -118,8 +118,31 @@ export default function CustomDesignPage() {
           </p>
         </div>
 
+        {/* Success Screen */}
+        {submitStatus === "success" && (
+          <div className="py-16 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-green-700 bg-green-950/30 mb-8">
+              <svg className="w-8 h-8 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="font-[family-name:var(--font-body)] font-bold text-white text-2xl md:text-3xl mb-4">
+              Request Received.
+            </h2>
+            <p className="text-text-secondary text-lg leading-relaxed max-w-xl mx-auto">
+              Your Picasso is being drafted. Keep an eye on your inbox.
+            </p>
+            <button
+              onClick={() => setSubmitStatus("idle")}
+              className="mt-10 inline-block border border-[#333] hover:border-white text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase px-6 py-3 rounded-md transition-colors"
+            >
+              Submit Another Request
+            </button>
+          </div>
+        )}
+
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className={`space-y-6 ${submitStatus === "success" ? "hidden" : ""}`}>
           {/* Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
@@ -239,15 +262,7 @@ export default function CustomDesignPage() {
             </p>
           </div>
 
-          {/* Status Messages */}
-          {submitStatus === "success" && (
-            <div className="rounded-md border border-green-800 bg-green-950/30 px-4 py-3">
-              <p className="text-sm text-green-400">
-                ✓ Request submitted successfully! We'll get back to you soon.
-              </p>
-            </div>
-          )}
-
+          {/* Error Message */}
           {submitStatus === "error" && (
             <div className="rounded-md border border-red-800 bg-red-950/30 px-4 py-3">
               <p className="text-sm text-red-400">
@@ -260,9 +275,15 @@ export default function CustomDesignPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 rounded-md transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 rounded-md transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isSubmitting ? "Submitting..." : "Submit Request"}
+            {isSubmitting && (
+              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            )}
+            {isSubmitting ? "Sending..." : "Submit Request"}
           </button>
         </form>
       </div>
