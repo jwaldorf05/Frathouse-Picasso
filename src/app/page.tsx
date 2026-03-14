@@ -113,8 +113,8 @@ function HomeContent() {
   }, [completeIntro, searchParams]);
 
   const collection = searchParams.get("collection") || undefined;
-  // Only show banner on true homepage (no collection param), not on "All" collection
-  const showHeroBanner = !collection;
+  // Never show hero banner after intro is completed (scrolled past initial view)
+  const showHeroBanner = false;
 
   return (
     <main className="relative">

@@ -503,13 +503,21 @@ function ProductCard({
       className="flex-shrink-0 w-[220px] md:w-[260px] group cursor-pointer block"
       aria-label={`View ${product.name}`}
     >
-      {/* Image placeholder */}
-      <div className="aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-[#111] relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="font-[family-name:var(--font-body)] font-bold text-white/20 text-2xl text-center px-4">
-            {product.name}
-          </span>
-        </div>
+      {/* Product image */}
+      <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#111] relative">
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-[family-name:var(--font-body)] font-bold text-white/20 text-2xl text-center px-4">
+              {product.name}
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-colors duration-300" />
       </div>
       <h3 className="font-[family-name:var(--font-body)] font-bold text-white text-sm leading-tight">

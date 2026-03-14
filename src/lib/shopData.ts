@@ -84,7 +84,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "frat-fluids",
     name: "FRAT FLUIDS",
     defaultPrice: "$95",
-    image: "/Product Photos/FratFluids/FratFluids12x18SignPrint.png",
+    image: "/Product Photos/FratFluids/Frat Fluids Mockup.png",
     category: "Street Signs",
     shortDescription: "Warning sign with fraternity house humor.",
     description:
@@ -96,8 +96,7 @@ export const inventoryProducts: InventoryProduct[] = [
       { size: '10" × 30"', price: "$115" },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/FratFluids/FratFluids12x18SignPrint.png" },
-      { id: "alt", title: "Alternate", image: "/Product Photos/FratFluids/Frat Fluids 12x18 SignPrint copy.png" },
+      { id: "main", title: "Main View", image: "/Product Photos/FratFluids/Frat Fluids Mockup.png" },
     ],
   },
   {
