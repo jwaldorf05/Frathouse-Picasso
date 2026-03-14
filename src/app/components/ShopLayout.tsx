@@ -25,6 +25,7 @@ interface SidebarProps {
 interface ShopLayoutProps {
   collection?: string;
   showHeroBanner?: boolean;
+  isHomepage?: boolean;
 }
 
 function getCollectionTitle(collectionSlug?: string): string {
@@ -532,7 +533,7 @@ function ProductCard({
 
 // ─── Carousel ───────────────────────────────────────────────────────
 
-function ProductCarousel({ products, collectionTitle, showTitle }: { products: InventoryProduct[]; collectionTitle: string; showTitle: boolean }) {
+function ProductCarousel({ products, collectionTitle, showTitle, showArrows = false }: { products: InventoryProduct[]; collectionTitle: string; showTitle: boolean; showArrows?: boolean }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: "start",
     containScroll: "trimSnaps",
@@ -540,6 +541,8 @@ function ProductCarousel({ products, collectionTitle, showTitle }: { products: I
   });
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -562,40 +565,61 @@ function ProductCarousel({ products, collectionTitle, showTitle }: { products: I
     <div className="relative">
       {/* Header - only show on homepage */}
       {showTitle && (
-        <div className="flex items-center justify-between mb-6 px-1">
+        <div className="mb-6 px-1">
           <h2 className="font-[family-name:var(--font-body)] font-bold text-white text-2xl md:text-3xl">
-            Hottest Right Now
+            {collectionTitle}
           </h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => emblaApi?.scrollPrev()}
-              disabled={!canScrollPrev}
-              className="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={() => emblaApi?.scrollNext()}
-              disabled={!canScrollNext}
-              className="w-8 h-8 rounded-full border border-[#333] flex items-center justify-center text-white/60 hover:text-white hover:border-white/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
         </div>
       )}
 
-      {/* Carousel viewport */}
-      <div className="overflow-hidden" ref={emblaRef}>
+      {/* Carousel viewport with hover zones */}
+      <div 
+        className="overflow-hidden relative" 
+        ref={emblaRef}
+        onMouseMove={(e) => {
+          if (!showArrows) return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const width = rect.width;
+          setShowLeftArrow(x < width * 0.15 && canScrollPrev);
+          setShowRightArrow(x > width * 0.85 && canScrollNext);
+        }}
+        onMouseLeave={() => {
+          if (showArrows) {
+            setShowLeftArrow(false);
+            setShowRightArrow(false);
+          }
+        }}
+      >
         <div className="flex gap-4">
           {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+
+        {/* Left arrow - appears on hover */}
+        {showArrows && showLeftArrow && (
+          <button
+            onClick={() => emblaApi?.scrollPrev()}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/80 border border-white/20 flex items-center justify-center text-white hover:bg-black hover:border-white/40 transition-all"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+
+        {/* Right arrow - appears on hover */}
+        {showArrows && showRightArrow && (
+          <button
+            onClick={() => emblaApi?.scrollNext()}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-black/80 border border-white/20 flex items-center justify-center text-white hover:bg-black hover:border-white/40 transition-all"
+          >
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Right fade gradient */}
@@ -608,12 +632,15 @@ function ProductCarousel({ products, collectionTitle, showTitle }: { products: I
 
 // ─── ShopLayout (main export) ───────────────────────────────────────
 
-export default function ShopLayout({ visible, collection, showHeroBanner = true }: ShopLayoutProps & { visible: boolean }) {
+export default function ShopLayout({ visible, collection, showHeroBanner = true, isHomepage = false }: ShopLayoutProps & { visible: boolean }) {
   const [cartCount, setCartCount] = useState(0);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   
-  const displayProducts = getProductsByCollection(collection);
+  // Homepage shows "Hottest" products, collection pages show filtered products
+  const displayProducts = isHomepage 
+    ? getProductsByCollection('hottest')
+    : getProductsByCollection(collection);
   const collectionTitle = getCollectionTitle(collection);
   const pageSeed = collection ? collection.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) : 42;
 
@@ -707,8 +734,8 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true 
             </div>
           )}
 
-          {/* Collection Title */}
-          {!showHeroBanner && (
+          {/* Collection Title - only show on collection pages */}
+          {!isHomepage && (
             <div className="mt-8 mb-6">
               <h1 className="font-[family-name:var(--font-body)] font-bold text-white text-3xl md:text-4xl">
                 {collectionTitle}
@@ -716,10 +743,23 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true 
             </div>
           )}
 
-          {/* Carousel section */}
-          <div className={showHeroBanner ? "py-10 md:py-14" : "pb-10 md:pb-14"}>
-            <ProductCarousel products={displayProducts} collectionTitle={collectionTitle} showTitle={showHeroBanner} />
-          </div>
+          {/* Homepage: Carousel with "Hottest Right Now" */}
+          {isHomepage && (
+            <div className="py-10 md:py-14">
+              <ProductCarousel products={displayProducts} collectionTitle="Hottest Right Now" showTitle={true} showArrows={true} />
+            </div>
+          )}
+
+          {/* Collection Pages: Grid Layout */}
+          {!isHomepage && (
+            <div className="pb-10 md:pb-14">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {displayProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}

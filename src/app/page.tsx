@@ -116,6 +116,8 @@ function HomeContent() {
   // Show banner only on homepage (no collection) and before intro is completed
   // After scrolling past intro, hide banner to match collection page style
   const showHeroBanner = !collection && !introCompleted;
+  // Homepage shows carousel, collection pages show grid
+  const isHomepage = !collection;
 
   return (
     <main className="relative">
@@ -134,7 +136,7 @@ function HomeContent() {
 
       {/* Shop layout: sidebar + hero banner + carousel */}
       <div ref={shopLayoutRef}>
-        <ShopLayout visible={shopVisible} collection={collection} showHeroBanner={showHeroBanner} />
+        <ShopLayout visible={shopVisible} collection={collection} showHeroBanner={showHeroBanner} isHomepage={isHomepage} />
       </div>
     </main>
   );

@@ -50,7 +50,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Eliot St sign captures the essence of city navigation with hand-finished detailing. Each sign is crafted to bring that authentic street corner vibe to your space.",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
-    collections: ["All", "Best Sellers", "Harvard Collection"],
+    collections: ["All", "Best Sellers", "Harvard Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 18"' },
       { size: '12" × 36"', price: "$125" },
@@ -70,7 +70,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "A tongue-in-cheek take on classic advertising, the Enjoy Cocaine sign brings irreverent humor to any wall. Hand-crafted with attention to vintage signage details.",
     materials: ["Aluminum street sign blank", "High-grade vinyl graphics", "UV-resistant coating"],
-    collections: ["All", "Best Sellers", "Fraternity Collection"],
+    collections: ["All", "Best Sellers", "Fraternity Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 12"' },
       { size: '24" × 24"', price: "$145" },
@@ -90,7 +90,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Frat Fluids sign combines hazard signage aesthetics with college culture comedy. Perfect for the basement bar or common room that needs a conversation starter.",
     materials: ["Aluminum street sign blank", "Screen-printed graphics", "Powder-coated finish"],
-    collections: ["All", "New Releases", "Fraternity Collection"],
+    collections: ["All", "New Releases", "Fraternity Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 18"' },
       { size: '10" × 30"', price: "$115" },
@@ -110,7 +110,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "Pledge's Leash brings parking lot humor to the fraternity house. This sign is built with the same specs as municipal signage for that authentic street-lifted look.",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "All-weather construction"],
-    collections: ["All", "Fraternity Collection"],
+    collections: ["All", "Fraternity Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 18"' },
       { size: '12" × 36"', price: "$125" },
@@ -130,7 +130,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "Rage Cage marks the territory where things get wild. Built with durable materials to withstand whatever chaos unfolds in your designated party space.",
     materials: ["Aluminum street sign blank", "High-impact graphics", "Scratch-resistant coating"],
-    collections: ["All", "Best Sellers", "Fraternity Collection"],
+    collections: ["All", "Best Sellers", "Fraternity Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 18"' },
       { size: '10" × 30"', price: "$115" },
@@ -150,7 +150,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "The Three Way sign plays on classic directional signage with a wink and a nod. Available in left or right arrow configurations to point wherever you need.",
     materials: ["Aluminum street sign blank", "Reflective directional arrows", "Weatherproof finish"],
-    collections: ["All", "New Releases", "Fraternity Collection"],
+    collections: ["All", "New Releases", "Fraternity Collection", "Hottest"],
     sizeOptions: [
       { size: '10" × 14" (Right)' },
       { size: '10" × 14" (Left)', price: "$95" },
@@ -173,7 +173,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "Wizard Crossing transforms the everyday crosswalk sign into something mystical. Perfect for Harry Potter fans or anyone who believes in a little magic on campus.",
     materials: ["Aluminum street sign blank", "Screen-printed wizard silhouette", "Reflective background"],
-    collections: ["All", "Harvard Collection"],
+    collections: ["All", "Harvard Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 12"' },
       { size: '24" × 24"', price: "$145" },
@@ -228,6 +228,7 @@ export function getProductsByCollection(collectionSlug?: string): InventoryProdu
     'best-sellers': 'Best Sellers',
     'fraternity': 'Fraternity Collection',
     'harvard': 'Harvard Collection',
+    'hottest': 'Hottest',
   };
   
   const collectionName = collectionMap[collectionSlug];
