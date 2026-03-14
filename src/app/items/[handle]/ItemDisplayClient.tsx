@@ -168,7 +168,7 @@ export default function ItemDisplayClient({
         <section className="mt-6 grid grid-cols-1 gap-8 md:mt-8 md:grid-cols-[1.1fr_1fr] md:gap-10">
           <div>
             <div className="rounded-xl border border-[#1c1c1c] bg-[#0d0d0d] p-3 relative z-20">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[#111]">
+              <div className="relative aspect-square overflow-hidden rounded-lg bg-[#111]">
                 {activeFrame.image ? (
                   <Image
                     src={activeFrame.image}
@@ -207,7 +207,7 @@ export default function ItemDisplayClient({
                     }}
                     aria-label={`Show ${frame.title.toLowerCase()} image`}
                   >
-                    <div className="relative aspect-[5/6] overflow-hidden rounded-md bg-[#111]">
+                    <div className="relative aspect-square overflow-hidden rounded-md bg-[#111]">
                       {frame.image ? (
                         <Image
                           src={frame.image}
@@ -400,7 +400,7 @@ export default function ItemDisplayClient({
                 href={`/items/${item.handle}`}
                 className="group rounded-xl border border-[#1a1a1a] bg-[#0d0d0d] p-4 transition-colors hover:border-[#2a2a2a]"
               >
-                <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
+                <div className="relative aspect-square overflow-hidden rounded-md bg-gradient-to-br from-[#18120f] via-[#141414] to-[#0d0d0d]">
                   {item.image ? (
                     <Image
                       src={item.image}

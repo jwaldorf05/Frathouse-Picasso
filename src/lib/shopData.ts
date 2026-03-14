@@ -52,7 +52,7 @@ export const inventoryProducts: InventoryProduct[] = [
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection", "Hottest"],
     sizeOptions: [
-      { size: '12" × 18"' },
+      { size: '10" × 30"' },
       { size: '12" × 36"', price: "$125" },
     ],
     gallery: [
@@ -63,7 +63,7 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "2",
     handle: "enjoy-cocaine",
     name: "ENJOY COCAINE",
-    defaultPrice: "$95",
+    defaultPrice: "$200",
     image: "/Product Photos/EnjoyCocaine/Enjoy_Cocaine_Mockup.png",
     category: "Street Signs",
     shortDescription: "Parody sign with bold statement graphics.",
@@ -72,8 +72,8 @@ export const inventoryProducts: InventoryProduct[] = [
     materials: ["Aluminum street sign blank", "High-grade vinyl graphics", "UV-resistant coating"],
     collections: ["All", "Best Sellers", "Fraternity Collection", "Hottest"],
     sizeOptions: [
-      { size: '12" × 12"' },
-      { size: '24" × 24"', price: "$145" },
+      { size: '24" × 24"' },
+      { size: '30" × 30"', price: "$250" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/EnjoyCocaine/Enjoy_Cocaine_Mockup.png" },
@@ -83,7 +83,7 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "3",
     handle: "frat-fluids",
     name: "FRAT FLUIDS",
-    defaultPrice: "$95",
+    defaultPrice: "$75",
     image: "/Product Photos/FratFluids/Frat Fluids Mockup.png",
     category: "Street Signs",
     shortDescription: "Warning sign with fraternity house humor.",
@@ -92,8 +92,8 @@ export const inventoryProducts: InventoryProduct[] = [
     materials: ["Aluminum street sign blank", "Screen-printed graphics", "Powder-coated finish"],
     collections: ["All", "New Releases", "Fraternity Collection", "Hottest"],
     sizeOptions: [
-      { size: '12" × 18"' },
-      { size: '10" × 30"', price: "$115" },
+      { size: '10" × 14"' },
+      { size: '12" × 18"', price: "$100" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/FratFluids/Frat Fluids Mockup.png" },
@@ -103,7 +103,7 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "4",
     handle: "pledges-leash",
     name: "PLEDGE'S LEASH",
-    defaultPrice: "$95",
+    defaultPrice: "$100",
     image: "/Product Photos/PledgesLeash/Pledge_Sign_Mockup.jpg",
     category: "Street Signs",
     shortDescription: "Parking-style sign with Greek life twist.",
@@ -113,7 +113,6 @@ export const inventoryProducts: InventoryProduct[] = [
     collections: ["All", "Fraternity Collection", "Hottest"],
     sizeOptions: [
       { size: '12" × 18"' },
-      { size: '12" × 36"', price: "$125" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/PledgesLeash/Pledge_Sign_Mockup.jpg" },
@@ -123,7 +122,7 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "5",
     handle: "rage-cage",
     name: "RAGE CAGE",
-    defaultPrice: "$95",
+    defaultPrice: "$75",
     image: "/Product Photos/RageCage/RageCageMockup.png",
     category: "Street Signs",
     shortDescription: "Warning sign for the party zone.",
@@ -132,8 +131,8 @@ export const inventoryProducts: InventoryProduct[] = [
     materials: ["Aluminum street sign blank", "High-impact graphics", "Scratch-resistant coating"],
     collections: ["All", "Best Sellers", "Fraternity Collection", "Hottest"],
     sizeOptions: [
-      { size: '12" × 18"' },
-      { size: '10" × 30"', price: "$115" },
+      { size: '10" × 14"' },
+      { size: '12" × 18"', price: "$100" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/RageCage/RageCageMockup.png" },

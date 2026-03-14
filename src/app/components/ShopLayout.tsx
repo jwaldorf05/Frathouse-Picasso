@@ -404,14 +404,26 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {cartItems.map((item: any) => (
-                <div key={item.id} className="flex items-center gap-4 p-4 bg-[#0d0d0d] rounded-lg border border-[#1a1a1a]">
-                  <div className="w-20 h-20 bg-gradient-to-br from-[#1a1a2e] to-[#16213e] rounded-md flex-shrink-0" />
-                  
-                  <div className="flex-1">
-                    <h3 className="font-[family-name:var(--font-body)] text-white text-sm font-bold">
-                      {item.name}
-                    </h3>
+              {cartItems.map((item: any) => {
+                const product = inventoryProducts.find(p => p.handle === item.handle);
+                return (
+                  <div key={item.id} className="flex items-center gap-4 p-4 bg-[#0d0d0d] rounded-lg border border-[#1a1a1a]">
+                    <div className="w-20 h-20 bg-[#111] rounded-md flex-shrink-0 overflow-hidden">
+                      {product?.image ? (
+                        <img 
+                          src={product.image} 
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#1a1a2e] to-[#16213e]" />
+                      )}
+                    </div>
+                    
+                    <div className="flex-1">
+                      <h3 className="font-[family-name:var(--font-body)] text-white text-sm font-bold">
+                        {item.name}
+                      </h3>
                     {item.selectedSize && (
                       <p className="text-text-secondary text-xs mt-1">Size: {item.selectedSize}</p>
                     )}
@@ -452,7 +464,8 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
                     </svg>
                   </button>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -490,13 +503,15 @@ function ProductCard({
 }: {
   product: InventoryProduct;
 }) {
-  const sprayStickerIndex = Math.abs(product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % 4;
-  const sprayStickers = [
+  const sprays = [
+    '/stickers/Murder Spray.png',
     '/stickers/Pledge Leash Spray.png',
+    '/stickers/Radioactive Spray.png',
     '/stickers/SEND Spraypaint.png',
     '/stickers/Three Way Spray.png',
     '/stickers/Wizard Spraypaint.png'
   ];
+  const sprayStickerIndex = Math.abs(product.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % sprays.length;
   
   return (
     <Link

@@ -1,5 +1,7 @@
 export const SPRAY_ASSETS = [
+  '/stickers/Murder Spray.png',
   '/stickers/Pledge Leash Spray.png',
+  '/stickers/Radioactive Spray.png',
   '/stickers/SEND Spraypaint.png',
   '/stickers/Three Way Spray.png',
   '/stickers/Wizard Spraypaint.png',
