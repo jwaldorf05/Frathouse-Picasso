@@ -241,7 +241,7 @@ export function getProductsByCollection(collectionSlug?: string): InventoryProdu
 }
 
 export const footerNavItems: ShopNavItem[] = [
-  { label: "About", href: "#" },
-  { label: "All", href: "#" },
-  { label: "Harvard Collection", href: "#" },
+  { label: "About", href: "/about" },
+  { label: "All", href: "/?shop=1&collection=all" },
+  { label: "Harvard Collection", href: "/?shop=1&collection=harvard" },
 ];

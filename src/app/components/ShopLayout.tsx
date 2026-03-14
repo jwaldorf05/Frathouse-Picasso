@@ -506,6 +506,7 @@ function ProductCard({
   const sprays = [
     '/stickers/Murder Spray.png',
     '/stickers/Pledge Leash Spray.png',
+    '/stickers/Pong Spray.png',
     '/stickers/Radioactive Spray.png',
     '/stickers/SEND Spraypaint.png',
     '/stickers/Three Way Spray.png',
@@ -790,7 +791,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
                 className="w-[120px] h-auto mb-4"
               />
               <p className="font-[family-name:var(--font-body)] text-text-muted text-sm leading-relaxed">
-                Wearable art born from the culture. Every piece hand-finished, one of one.
+                Where did we get them? Don't worry about it.
               </p>
             </div>
 
