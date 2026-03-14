@@ -113,8 +113,9 @@ function HomeContent() {
   }, [completeIntro, searchParams]);
 
   const collection = searchParams.get("collection") || undefined;
-  // Never show hero banner after intro is completed (scrolled past initial view)
-  const showHeroBanner = false;
+  // Show banner only on homepage (no collection) and before intro is completed
+  // After scrolling past intro, hide banner to match collection page style
+  const showHeroBanner = !collection && !introCompleted;
 
   return (
     <main className="relative">
