@@ -272,7 +272,7 @@ export default function ItemDisplayClient({
                             previous === sizeOption.size ? null : sizeOption.size
                           )
                         }
-                        className="min-w-12 rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
+                        className="min-w-12 min-h-[44px] rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
                         style={{ borderColor: isSelected ? "#ff4d4d" : "#333" }}
                         aria-pressed={isSelected}
                       >
@@ -317,7 +317,7 @@ export default function ItemDisplayClient({
                             previous === colorOption.color ? null : colorOption.color
                           )
                         }
-                        className="min-w-12 rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
+                        className="min-w-12 min-h-[44px] rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
                         style={{ borderColor: isSelected ? "#ff4d4d" : "#333" }}
                         aria-pressed={isSelected}
                       >
@@ -353,7 +353,7 @@ export default function ItemDisplayClient({
                             previous === formatOption.format ? null : formatOption.format
                           )
                         }
-                        className="min-w-12 rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
+                        className="min-w-12 min-h-[44px] rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
                         style={{ borderColor: isSelected ? "#ff4d4d" : "#333" }}
                         aria-pressed={isSelected}
                       >
@@ -378,18 +378,18 @@ export default function ItemDisplayClient({
                 <button
                   type="button"
                   onClick={decreaseQuantity}
-                  className="px-4 py-2 text-lg text-white transition-colors hover:bg-[#141414]"
+                  className="w-11 h-11 flex items-center justify-center text-lg text-white transition-colors hover:bg-[#141414]"
                   aria-label="Decrease quantity"
                 >
                   -
                 </button>
-                <span className="min-w-12 border-x border-[#333] px-4 py-2 text-center text-sm font-medium">
+                <span className="min-w-12 border-x border-[#333] px-4 py-2 text-center text-sm font-medium flex items-center justify-center">
                   {quantity}
                 </span>
                 <button
                   type="button"
                   onClick={increaseQuantity}
-                  className="px-4 py-2 text-lg text-white transition-colors hover:bg-[#141414]"
+                  className="w-11 h-11 flex items-center justify-center text-lg text-white transition-colors hover:bg-[#141414]"
                   aria-label="Increase quantity"
                 >
                   +
@@ -408,28 +408,6 @@ export default function ItemDisplayClient({
                   </p>
                 </div>
               )}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
-                  onClick={() => addToCart(false)}
-                  className="w-full rounded-md border border-[#3a3a3a] bg-transparent px-5 py-3 text-xs font-bold uppercase tracking-[1.3px] text-white transition-colors hover:border-[#666] hover:bg-[#111] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isCartLoading && !isCheckoutLoading ? "Adding..." : `Add to Cart · ${quantity}`}
-                </button>
-                <button
-                  type="button"
-                  disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
-                  onClick={() => addToCart(true)}
-                  className="w-full rounded-md border border-[#a74343] bg-gradient-to-r from-[#7f2f2f] to-[#9f3b3b] px-5 py-3 text-xs font-bold uppercase tracking-[1.3px] text-white transition-all hover:from-[#944040] hover:to-[#b04a4a] disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isCheckoutLoading ? "Redirecting..." : `Checkout Now · ${quantity}`}
-                </button>
-              </div>
-              <p className="mt-2 text-xs text-text-secondary">
-                Secure payment powered by Stripe. Card details are handled directly by Stripe.
-              </p>
-              {cartMessage && <p className="mt-2 text-xs text-emerald-400">{cartMessage}</p>}
               {checkoutStatus === "success" && (
                 <p className="mt-2 text-xs text-emerald-400">
                   Payment completed. You should receive a receipt from Stripe shortly.

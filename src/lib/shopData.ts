@@ -558,8 +558,8 @@ export const collectionItems: ShopNavItem[] = [
   { label: "Harvard Collection", href: "/?shop=1&collection=harvard" },
   { label: "Metro Collection", href: "/?shop=1&collection=metro" },
   { label: "Custom Design", href: "/custom" },
-  { label: "Merch", href: "/?shop=1&collection=merch" },
-  { label: "Stickers", href: "/?shop=1&collection=stickers" },
+  { label: "Merch", href: "/merch" },
+  { label: "Stickers", href: "/stickers" },
 ];
 
 export function getProductsByCollection(collectionSlug?: string): InventoryProduct[] {

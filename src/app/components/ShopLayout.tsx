@@ -43,12 +43,133 @@ function getCollectionTitle(collectionSlug?: string): string {
   return titleMap[collectionSlug] || 'All Signs';
 }
 
+// ─── Mobile Header ──────────────────────────────────────────────────
+
+function MobileHeader({ onMenuClick, cartCount, onCartClick, isMounted }: {
+  onMenuClick: () => void;
+  cartCount: number;
+  onCartClick: () => void;
+  isMounted: boolean;
+}) {
+  return (
+    <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-3">
+      <div className="flex items-center justify-between">
+        {/* Hamburger button - 44x44px touch target */}
+        <button
+          onClick={onMenuClick}
+          className="w-11 h-11 flex items-center justify-center text-white"
+          aria-label="Open menu"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        
+        {/* Centered logo */}
+        <Image
+          src="/FP_Borderless.png"
+          alt="Frathouse Picasso"
+          width={120}
+          height={40}
+          className="h-8 w-auto"
+        />
+        
+        {/* Spacer to balance layout */}
+        <div className="w-11" />
+      </div>
+    </header>
+  );
+}
+
+// ─── Mobile Navigation Drawer ───────────────────────────────────────
+
+function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [collectionsOpen, setCollectionsOpen] = useState(true);
+  
+  return (
+    <>
+      {/* Backdrop */}
+      {isOpen && (
+        <div 
+          className="md:hidden fixed inset-0 bg-black/60 z-[90]"
+          onClick={onClose}
+        />
+      )}
+      
+      {/* Drawer - slides from left */}
+      <aside
+        className="md:hidden fixed left-0 top-0 h-screen w-[280px] flex flex-col justify-between z-[100] bg-[#0a0a0a] border-r border-[#1a1a1a] transition-transform duration-300 ease-in-out"
+        style={{
+          transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+        }}
+      >
+        {/* Caution tape decorations */}
+        <img src="/stickers/Caution Tape 1.png" alt="" className="absolute top-14 left-0 w-full h-auto pointer-events-none z-[1] opacity-70" style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }} />
+        <img src="/stickers/Caution Tape 2.png" alt="" className="absolute top-[44%] left-0 w-full h-auto pointer-events-none z-[1] opacity-65" style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }} />
+        <img src="/stickers/Caution Tape 3.png" alt="" className="absolute bottom-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-60" style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }} />
+        
+        {/* Logo */}
+        <div className="p-6 relative z-[110]">
+          <Image src="/FP_Borderless.png" alt="Frathouse Picasso" width={180} height={60} className="w-[160px] h-auto" />
+        </div>
+        
+        {/* Navigation */}
+        <nav className="flex-1 px-3 relative z-[110] overflow-y-auto">
+          {/* Home - 44px min height */}
+          <a href="/?shop=1" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+            Home
+          </a>
+          
+          {/* About - 44px min height */}
+          <a href="/about" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+            About
+          </a>
+          
+          {/* Collections accordion */}
+          <button onClick={() => setCollectionsOpen(!collectionsOpen)} className="w-full flex items-center justify-between px-3 py-3 min-h-[44px] rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white">
+            Collections
+            <svg className="w-4 h-4 transition-transform" style={{ transform: collectionsOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          {collectionsOpen && (
+            <div className="pl-4">
+              {collectionItems.map((item) => (
+                <a key={item.label} href={item.href} className="block w-full text-left px-3 py-2 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1px] transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </nav>
+      </aside>
+    </>
+  );
+}
+
+// ─── Sidebar ────────────────────────────────────────────────────────
+
 function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
   const [activeNav, setActiveNav] = useState("All");
   const [collectionsOpen, setCollectionsOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <>
+      {/* Mobile Header */}
+      <MobileHeader 
+        onMenuClick={() => setMobileMenuOpen(true)}
+        cartCount={cartCount}
+        onCartClick={onCartClick}
+        isMounted={isMounted}
+      />
+      
+      {/* Mobile Navigation Drawer */}
+      <MobileNavDrawer 
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+      
       {/* Desktop sidebar */}
       <aside
         className="hidden md:flex fixed left-0 top-0 h-screen w-60 flex-col justify-between z-50 will-change-transform overflow-x-hidden"
@@ -169,58 +290,28 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Mobile bottom nav */}
-      <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around py-3 will-change-transform"
+      {/* Mobile FAB Cart Button */}
+      <button
+        onClick={() => {
+          console.log('Mobile FAB cart button clicked! Count:', cartCount);
+          onCartClick();
+        }}
+        className="md:hidden fixed bottom-6 right-6 z-40 w-14 h-14 bg-accent hover:bg-accent/90 rounded-full shadow-lg flex items-center justify-center transition-all active:scale-95"
+        aria-label="Open cart"
         style={{
-          background: "#0a0a0a",
-          borderTop: "1px solid #1a1a1a",
-          transform: visible ? "translateY(0)" : "translateY(100%)",
-          transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+          transform: visible ? 'scale(1)' : 'scale(0)',
+          transition: 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)',
         }}
       >
-        <button
-          onClick={() => setActiveNav("About")}
-          className="font-[family-name:var(--font-body)] text-[10px] tracking-[1px] uppercase transition-colors"
-          style={{ color: activeNav === "About" ? "#fff" : "#666" }}
-        >
-          About
-        </button>
-        {collectionItems.map((item) => (
-          <button
-            key={item.label}
-            onClick={() => setActiveNav(item.label)}
-            className="font-[family-name:var(--font-body)] text-[10px] tracking-[1px] uppercase transition-colors"
-            style={{ color: activeNav === item.label ? "#fff" : "#666" }}
-          >
-            {item.label}
-          </button>
-        ))}
-        <button 
-          onClick={() => {
-            console.log('Mobile cart button clicked! Count:', cartCount);
-            onCartClick();
-          }}
-          className="relative"
-        >
-          <svg
-            className="w-5 h-5 text-text-secondary"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
-            />
-          </svg>
-          <span className="absolute -top-1 -right-1 bg-accent text-white text-[8px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-bold">
-            {isMounted ? cartCount : 0}
+        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+        </svg>
+        {isMounted && cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-white text-accent text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+            {cartCount}
           </span>
-        </button>
-      </nav>
+        )}
+      </button>
     </>
   );
 }
@@ -350,37 +441,52 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
       <div 
         className="fixed inset-0 bg-black/60 z-[100]"
         onClick={onClose}
+        style={{ display: isOpen ? 'block' : 'none' }}
       />
       
-      {/* Panel */}
-      <div className="fixed right-0 top-0 h-full w-full max-w-md bg-[#0a0a0a] z-[110] border-l border-[#1a1a1a] flex flex-col overflow-hidden">
-        {/* Caution tape - edge to edge */}
+      {/* Panel - slides from right on desktop, bottom on mobile */}
+      <div 
+        className="fixed bg-[#0a0a0a] z-[110] border-[#1a1a1a] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out
+                   md:right-0 md:top-0 md:h-full md:w-full md:max-w-md md:border-l
+                   bottom-0 left-0 right-0 max-h-[85vh] rounded-t-2xl border-t"
+        style={{
+          transform: isOpen ? 'translateY(0)' : 'translateY(100%)',
+        }}
+      >
+        {/* Caution tape - only on desktop */}
         <img
           src="/stickers/Caution Tape 1.png"
           alt=""
-          className="absolute top-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-65"
+          className="hidden md:block absolute top-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-65"
           style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
         />
         <img
           src="/stickers/Caution Tape 2.png"
           alt=""
-          className="absolute top-[40%] left-0 w-full h-auto pointer-events-none z-[1] opacity-60"
+          className="hidden md:block absolute top-[40%] left-0 w-full h-auto pointer-events-none z-[1] opacity-60"
           style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
         />
         <img
           src="/stickers/Caution Tape 3.png"
           alt=""
-          className="absolute bottom-32 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
+          className="hidden md:block absolute bottom-32 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
           style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
         />
-        {/* Header */}
+        
+        {/* Mobile drag handle */}
+        <div className="md:hidden flex justify-center pt-3 pb-2">
+          <div className="w-12 h-1 bg-[#333] rounded-full" />
+        </div>
+        
+        {/* Header - 44px min height for close button */}
         <div className="flex items-center justify-between p-6 border-b border-[#1a1a1a] relative z-[110] bg-[#0a0a0a]/90 backdrop-blur-sm">
           <h2 className="font-[family-name:var(--font-body)] text-xl font-bold text-white">
             YOUR CART ({cartCount})
           </h2>
           <button 
             onClick={onClose}
-            className="text-text-secondary hover:text-white transition-colors"
+            className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-white transition-colors"
+            aria-label="Close cart"
           >
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -428,12 +534,12 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
                       <p className="text-text-secondary text-xs mt-1">Size: {item.selectedSize}</p>
                     )}
                     
-                    {/* Quantity controls */}
+                    {/* Quantity controls - 44x44px touch targets */}
                     <div className="mt-2 flex items-center gap-3">
                       <div className="inline-flex items-center border border-[#333] rounded-md overflow-hidden bg-[#0d0d0d]">
                         <button
                           onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                          className="px-3 py-1 text-white hover:bg-[#1a1a1a] transition-colors"
+                          className="w-11 h-11 flex items-center justify-center text-white hover:bg-[#1a1a1a] transition-colors"
                           aria-label="Decrease quantity"
                         >
                           −
@@ -443,7 +549,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
                         </span>
                         <button
                           onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                          className="px-3 py-1 text-white hover:bg-[#1a1a1a] transition-colors"
+                          className="w-11 h-11 flex items-center justify-center text-white hover:bg-[#1a1a1a] transition-colors"
                           aria-label="Increase quantity"
                         >
                           +
@@ -453,13 +559,13 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
                     </div>
                   </div>
 
-                  {/* Remove button */}
+                  {/* Remove button - 44x44px touch target */}
                   <button
                     onClick={() => handleRemoveItem(item.id)}
-                    className="w-6 h-6 flex items-center justify-center text-text-secondary hover:text-white transition-colors flex-shrink-0"
+                    className="w-11 h-11 flex items-center justify-center text-text-secondary hover:text-white transition-colors flex-shrink-0"
                     aria-label="Remove item"
                   >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
@@ -485,7 +591,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
             )}
             <button
               onClick={handleCheckout}
-              className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 rounded-md transition-colors font-bold"
+              className="w-full bg-accent hover:bg-accent/90 text-white font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase py-4 min-h-[44px] rounded-md transition-colors font-bold"
             >
               Proceed to Checkout
             </button>
@@ -714,7 +820,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
       <Sidebar visible={visible} cartCount={cartCount} onCartClick={handleCartClick} isMounted={isMounted} />
 
       <div
-        className={`relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
+        className={`pt-14 md:pt-0 md:pl-60 relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
         style={{ background: "#0a0a0a" }}
       >
         {/* Background graffiti sprays */}
@@ -823,11 +929,6 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
                 <li>
                   <a href="#" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
                     Instagram
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
-                    Twitter / X
                   </a>
                 </li>
                 <li>

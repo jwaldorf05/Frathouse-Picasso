@@ -11,12 +11,8 @@ export default function ContactUsPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    description: "",
-    width: "",
-    length: "",
-    unit: "in" as "in" | "cm",
+    message: "",
   });
-  const [files, setFiles] = useState<FileList | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -32,19 +28,16 @@ export default function ContactUsPage() {
     setErrorMessage("");
 
     try {
+      // Check rate limit
+      const hasSubmitted = document.cookie.split('; ').find(row => row.startsWith('contact-submitted='));
+      if (hasSubmitted) {
+        throw new Error("You can only submit one message every 12 hours. Please try again later.");
+      }
+
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
       formDataToSend.append("email", formData.email);
-      formDataToSend.append("description", formData.description);
-      if (formData.width) formDataToSend.append("width", formData.width);
-      if (formData.length) formDataToSend.append("length", formData.length);
-      formDataToSend.append("unit", formData.unit);
-
-      if (files) {
-        Array.from(files).forEach((file) => {
-          formDataToSend.append("files", file);
-        });
-      }
+      formDataToSend.append("description", formData.message);
 
       const response = await fetch("/api/custom-request", {
         method: "POST",
@@ -58,8 +51,12 @@ export default function ContactUsPage() {
       }
 
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", description: "", width: "", length: "", unit: "in" });
-      setFiles(null);
+      setFormData({ name: "", email: "", message: "" });
+      
+      // Set rate limit cookie (12 hours)
+      const expiryDate = new Date();
+      expiryDate.setHours(expiryDate.getHours() + 12);
+      document.cookie = `contact-submitted=true; expires=${expiryDate.toUTCString()}; path=/`;
     } catch (error) {
       setSubmitStatus("error");
       setErrorMessage(error instanceof Error ? error.message : "An error occurred");
@@ -113,8 +110,7 @@ export default function ContactUsPage() {
             CONTACT US
           </h1>
           <p className="text-text-secondary text-lg leading-relaxed max-w-2xl">
-            We create custom designs from your provided images or descriptions. Whether you have a specific vision or just an idea, 
-            we'll work with you to bring it to life. Submit your request below and we'll get back to you with a quote.
+            We are open to negotiation. All messages will be sent by carrier pigeon.
           </p>
         </div>
 
@@ -175,91 +171,20 @@ export default function ContactUsPage() {
             />
           </div>
 
-          {/* Description */}
+          {/* Your Message */}
           <div>
-            <label htmlFor="description" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
-              Design Description
+            <label htmlFor="message" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
+              Your Message
             </label>
             <textarea
-              id="description"
+              id="message"
               required
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
               rows={6}
               className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors resize-none"
-              placeholder="Describe your design idea in detail..."
+              placeholder="Tell us what's on your mind..."
             />
-          </div>
-
-          {/* Sign Dimensions */}
-          <div>
-            <label className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
-              Sign Dimensions (Optional)
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label htmlFor="width" className="block text-xs text-text-secondary mb-1">
-                  Width
-                </label>
-                <input
-                  type="number"
-                  id="width"
-                  min="0"
-                  step="0.1"
-                  value={formData.width}
-                  onChange={(e) => setFormData({ ...formData, width: e.target.value })}
-                  className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label htmlFor="length" className="block text-xs text-text-secondary mb-1">
-                  Length
-                </label>
-                <input
-                  type="number"
-                  id="length"
-                  min="0"
-                  step="0.1"
-                  value={formData.length}
-                  onChange={(e) => setFormData({ ...formData, length: e.target.value })}
-                  className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label htmlFor="unit" className="block text-xs text-text-secondary mb-1">
-                  Unit
-                </label>
-                <select
-                  id="unit"
-                  value={formData.unit}
-                  onChange={(e) => setFormData({ ...formData, unit: e.target.value as "in" | "cm" })}
-                  className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
-                >
-                  <option value="in">inches (in)</option>
-                  <option value="cm">centimeters (cm)</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* File Upload */}
-          <div>
-            <label htmlFor="files" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
-              Reference Images (Optional)
-            </label>
-            <input
-              type="file"
-              id="files"
-              multiple
-              accept=".png,.jpg,.jpeg,.pdf"
-              onChange={(e) => setFiles(e.target.files)}
-              className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-white hover:file:bg-accent/90 file:cursor-pointer focus:outline-none focus:border-accent transition-colors"
-            />
-            <p className="text-xs text-text-secondary mt-2">
-              Accepted formats: PNG, JPG, PDF (Max 10MB per file)
-            </p>
           </div>
 
           {/* Error Message */}

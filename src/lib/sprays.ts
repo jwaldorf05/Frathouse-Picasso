@@ -36,6 +36,10 @@ export interface SprayPlacement {
 }
 
 export function getSprayPlacements(count: number, baseSeed: number): SprayPlacement[] {
+  // Detect mobile and reduce spray count for performance
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const adjustedCount = isMobile ? Math.min(count, 5) : count;
+  
   // Shuffle spray assets to ensure variety (1-2 of each)
   const shuffledAssets = [...SPRAY_ASSETS];
   for (let i = shuffledAssets.length - 1; i > 0; i--) {
@@ -43,7 +47,7 @@ export function getSprayPlacements(count: number, baseSeed: number): SprayPlacem
     [shuffledAssets[i], shuffledAssets[j]] = [shuffledAssets[j], shuffledAssets[i]];
   }
   
-  return Array.from({ length: count }, (_, i) => {
+  return Array.from({ length: adjustedCount }, (_, i) => {
     const s = baseSeed + i;
     // Use shuffled assets and limit to 1-2 per spray by cycling through twice
     const assetIndex = i % shuffledAssets.length;
