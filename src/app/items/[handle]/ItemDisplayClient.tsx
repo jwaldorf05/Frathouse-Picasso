@@ -52,6 +52,25 @@ export default function ItemDisplayClient({
     }
   }, [checkoutStatus]);
 
+  // Auto-select when there's only one option
+  useEffect(() => {
+    if (product.sizeOptions?.length === 1 && !selectedSize) {
+      setSelectedSize(product.sizeOptions[0].size);
+    }
+  }, [product.sizeOptions, selectedSize]);
+
+  useEffect(() => {
+    if (product.colorOptions?.length === 1 && !selectedColor) {
+      setSelectedColor(product.colorOptions[0].color);
+    }
+  }, [product.colorOptions, selectedColor]);
+
+  useEffect(() => {
+    if (product.formatOptions?.length === 1 && !selectedFormat) {
+      setSelectedFormat(product.formatOptions[0].format);
+    }
+  }, [product.formatOptions, selectedFormat]);
+
   const canAddToCart = (!hasSizes || selectedSize !== null) && (!hasColors || selectedColor !== null) && (!hasFormats || selectedFormat !== null);
   const isRedirectingToStripe = isCheckoutLoading;
 
