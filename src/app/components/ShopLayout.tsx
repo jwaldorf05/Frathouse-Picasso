@@ -98,7 +98,7 @@ function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
       
       {/* Drawer - slides from left */}
       <aside
-        className="md:hidden fixed left-0 top-0 h-screen w-[280px] flex flex-col justify-between z-[100] bg-[#0a0a0a] border-r border-[#1a1a1a] transition-transform duration-300 ease-in-out"
+        className="md:hidden fixed left-0 top-0 h-screen w-[280px] flex flex-col justify-between z-[100] bg-[#0a0a0a] border-r border-[#1a1a1a] transition-transform duration-300 ease-in-out overflow-hidden relative"
         style={{
           transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
         }}
@@ -820,7 +820,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
       <Sidebar visible={visible} cartCount={cartCount} onCartClick={handleCartClick} isMounted={isMounted} />
 
       <div
-        className={`pt-14 md:pt-0 md:pl-60 relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
+        className={`pt-14 md:pt-0 relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
         style={{ background: "#0a0a0a" }}
       >
         {/* Background graffiti sprays */}
@@ -875,7 +875,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
           {/* Collection Pages: Grid Layout */}
           {!isHomepage && (
             <div className="pb-10 md:pb-14">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full">
                 {displayProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

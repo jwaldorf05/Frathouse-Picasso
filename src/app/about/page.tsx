@@ -71,7 +71,7 @@ export default function AboutPage() {
               {/* Line 1: Beautiful ✓ */}
               <div className="flex items-center justify-center gap-4 mb-6">
                 <span 
-                  className="font-[family-name:var(--font-body)] font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-none"
+                  className="font-[family-name:var(--font-body)] font-bold text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none"
                   style={{ 
                     color: '#CCFF00',
                     textShadow: '0 0 20px rgba(204, 255, 0, 0.5), 0 0 40px rgba(204, 255, 0, 0.3)'
@@ -82,7 +82,7 @@ export default function AboutPage() {
                 <img 
                   src="/images/Checkmark_Yellow.png"
                   alt="Checkmark"
-                  className="h-[5em] sm:h-[6em] md:h-[7em] lg:h-[8em] w-auto flex-shrink-0"
+                  className="h-[0.9em] w-auto flex-shrink-0"
                   style={{
                     objectFit: 'contain',
                     filter: 'drop-shadow(0 0 20px rgba(204, 255, 0, 0.5)) drop-shadow(0 0 40px rgba(204, 255, 0, 0.3))'
@@ -93,7 +93,7 @@ export default function AboutPage() {
               {/* Line 2: Legal ? */}
               <div className="flex items-center justify-center gap-4">
                 <span 
-                  className="font-[family-name:var(--font-body)] font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl leading-none"
+                  className="font-[family-name:var(--font-body)] font-bold text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none"
                   style={{ 
                     color: '#FF007F',
                     textShadow: '0 0 20px rgba(255, 0, 127, 0.5), 0 0 40px rgba(255, 0, 127, 0.3)'
@@ -104,7 +104,7 @@ export default function AboutPage() {
                 <img 
                   src="/images/Question_Pink.png"
                   alt="Question mark"
-                  className="h-[5em] sm:h-[6em] md:h-[7em] lg:h-[8em] w-auto flex-shrink-0"
+                  className="h-[0.9em] w-auto flex-shrink-0"
                   style={{
                     objectFit: 'contain',
                     filter: 'drop-shadow(0 0 20px rgba(255, 0, 127, 0.5)) drop-shadow(0 0 40px rgba(255, 0, 127, 0.3))'

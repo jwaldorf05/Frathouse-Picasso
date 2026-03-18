@@ -397,6 +397,28 @@ export default function ItemDisplayClient({
               </div>
             </div>
 
+            {/* Action Buttons */}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
+                onClick={() => addToCart(false)}
+                className="w-full rounded-md border border-[#3a3a3a] bg-transparent px-5 py-3 min-h-[44px] text-xs font-bold uppercase tracking-[1.3px] text-white transition-colors hover:border-[#666] hover:bg-[#111] disabled:cursor-not-allowed disabled:opacity-60"
+                id="add-to-cart-button"
+              >
+                {isCartLoading && !isCheckoutLoading ? "Adding..." : `Add to Cart · ${quantity}`}
+              </button>
+              <button
+                type="button"
+                disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
+                onClick={() => addToCart(true)}
+                className="w-full rounded-md bg-accent px-5 py-3 min-h-[44px] text-xs font-bold uppercase tracking-[1.3px] text-white transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
+                id="buy-now-button"
+              >
+                {isCheckoutLoading ? "Redirecting..." : "Buy Now"}
+              </button>
+            </div>
+
             <div className="mt-8">
               {isRedirectingToStripe && (
                 <div className="mb-3 rounded-md border border-[#3b2222] bg-[#1a1111] px-4 py-3">
