@@ -21,8 +21,12 @@ export default function ItemDisplayClient({
   relatedItems,
 }: ItemDisplayClientProps) {
   const searchParams = useSearchParams();
-  const hasSizes = (product.sizeOptions?.length ?? 0) > 0;
+  const hasSizes = (product.sizeOptions?.length ?? 0) > 1;
+  const hasColors = (product.colorOptions?.length ?? 0) > 0;
+  const hasFormats = (product.formatOptions?.length ?? 0) > 0;
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -48,7 +52,7 @@ export default function ItemDisplayClient({
     }
   }, [checkoutStatus]);
 
-  const canAddToCart = !hasSizes || selectedSize !== null;
+  const canAddToCart = (!hasSizes || selectedSize !== null) && (!hasColors || selectedColor !== null) && (!hasFormats || selectedFormat !== null);
   const isRedirectingToStripe = isCheckoutLoading;
 
   const decreaseQuantity = () => {
@@ -78,6 +82,8 @@ export default function ItemDisplayClient({
           handle: product.handle,
           quantity,
           selectedSize,
+          selectedColor,
+          selectedFormat,
         }),
       });
 
@@ -247,6 +253,7 @@ export default function ItemDisplayClient({
               {activePrice}
             </p>
 
+            {/* Size Options */}
             {hasSizes ? (
               <div className="mt-8">
                 <p className="font-[family-name:var(--font-body)] text-xs tracking-[2px] uppercase text-text-secondary">
@@ -280,10 +287,87 @@ export default function ItemDisplayClient({
                   </p>
                 )}
               </div>
-            ) : (
-              <p className="mt-8 font-[family-name:var(--font-body)] text-sm text-text-secondary">
-                This item is one-size / no size selection needed.
-              </p>
+            ) : product.sizeOptions?.length === 1 ? (
+              <div className="mt-8">
+                <p className="font-[family-name:var(--font-body)] text-xs tracking-[2px] uppercase text-text-secondary">
+                  Size
+                </p>
+                <p className="mt-2 font-[family-name:var(--font-body)] text-sm text-white">
+                  {product.sizeOptions[0].size}
+                </p>
+              </div>
+            ) : null}
+
+            {/* Color Options */}
+            {hasColors && (
+              <div className="mt-8">
+                <p className="font-[family-name:var(--font-body)] text-xs tracking-[2px] uppercase text-text-secondary">
+                  Color
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {product.colorOptions?.map((colorOption) => {
+                    const isSelected = selectedColor === colorOption.color;
+
+                    return (
+                      <button
+                        key={colorOption.color}
+                        type="button"
+                        onClick={() =>
+                          setSelectedColor((previous) =>
+                            previous === colorOption.color ? null : colorOption.color
+                          )
+                        }
+                        className="min-w-12 rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
+                        style={{ borderColor: isSelected ? "#ff4d4d" : "#333" }}
+                        aria-pressed={isSelected}
+                      >
+                        {colorOption.color}
+                      </button>
+                    );
+                  })}
+                </div>
+                {!selectedColor && (
+                  <p className="mt-2 text-xs text-[#ff6b6b]">
+                    Please select a color before adding to cart.
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Format Options */}
+            {hasFormats && (
+              <div className="mt-8">
+                <p className="font-[family-name:var(--font-body)] text-xs tracking-[2px] uppercase text-text-secondary">
+                  Format
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {product.formatOptions?.map((formatOption) => {
+                    const isSelected = selectedFormat === formatOption.format;
+
+                    return (
+                      <button
+                        key={formatOption.format}
+                        type="button"
+                        onClick={() =>
+                          setSelectedFormat((previous) =>
+                            previous === formatOption.format ? null : formatOption.format
+                          )
+                        }
+                        className="min-w-12 rounded-md border px-3 py-2 text-sm font-medium text-white transition-colors"
+                        style={{ borderColor: isSelected ? "#ff4d4d" : "#333" }}
+                        aria-pressed={isSelected}
+                      >
+                        {formatOption.format}
+                      </button>
+                    );
+                  })}
+                </div>
+                {!selectedFormat && (
+                  <p className="mt-2 text-xs text-[#ff6b6b]">
+                    Please select a format before adding to cart.
+                  </p>
+                )}
+              </div>
             )}
 
             <div className="mt-8">

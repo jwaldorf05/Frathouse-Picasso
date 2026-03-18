@@ -836,7 +836,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
+                  <a href="/contact" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
                     Contact Us
                   </a>
                 </li>
