@@ -621,7 +621,7 @@ function ProductCard({
   return (
     <Link
       href={`/items/${product.handle}`}
-      className="flex-shrink-0 w-[220px] md:w-[260px] group cursor-pointer block"
+      className="flex-shrink-0 w-full md:w-[260px] group cursor-pointer block"
       aria-label={`View ${product.name}`}
     >
       {/* Product image */}
