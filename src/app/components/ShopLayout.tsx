@@ -893,23 +893,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
             }}
           />
         ))}
-        <div className="px-6 md:px-10 relative z-[3]">
-          {/* Hero banner — only show on homepage on desktop */}
-          {isHomepage && (
-            <div
-              className="hidden md:block w-full relative overflow-hidden rounded-lg mt-6"
-              style={{ height: "45vh", minHeight: 300 }}
-            >
-              <Image
-                src="/FP_Background.jpeg"
-                alt="Frathouse Picasso"
-                fill
-                className="object-cover"
-                sizes="(min-width: 768px) calc(100vw - 240px), 100vw"
-              />
-            </div>
-          )}
-
+        <div className="px-6 md:px-10 pt-6 md:pt-0 relative z-[3]">
           {/* Collection Title - only show on collection pages */}
           {!isHomepage && (
             <div className="mt-8 mb-6">
@@ -981,12 +965,12 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
               </h4>
               <ul className="space-y-2">
                 <li>
-                  <a href="#" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
+                  <a href="https://www.instagram.com/frathousepicasso/" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
                     Instagram
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
+                  <a href="https://www.tiktok.com/@frathousepicasso" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-text-secondary text-sm hover:text-white transition-colors">
                     TikTok
                   </a>
                 </li>
