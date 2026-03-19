@@ -79,21 +79,6 @@ function HomeContent() {
           onEnter: () => {
             completeIntro(false);
           },
-          onLeaveBack: () => {
-            // Restore fixed hero when scrolling back up
-            if (heroBackgroundRef.current) {
-              heroBackgroundRef.current.style.display = "";
-              heroBackgroundRef.current.style.opacity = "1";
-            }
-            if (heroOverlayRef.current) {
-              heroOverlayRef.current.style.display = "";
-            }
-            // Restore dim overlay
-            if (heroDimRef.current) {
-              heroDimRef.current.style.opacity = "1";
-            }
-            setShopVisible(false);
-          },
         });
       }
     });
