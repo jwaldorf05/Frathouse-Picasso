@@ -218,7 +218,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/EliotSt/EliotStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/EliotSt/EliotStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/EliotSt/EliotStGreenMockup.png" },
     ],
   },
   {
@@ -242,7 +243,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/KirklandSt/KirklandStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/KirklandSt/KirklandStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/KirklandSt/KirklandStGreenMockup.png" },
     ],
   },
   {
@@ -266,7 +268,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/WinthropSt/WinthropStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/WinthropSt/WinthropStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/WinthropSt/WinthropStGreenMockup.png" },
     ],
   },
   {
@@ -290,7 +293,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/LowellSt/LowellStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/LowellSt/LowellStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/LowellSt/LowellStGreenMockup.png" },
     ],
   },
   {
@@ -314,7 +318,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/QuincySt/QuincyStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/QuincySt/QuincyStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/QuincySt/QuincyStGreenMockup.png" },
     ],
   },
   {
@@ -338,7 +343,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/AdamsSt/AdamsStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/AdamsSt/AdamsStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/AdamsSt/AdamsStGreenMockup.png" },
     ],
   },
   {
@@ -362,7 +368,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/LeverettSt/LeverettStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/LeverettSt/LeverettStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/LeverettSt/LeverettStGreenMockup.png" },
     ],
   },
   {
@@ -386,7 +393,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/DunsterSt/DunsterStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/DunsterSt/DunsterStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/DunsterSt/DunsterStGreenMockup.png" },
     ],
   },
   {
@@ -410,7 +418,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/MatherSt/MatherStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/MatherSt/MatherStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/MatherSt/MatherStGreenMockup.png" },
     ],
   },
   {
@@ -434,17 +443,18 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/CurrierSt/CurrierStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/CurrierSt/CurrierStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/CurrierSt/CurrierStGreenMockup.png" },
     ],
   },
   {
     id: "18",
-    handle: "phoho-st",
-    name: "PHOHO ST",
+    handle: "pfoho-st",
+    name: "PFOHO ST",
     defaultPrice: "$95",
-    image: "/Product Photos/PhohoSt/PhohoStMockup.png",
+    image: "/Product Photos/PfohoSt/PfohoStMockup.png",
     category: "Street Signs",
-    shortDescription: "Where my Phohomies at?",
+    shortDescription: "Where my Pfohomies at?",
     description:
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
@@ -458,7 +468,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/PhohoSt/PhohoStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/PfohoSt/PfohoStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/PfohoSt/PfohoStGreenMockup.png" },
     ],
   },
   {
@@ -482,7 +493,8 @@ export const inventoryProducts: InventoryProduct[] = [
       { color: 'Green' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/CabotSt/CabotStMockup.png" },
+      { id: "blue", title: "Blue", image: "/Product Photos/CabotSt/CabotStBlueMockup.png" },
+      { id: "green", title: "Green", image: "/Product Photos/CabotSt/CabotStGreenMockup.png" },
     ],
   },
   {

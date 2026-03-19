@@ -71,6 +71,19 @@ export default function ItemDisplayClient({
     }
   }, [product.formatOptions, selectedFormat]);
 
+  // Change image when color is selected
+  useEffect(() => {
+    if (selectedColor && product.gallery) {
+      const colorId = selectedColor.toLowerCase();
+      const matchingImageIndex = product.gallery.findIndex(
+        (img) => img.id.toLowerCase() === colorId
+      );
+      if (matchingImageIndex !== -1) {
+        setActiveImageIndex(matchingImageIndex);
+      }
+    }
+  }, [selectedColor, product.gallery]);
+
   const canAddToCart = (!hasSizes || selectedSize !== null) && (!hasColors || selectedColor !== null) && (!hasFormats || selectedFormat !== null);
   const isRedirectingToStripe = isCheckoutLoading;
 
