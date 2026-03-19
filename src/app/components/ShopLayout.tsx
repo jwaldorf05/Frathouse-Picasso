@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
@@ -339,6 +339,10 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   console.log('CartPanel render - isOpen:', isOpen, 'cartCount:', cartCount);
 
@@ -439,6 +443,35 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isSwipeUp = distance > 50;
+    const isSwipeDown = distance < -50;
+    
+    if (isSwipeUp && !isExpanded) {
+      setIsExpanded(true);
+    } else if (isSwipeDown) {
+      if (isExpanded) {
+        setIsExpanded(false);
+      } else {
+        onClose();
+      }
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
   if (!isOpen) {
     console.log('CartPanel not rendering - isOpen is false');
     return null;
@@ -456,11 +489,16 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
       />
       
       {/* Panel - slides from right on desktop, bottom on mobile */}
-      <div 
-        className={`fixed bg-[#0a0a0a] z-[110] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out
-                   bottom-0 left-0 right-0 max-h-[85vh] rounded-t-2xl border-t border-[#1a1a1a]
+      <div
+        ref={panelRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className={`fixed bg-[#0a0a0a] z-[110] flex flex-col overflow-hidden transition-all duration-300 ease-in-out
+                   bottom-0 left-0 right-0 rounded-t-2xl border-t border-[#1a1a1a]
                    md:bottom-0 md:left-auto md:right-0 md:top-0 md:max-h-none md:w-full md:max-w-md md:border-l md:border-t-0 md:rounded-none
-                   ${isOpen ? 'translate-y-0 md:translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-y-0 md:translate-x-full'}`}
+                   ${isOpen ? 'translate-y-0 md:translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-y-0 md:translate-x-full'}
+                   ${isExpanded ? 'max-h-screen top-0' : 'max-h-[85vh]'}`}
       >
         {/* Caution tape - only on desktop */}
         <img
@@ -490,7 +528,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
         />
         
         {/* Mobile drag handle */}
-        <div className="md:hidden flex justify-center pt-3 pb-2">
+        <div className="md:hidden flex justify-center pt-3 pb-2 cursor-grab active:cursor-grabbing">
           <div className="w-12 h-1 bg-[#333] rounded-full" />
         </div>
         
@@ -856,10 +894,10 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
           />
         ))}
         <div className="px-6 md:px-10 relative z-[3]">
-          {/* Hero banner — only show on homepage */}
+          {/* Hero banner — only show on homepage on desktop */}
           {isHomepage && (
             <div
-              className="w-full relative overflow-hidden rounded-lg mt-6"
+              className="hidden md:block w-full relative overflow-hidden rounded-lg mt-6"
               style={{ height: "45vh", minHeight: 300 }}
             >
               <Image
