@@ -20,7 +20,7 @@ export default function LandingPage() {
 
   const completeLanding = useCallback(() => {
     localStorage.setItem(LANDING_SEEN_KEY, "1");
-    router.push("/");
+    router.replace("/");
   }, [router]);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function LandingPage() {
       if (scrollTextRef.current) {
         ScrollTrigger.create({
           trigger: scrollTextRef.current,
-          start: "bottom top",
+          start: "bottom center",
           onEnter: () => {
             completeLanding();
           },
@@ -68,6 +68,9 @@ export default function LandingPage() {
 
       {/* Scroll text floating over the fixed hero */}
       <ScrollTextSection ref={scrollTextRef} />
+      
+      {/* Extra spacer to ensure scroll trigger fires */}
+      <div className="relative z-[1] h-screen" />
     </main>
   );
 }
