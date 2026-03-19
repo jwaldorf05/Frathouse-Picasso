@@ -36,9 +36,12 @@ function HomeContent() {
     }
 
     if (scrollToShop) {
+      // Reset scroll position immediately and after a short delay to ensure it sticks
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
       requestAnimationFrame(() => {
         window.scrollTo(0, 0);
-        shopLayoutRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
       });
     }
   }, []);
@@ -97,6 +100,15 @@ function HomeContent() {
 
     completeIntro(true);
   }, [completeIntro, searchParams]);
+
+  // Ensure scroll is at top when intro is completed
+  useEffect(() => {
+    if (introCompleted) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [introCompleted]);
 
   const collection = searchParams.get("collection") || undefined;
   // Show banner only on homepage (no collection) and before intro is completed

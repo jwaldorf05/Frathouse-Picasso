@@ -82,7 +82,7 @@ export default function AboutPage() {
                 <img 
                   src="/images/Checkmark_Yellow.png"
                   alt="Checkmark"
-                  className="h-[0.9em] w-auto flex-shrink-0"
+                  className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto flex-shrink-0"
                   style={{
                     objectFit: 'contain',
                     filter: 'drop-shadow(0 0 20px rgba(204, 255, 0, 0.5)) drop-shadow(0 0 40px rgba(204, 255, 0, 0.3))'
@@ -104,7 +104,7 @@ export default function AboutPage() {
                 <img 
                   src="/images/Question_Pink.png"
                   alt="Question mark"
-                  className="h-[0.9em] w-auto flex-shrink-0"
+                  className="h-16 sm:h-20 md:h-24 lg:h-28 w-auto flex-shrink-0"
                   style={{
                     objectFit: 'contain',
                     filter: 'drop-shadow(0 0 20px rgba(255, 0, 127, 0.5)) drop-shadow(0 0 40px rgba(255, 0, 127, 0.3))'

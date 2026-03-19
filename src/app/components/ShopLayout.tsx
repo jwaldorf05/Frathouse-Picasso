@@ -448,7 +448,7 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
       <div 
         className={`fixed bg-[#0a0a0a] z-[110] flex flex-col overflow-hidden transition-transform duration-300 ease-in-out
                    bottom-0 left-0 right-0 max-h-[85vh] rounded-t-2xl border-t border-[#1a1a1a]
-                   md:bottom-auto md:left-auto md:right-0 md:top-0 md:h-screen md:w-full md:max-w-md md:border-l md:border-t-0 md:rounded-none
+                   md:bottom-0 md:left-auto md:right-0 md:top-0 md:max-h-none md:w-full md:max-w-md md:border-l md:border-t-0 md:rounded-none
                    ${isOpen ? 'translate-y-0 md:translate-y-0 md:translate-x-0' : 'translate-y-full md:translate-y-0 md:translate-x-full'}`}
       >
         {/* Caution tape - only on desktop */}
