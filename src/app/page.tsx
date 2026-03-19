@@ -37,6 +37,7 @@ function HomeContent() {
 
     if (scrollToShop) {
       requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
         shopLayoutRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
       });
     }
@@ -105,7 +106,7 @@ function HomeContent() {
   const isHomepage = !collection;
 
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
+    <main className={`relative min-h-screen overflow-x-hidden ${introCompleted ? 'h-auto' : ''}`}>
       {!introCompleted && (
         <>
           {/* Fixed hero: background image + overlay (logo, tagline, scroll indicator) */}
@@ -120,7 +121,7 @@ function HomeContent() {
       )}
 
       {/* Shop layout: sidebar + hero banner + carousel */}
-      <div ref={shopLayoutRef} className="relative">
+      <div ref={shopLayoutRef} className={`relative ${introCompleted ? 'min-h-screen' : ''}`}>
         <ShopLayout visible={shopVisible} collection={collection} showHeroBanner={showHeroBanner} isHomepage={isHomepage} />
       </div>
     </main>
