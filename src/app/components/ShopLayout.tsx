@@ -857,7 +857,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
         ))}
         <div className="px-6 md:px-10 relative z-[3]">
           {/* Hero banner — only show on homepage */}
-          {showHeroBanner && (
+          {isHomepage && (
             <div
               className="w-full relative overflow-hidden rounded-lg mt-6"
               style={{ height: "45vh", minHeight: 300 }}
