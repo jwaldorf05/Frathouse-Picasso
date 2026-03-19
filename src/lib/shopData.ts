@@ -521,7 +521,7 @@ export const inventoryProducts: InventoryProduct[] = [
       { size: '12" × 12"' },
     ],
     gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/ThroppyToppy/ThroppyToppyMockup.png" },
+      { id: "main", title: "Main View", image: "/Product Photos/NoYalies/NoYaliesMockup.png" },
     ],
   },
 ];
