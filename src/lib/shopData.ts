@@ -202,7 +202,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "eliot-st",
     name: "ELIOT ST",
     defaultPrice: "$95",
-    image: "/Product Photos/EliotSt/EliotStMockup.png",
+    image: "/Product Photos/EliotSt/EliotStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Floreat Domus De Eliot",
     description:
@@ -227,7 +227,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "kirkland-st",
     name: "KIRKLAND ST",
     defaultPrice: "$95",
-    image: "/Product Photos/KirklandSt/KirklandStMockup.png",
+    image: "/Product Photos/KirklandSt/KirklandStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Incest fest?",
     description:
@@ -252,7 +252,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "Winthrop-st",
     name: "WINTHROP ST",
     defaultPrice: "$95",
-    image: "/Product Photos/WinthropSt/WinthropStMockup.png",
+    image: "/Product Photos/WinthropSt/WinthropStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Throp on top",
     description:
@@ -277,7 +277,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "lowell-st",
     name: "LOWELL ST",
     defaultPrice: "$95",
-    image: "/Product Photos/LowellSt/LowellStMockup.png",
+    image: "/Product Photos/LowellSt/LowellStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Suck my bells",
     description:
@@ -302,7 +302,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "quincy-st",
     name: "QUINCY ST",
     defaultPrice: "$95",
-    image: "/Product Photos/QuincySt/QuincyStMockup.png",
+    image: "/Product Photos/QuincySt/QuincyStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "A house as hot as our breakfast",
     description:
@@ -327,7 +327,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "adams-st",
     name: "ADAMS ST",
     defaultPrice: "$95",
-    image: "/Product Photos/AdamsSt/AdamsStMockup.png",
+    image: "/Product Photos/AdamsSt/AdamsStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Bust a nut",
     description:
@@ -352,7 +352,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "leverett-st",
     name: "LEVERETT ST",
     defaultPrice: "$95",
-    image: "/Product Photos/LeverettSt/LeverettStMockup.png",
+    image: "/Product Photos/LeverettSt/LeverettStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Level up bitch",
     description:
@@ -377,7 +377,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "dunster-st",
     name: "DUNSTER ST",
     defaultPrice: "$95",
-    image: "/Product Photos/DunsterSt/DunsterStMockup.png",
+    image: "/Product Photos/DunsterSt/DunsterStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Get that big D",
     description:
@@ -402,7 +402,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "mather-st",
     name: "MATHER ST",
     defaultPrice: "$95",
-    image: "/Product Photos/MatherSt/MatherStMockup.png",
+    image: "/Product Photos/MatherSt/MatherStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "It's a good house, I swear!",
     description:
@@ -427,7 +427,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "currier-st",
     name: "CURRIER ST",
     defaultPrice: "$95",
-    image: "/Product Photos/CurrierSt/CurrierStMockup.png",
+    image: "/Product Photos/CurrierSt/CurrierStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Definitely the next Bill Gates",
     description:
@@ -452,7 +452,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "pfoho-st",
     name: "PFOHO ST",
     defaultPrice: "$95",
-    image: "/Product Photos/PfohoSt/PfohoStMockup.png",
+    image: "/Product Photos/PfohoSt/PfohoStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Where my Pfohomies at?",
     description:
@@ -477,7 +477,7 @@ export const inventoryProducts: InventoryProduct[] = [
     handle: "cabot-st",
     name: "CABOT ST",
     defaultPrice: "$95",
-    image: "/Product Photos/CabotSt/CabotStMockup.png",
+    image: "/Product Photos/CabotSt/CabotStBlueMockup.png",
     category: "Street Signs",
     shortDescription: "Something's fishy here",
     description:
