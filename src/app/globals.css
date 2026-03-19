@@ -24,11 +24,18 @@
   --font-body: var(--font-body);
 }
 
-body {
+html, body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), "DM Sans", sans-serif;
   overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 /* Scroll text shadow for readability over hero image */

@@ -120,7 +120,7 @@ function HomeContent() {
   const isHomepage = !collection;
 
   return (
-    <main className="relative">
+    <main className="relative min-h-screen overflow-x-hidden">
       {!introCompleted && (
         <>
           {/* Fixed hero: background image + overlay (logo, tagline, scroll indicator) */}
@@ -135,7 +135,7 @@ function HomeContent() {
       )}
 
       {/* Shop layout: sidebar + hero banner + carousel */}
-      <div ref={shopLayoutRef}>
+      <div ref={shopLayoutRef} className="relative">
         <ShopLayout visible={shopVisible} collection={collection} showHeroBanner={showHeroBanner} isHomepage={isHomepage} />
       </div>
     </main>

@@ -873,7 +873,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
           {/* Collection Pages: Grid Layout */}
           {!isHomepage && (
             <div className="pb-10 md:pb-14">
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-6 lg:gap-8 w-full">
                 {displayProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
