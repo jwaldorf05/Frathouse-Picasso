@@ -107,6 +107,8 @@ function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
         <img src="/stickers/Caution Tape 1.png" alt="" className="absolute top-14 left-0 w-full h-auto pointer-events-none z-[1] opacity-70" style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }} />
         <img src="/stickers/Caution Tape 2.png" alt="" className="absolute top-[44%] left-0 w-full h-auto pointer-events-none z-[1] opacity-65" style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }} />
         <img src="/stickers/Caution Tape 3.png" alt="" className="absolute bottom-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-60" style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }} />
+        {/* Murder Spray decoration */}
+        <img src="/stickers/Murder Spray.png" alt="" className="absolute top-[28%] right-4 w-16 h-auto pointer-events-none z-[1] opacity-40" style={{ transform: 'rotate(-15deg)' }} />
         
         {/* Logo */}
         <div className="p-6 relative z-[110]">
@@ -184,20 +186,27 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
         <img
           src="/stickers/Caution Tape 1.png"
           alt=""
-          className="absolute top-14 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
+          className="absolute top-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-65"
           style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
         />
         <img
           src="/stickers/Caution Tape 2.png"
           alt=""
-          className="absolute top-[44%] left-0 w-full h-auto pointer-events-none z-[1] opacity-65"
+          className="absolute top-[44%] left-0 w-full h-auto pointer-events-none z-[1] opacity-60"
           style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
         />
         <img
           src="/stickers/Caution Tape 3.png"
           alt=""
-          className="absolute bottom-20 left-0 w-full h-auto pointer-events-none z-[1] opacity-60"
+          className="absolute bottom-32 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
           style={{ transform: 'scaleX(1.05)', transformOrigin: 'left' }}
+        />
+        {/* Murder Spray decoration */}
+        <img
+          src="/stickers/Murder Spray.png"
+          alt=""
+          className="absolute top-[30%] right-6 w-20 h-auto pointer-events-none z-[1] opacity-35"
+          style={{ transform: 'rotate(-12deg)' }}
         />
         {/* Brand logo */}
         <div className="p-6 relative z-[110]">
@@ -469,6 +478,13 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
           alt=""
           className="hidden md:block absolute bottom-32 left-0 w-full h-auto pointer-events-none z-[1] opacity-70"
           style={{ transform: 'scaleX(1.02)', transformOrigin: 'left' }}
+        />
+        {/* Murder Spray decoration - desktop cart */}
+        <img
+          src="/stickers/Murder Spray.png"
+          alt=""
+          className="hidden md:block absolute top-[25%] right-8 w-24 h-auto pointer-events-none z-[1] opacity-30"
+          style={{ transform: 'rotate(-10deg)' }}
         />
         
         {/* Mobile drag handle */}
