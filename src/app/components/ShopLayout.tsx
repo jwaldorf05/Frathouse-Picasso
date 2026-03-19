@@ -52,7 +52,7 @@ function MobileHeader({ onMenuClick, cartCount, onCartClick, isMounted }: {
   isMounted: boolean;
 }) {
   return (
-    <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-3">
+    <header className="md:hidden sticky top-0 left-0 right-0 z-50 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Hamburger button - 44x44px touch target */}
         <button
@@ -836,7 +836,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
       <Sidebar visible={visible} cartCount={cartCount} onCartClick={handleCartClick} isMounted={isMounted} />
 
       <div
-        className={`pt-14 md:pt-0 relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
+        className={`relative z-[2] shop-content ${visible ? "shop-content-visible" : ""} overflow-hidden`}
         style={{ background: "#0a0a0a" }}
       >
         {/* Background graffiti sprays */}
