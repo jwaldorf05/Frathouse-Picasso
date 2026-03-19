@@ -100,9 +100,11 @@ function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
       
       {/* Drawer - slides from left */}
       <aside
-        className="md:hidden fixed left-0 top-0 h-screen w-[280px] flex flex-col justify-between z-[100] bg-[#0a0a0a] border-r border-[#1a1a1a] transition-transform duration-300 ease-in-out overflow-hidden relative"
+        className="md:hidden fixed left-0 top-0 bottom-0 w-[280px] flex flex-col justify-between z-[100] bg-[#0a0a0a] border-r border-[#1a1a1a] transition-transform duration-300 ease-in-out overflow-hidden"
         style={{
           transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+          height: '100vh',
+          position: 'fixed',
         }}
       >
         {/* Caution tape decorations */}
