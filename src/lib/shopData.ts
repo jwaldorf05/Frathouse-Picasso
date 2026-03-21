@@ -177,26 +177,26 @@ export const inventoryProducts: InventoryProduct[] = [
       { id: "left", title: "Left Arrow", image: "/Product Photos/ThreeWay/Threeway_Left_Mockup.jpg" },
     ],
   },
-  {
-    id: "7",
-    handle: "wizard-crossing",
-    name: "WIZARD CROSSING",
-    defaultPrice: "$200",
-    image: "/Product Photos/WizardCrossing/Wizard_Sign_Mockup.jpg",
-    category: "Street Signs",
-    shortDescription: "Who says wizards can't have rights too?",
-    description:
-      "How dare you insinuate that the sign didn't come this way? 100% muggle made (probably)",
-    materials: ["Aluminum street sign blank", "Screen-printed wizard silhouette", "Reflective background"],
-    collections: ["All", "Hottest"],
-    sizeOptions: [
-      { size: '24" × 24"'},
-      { size: '30" × 30"', price: "$250" },
-    ],
-    gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/WizardCrossing/Wizard_Sign_Mockup.jpg" },
-    ],
-  },
+  // {
+  //   id: "7",
+  //   handle: "wizard-crossing",
+  //   name: "WIZARD CROSSING",
+  //   defaultPrice: "$200",
+  //   image: "/Product Photos/WizardCrossing/Wizard_Sign_Mockup.jpg",
+  //   category: "Street Signs",
+  //   shortDescription: "Who says wizards can't have rights too?",
+  //   description:
+  //     "How dare you insinuate that the sign didn't come this way? 100% muggle made (probably)",
+  //   materials: ["Aluminum street sign blank", "Screen-printed wizard silhouette", "Reflective background"],
+  //   collections: ["All", "Hottest"],
+  //   sizeOptions: [
+  //     { size: '24" × 24"'},
+  //     { size: '30" × 30"', price: "$250" },
+  //   ],
+  //   gallery: [
+  //     { id: "main", title: "Main View", image: "/Product Photos/WizardCrossing/Wizard_Sign_Mockup.jpg" },
+  //   ],
+  // },
   {
     id: "8",
     handle: "eliot-st",

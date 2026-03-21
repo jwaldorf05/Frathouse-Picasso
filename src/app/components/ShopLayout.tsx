@@ -1026,7 +1026,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
               <a href="#" className="font-[family-name:var(--font-body)] text-text-muted text-xs hover:text-white transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="font-[family-name:var(--font-body)] text-text-muted text-xs hover:text-white transition-colors">
+              <a href="/shipping-returns" className="font-[family-name:var(--font-body)] text-text-muted text-xs hover:text-white transition-colors">
                 Shipping & Returns
               </a>
             </div>
