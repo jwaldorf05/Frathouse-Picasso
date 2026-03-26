@@ -53,26 +53,26 @@ export interface InventoryProduct {
 // 2) Use `sizeOptions.price` only for true size-based cost differences.
 // 3) `gallery.title` appears in the UI thumbnail label, so keep titles short and intentional.
 export const inventoryProducts: InventoryProduct[] = [
-  {
-    id: "1",
-    handle: "harvard-tstop",
-    name: "HARVARD T STOP",
-    defaultPrice: "$95",
-    image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png",
-    category: "Street Signs",
-    shortDescription: "I go to a school in Boston",
-    description:
-      "More fun than a banner, no?",
-    materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
-    collections: ["All", "Best Sellers", "Harvard Collection"],
-    sizeOptions: [
-      { size: '10" × 30"' },
-      { size: '12" × 36"', price: "$125" },
-    ],
-    gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png" },
-    ],
-  },
+  // {
+  //   id: "1",
+  //   handle: "harvard-tstop",
+  //   name: "HARVARD T STOP",
+  //   defaultPrice: "$95",
+  //   image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png",
+  //   category: "Street Signs",
+  //   shortDescription: "I go to a school in Boston",
+  //   description:
+  //     "More fun than a banner, no?",
+  //   materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
+  //   collections: ["All", "Best Sellers", "Harvard Collection"],
+  //   sizeOptions: [
+  //     { size: '10" × 30"' },
+  //     { size: '12" × 36"', price: "$125" },
+  //   ],
+  //   gallery: [
+  //     { id: "main", title: "Main View", image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png" },
+  //   ],
+  // },
   {
     id: "2",
     handle: "enjoy-cocaine",
@@ -497,26 +497,26 @@ export const inventoryProducts: InventoryProduct[] = [
       { id: "green", title: "Green", image: "/Product Photos/CabotSt/CabotStGreenMockup.png" },
     ],
   },
-  {
-    id: "20",
-    handle: "throppy-toppy",
-    name: "THROPPY TOPPY?",
-    defaultPrice: "$200",
-    image: "/Product Photos/ThroppyToppy/ThroppyToppyMockup.png",
-    category: "Street Signs",
-    shortDescription: "I did not have intercourse with that woman",
-    description:
-      "Becoming a Harvard man is a distinction I hope to achieve",
-    materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
-    collections: ["All", "Best Sellers", "Harvard Collection"],
-    sizeOptions: [
-      { size: '24" × 24"' },
-      { size: '30" × 30"', price: "$250" },
-    ],
-    gallery: [
-      { id: "main", title: "Main View", image: "/Product Photos/ThroppyToppy/ThroppyToppyMockup.png" },
-    ],
-  },
+  // {
+  //   id: "20",
+  //   handle: "throppy-toppy",
+  //   name: "THROPPY TOPPY?",
+  //   defaultPrice: "$200",
+  //   image: "/Product Photos/ThroppyToppy/ThroppyToppyMockup.png",
+  //   category: "Street Signs",
+  //   shortDescription: "I did not have intercourse with that woman",
+  //   description:
+  //     "Becoming a Harvard man is a distinction I hope to achieve",
+  //   materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
+  //   collections: ["All", "Best Sellers", "Harvard Collection"],
+  //   sizeOptions: [
+  //     { size: '24" × 24"' },
+  //     { size: '30" × 30"', price: "$250" },
+  //   ],
+  //   gallery: [
+  //     { id: "main", title: "Main View", image: "/Product Photos/ThroppyToppy/ThroppyToppyMockup.png" },
+  //   ],
+  // },
   {
     id: "21",
     handle: "no-yalies",
