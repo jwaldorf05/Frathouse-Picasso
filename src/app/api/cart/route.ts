@@ -91,3 +91,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    // Clear the cart by setting an empty cart cookie
+    const emptyCart = { items: [] };
+    const response = NextResponse.json(
+      {
+        items: [],
+        totalQuantity: 0,
+        message: 'Cart cleared successfully',
+      },
+      { status: 200 }
+    );
+    response.headers.set("Set-Cookie", serializeCartCookie(emptyCart));
+
+    return response;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to clear cart.";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
