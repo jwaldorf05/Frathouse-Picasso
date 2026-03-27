@@ -7,6 +7,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
+    const requestUrl = new URL(request.url);
+    const origin = requestUrl.origin;
+
     const body = await request.json();
     const {
       stripePriceId,
@@ -39,10 +42,9 @@ export async function POST(request: NextRequest) {
       metadata.selectedFormat = selectedFormat;
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const itemPath =
+    const returnTo =
       typeof productHandle === 'string' && productHandle.length > 0
-        ? `/items/${productHandle}`
+        ? `/items/${productHandle}?shop=1`
         : '/?shop=1';
 
     // Create Stripe checkout session
@@ -60,8 +62,8 @@ export async function POST(request: NextRequest) {
       shipping_address_collection: {
         allowed_countries: ['US', 'CA'],
       },
-      success_url: `${baseUrl}${itemPath}?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}${itemPath}?checkout=cancelled`,
+      success_url: `${origin}/api/checkout/complete?session_id={CHECKOUT_SESSION_ID}&return_to=${encodeURIComponent(returnTo)}`,
+      cancel_url: `${origin}${returnTo}${returnTo.includes('?') ? '&' : '?'}checkout=cancelled`,
       metadata: metadata,
     });
 
