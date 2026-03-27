@@ -56,26 +56,26 @@ export interface InventoryProduct {
 // 2) Use `sizeOptions.price` only for true size-based cost differences.
 // 3) `gallery.title` appears in the UI thumbnail label, so keep titles short and intentional.
 export const inventoryProducts: InventoryProduct[] = [
-  // {
-  //   id: "1",
-  //   handle: "harvard-tstop",
-  //   name: "HARVARD T STOP",
-  //   defaultPrice: "$95",
-  //   image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png",
-  //   category: "Street Signs",
-  //   shortDescription: "I go to a school in Boston",
-  //   description:
-  //     "More fun than a banner, no?",
-  //   materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
-  //   collections: ["All", "Best Sellers", "Harvard Collection"],
-  //   sizeOptions: [
-  //     { size: '10" × 30"' },
-  //     { size: '12" × 36"', price: "$125" },
-  //   ],
-  //   gallery: [
-  //     { id: "main", title: "Main View", image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png" },
-  //   ],
-  // },
+  {
+    id: "1",
+    handle: "harvard-tstop",
+    name: "HARVARD T STOP",
+    defaultPrice: "$95",
+    image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png",
+    category: "Street Signs",
+    shortDescription: "I go to a school in Boston",
+    description:
+      "More fun than a banner, no?",
+    materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
+    collections: ["All", "Best Sellers", "Harvard Collection"],
+    sizeOptions: [
+      { size: '10" × 30"' },
+      { size: '12" × 36"', price: "$125" },
+    ],
+    gallery: [
+      { id: "main", title: "Main View", image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png" },
+    ],
+  },
   {
     id: "2",
     handle: "enjoy-cocaine",
@@ -145,7 +145,7 @@ export const inventoryProducts: InventoryProduct[] = [
     defaultPrice: "$75",
     image: "/Product Photos/RageCage/RageCageMockup.png",
     category: "Street Signs",
-    shortDescription: "BDSM? No, just a drinking game.",
+    shortDescription: "Some of you may die, but that is a sacrifice I am willing to make.",
     description:
       "The pledges knew what they signed up for, so you're not liable right? RIGHT?",
     materials: ["Aluminum street sign blank", "High-impact graphics", "Scratch-resistant coating"],
@@ -566,12 +566,12 @@ export const inventoryProducts: InventoryProduct[] = [
     category: "Street Signs",
     shortDescription: "Kinky, are we?",
     description:
-      "Just to make it obvious they're not welcome here.",
+      "Employee of the month.",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Fraternity Collection"],
     stripeProductId: "",
     sizeOptions: [
-      { size: '12" × 12"', stripePriceId: "" },
+      { size: '30" × 10"', stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/BDSM/BDSMMockup.png" },
