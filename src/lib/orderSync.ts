@@ -137,26 +137,51 @@ async function createOrderFromSession(
   const discountAmount = totalDetails?.amount_discount ?? 0;
   let discountCode: string | null = null;
 
+  // Validate total_details exists
+  if (!totalDetails) {
+    console.warn(`[Order Sync] WARNING: Session ${session.id} has no total_details - discount extraction may fail`);
+    console.warn(`[Order Sync] Session may need to be retrieved with expand: ['total_details.breakdown']`);
+  }
+
   // Get promotion code name from discounts breakdown
   if (totalDetails?.breakdown?.discounts && Array.isArray(totalDetails.breakdown.discounts)) {
     const firstDiscount = totalDetails.breakdown.discounts[0];
+    
+    console.log(`[Order Sync] Discount breakdown found:`, {
+      discountCount: totalDetails.breakdown.discounts.length,
+      firstDiscountType: firstDiscount?.discount?.promotion_code ? 'promotion_code' : 
+                         firstDiscount?.discount?.coupon ? 'coupon' : 'unknown',
+    });
+
     if (firstDiscount?.discount?.promotion_code) {
       const promoCodeRef = firstDiscount.discount.promotion_code;
       // If it's an expanded object, get the code property
       if (typeof promoCodeRef === 'object' && promoCodeRef !== null && 'code' in promoCodeRef) {
         discountCode = (promoCodeRef as any).code;
+        console.log(`[Order Sync] Extracted promotion code: ${discountCode}`);
+      } else {
+        console.warn(`[Order Sync] Promotion code reference is not expanded:`, typeof promoCodeRef);
       }
     } else if (firstDiscount?.discount?.coupon) {
       const couponRef = firstDiscount.discount.coupon;
       // If it's an expanded object, get the name or id
       if (typeof couponRef === 'object' && couponRef !== null) {
         discountCode = (couponRef as any).name || (couponRef as any).id;
+        console.log(`[Order Sync] Extracted coupon code: ${discountCode}`);
+      } else {
+        console.warn(`[Order Sync] Coupon reference is not expanded:`, typeof couponRef);
       }
     }
+  } else if (discountAmount > 0) {
+    console.warn(`[Order Sync] Discount amount exists ($${(discountAmount / 100).toFixed(2)}) but no breakdown found`);
+    console.warn(`[Order Sync] This may indicate the session was not retrieved with proper expansion`);
   }
 
   if (discountAmount > 0) {
-    console.log(`[Order Sync] Discount detected: ${discountCode || 'unknown code'} - $${(discountAmount / 100).toFixed(2)} off`);
+    console.log(`[Order Sync] ✅ Discount detected: ${discountCode || 'UNKNOWN_CODE'} - $${(discountAmount / 100).toFixed(2)} off`);
+    console.log(`[Order Sync] Will save to database: { discount_amount: ${discountAmount}, discount_code: "${discountCode}" }`);
+  } else {
+    console.log(`[Order Sync] No discount applied to this order`);
   }
 
   let createdOrder: Order | null = null;
