@@ -42,6 +42,11 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
+      customer_creation: 'always',
+      billing_address_collection: 'auto',
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA'],
+      },
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/items/{CHECKOUT_SESSION_ID}?checkout=success`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/items/{CHECKOUT_SESSION_ID}?checkout=cancelled`,
       metadata: metadata,

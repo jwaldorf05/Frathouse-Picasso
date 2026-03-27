@@ -10,6 +10,43 @@ import {
 
 export const dynamic = 'force-dynamic';
 
+async function resolveCustomerEmail(
+  stripe: Stripe,
+  session: Stripe.Checkout.Session
+): Promise<string | null> {
+  const fromDetails = session.customer_details?.email;
+  if (fromDetails) return fromDetails;
+
+  const fromSession = session.customer_email;
+  if (fromSession) return fromSession;
+
+  if (typeof session.customer === "string") {
+    try {
+      const customer = await stripe.customers.retrieve(session.customer);
+      if (!("deleted" in customer) && customer.email) {
+        return customer.email;
+      }
+    } catch (error) {
+      console.error("Failed to retrieve Stripe customer for email lookup:", error);
+    }
+  } else if (session.customer && session.customer.email) {
+    return session.customer.email;
+  }
+
+  return null;
+}
+
+function resolveCustomerName(session: Stripe.Checkout.Session): string | null {
+  const fromDetails = session.customer_details?.name;
+  if (fromDetails) return fromDetails;
+
+  if (session.customer && typeof session.customer !== "string" && session.customer.name) {
+    return session.customer.name;
+  }
+
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   const stripe = getStripeInstance();
   const body = await request.text();
@@ -104,13 +141,17 @@ async function handleCheckoutSessionCompleted(
     expand: ["line_items.data.price.product", "customer"],
   });
 
-  const customerEmail = expandedSession.customer_details?.email;
+  const customerEmail = await resolveCustomerEmail(stripe, expandedSession);
+  const customerName = resolveCustomerName(expandedSession);
+  const orderEmail = customerEmail ?? `unknown+${session.id}@no-email.invalid`;
+
   if (!customerEmail) {
-    console.error("No customer email in session:", session.id);
-    return;
+    console.warn(
+      "No customer email found in checkout session; saving order with placeholder email:",
+      session.id
+    );
   }
 
-  const customerName = expandedSession.customer_details?.name ?? null;
   const shipping = (expandedSession as any).shipping_details;
 
   // --- Generate order number (FP-0001 format) ---
@@ -135,7 +176,7 @@ async function handleCheckoutSessionCompleted(
       stripe_session_id: session.id,
       order_number: orderNumber,
       status: "new",
-      customer_email: customerEmail,
+      customer_email: orderEmail,
       customer_name: customerName,
       shipping_name: shipping?.name ?? null,
       shipping_address_line1: shipping?.address?.line1 ?? null,
@@ -197,11 +238,15 @@ async function handleCheckoutSessionCompleted(
     .select("*")
     .eq("order_id", newOrder.id);
 
-  try {
-    await sendCustomerConfirmation(newOrder, orderItems ?? []);
-    console.log("✓ Customer confirmation sent to:", customerEmail);
-  } catch (err) {
-    console.error("Failed to send customer confirmation:", err);
+  if (customerEmail) {
+    try {
+      await sendCustomerConfirmation(newOrder, orderItems ?? []);
+      console.log("✓ Customer confirmation sent to:", customerEmail);
+    } catch (err) {
+      console.error("Failed to send customer confirmation:", err);
+    }
+  } else {
+    console.warn("Skipping customer confirmation email because no customer email is available.");
   }
 
   try {
