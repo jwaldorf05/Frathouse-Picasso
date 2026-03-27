@@ -133,12 +133,23 @@ function OrderConfirmationContent() {
   };
 
   return (
-    <main className="min-h-screen bg-[#0a0a0a] text-white">
-      <div className="max-w-3xl mx-auto px-6 py-12 md:py-16">
+    <main className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
+      {/* Spray Paint Background */}
+      <div className="absolute inset-0 pointer-events-none opacity-10">
+        <img src="/stickers/Murder Spray.png" alt="" className="absolute top-10 left-10 w-32 h-32 rotate-12" />
+        <img src="/stickers/Pledge Leash Spray.png" alt="" className="absolute top-40 right-20 w-28 h-28 -rotate-6" />
+        <img src="/stickers/Pong Spray.png" alt="" className="absolute bottom-32 left-16 w-36 h-36 rotate-45" />
+        <img src="/stickers/Radioactive Spray.png" alt="" className="absolute top-1/3 right-10 w-32 h-32 -rotate-12" />
+        <img src="/stickers/SEND Spraypaint.png" alt="" className="absolute bottom-20 right-24 w-40 h-40 rotate-6" />
+        <img src="/stickers/Three Way Spray.png" alt="" className="absolute top-20 right-1/3 w-28 h-28 rotate-90" />
+        <img src="/stickers/Wizard Spraypaint.png" alt="" className="absolute bottom-40 left-1/4 w-32 h-32 -rotate-45" />
+      </div>
+      
+      <div className="max-w-3xl mx-auto px-6 py-12 md:py-16 relative z-10">
         {/* Header */}
         <div className="mb-8 pb-8 border-b border-accent/30">
           <h1 className="font-[family-name:var(--font-body)] font-bold text-3xl md:text-4xl mb-3">
-            Your Picasso is in progress!
+            The goods are moving.
           </h1>
           <p className="text-text-secondary text-base">
             Hi {orderDetails.customerName || 'there'}, thanks for your order.
