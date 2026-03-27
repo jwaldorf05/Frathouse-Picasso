@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 
+export const runtime = "nodejs";
+
 function computeSessionToken(password: string): string {
   return createHmac("sha256", password).update("admin-session-v1").digest("hex");
+}
+
+function getAdminPassword(): string | null {
+  const candidates = [
+    process.env.ADMIN_PASSWORD,
+    process.env.ADMIN_LOGIN_PASSWORD,
+    process.env.FRATHOUSE_ADMIN_PASSWORD,
+    process.env.NEXT_PUBLIC_ADMIN_PASSWORD,
+  ];
+
+  for (const value of candidates) {
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -14,10 +33,12 @@ export async function POST(request: NextRequest) {
   }
 
   const { password } = body;
-  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminPassword = getAdminPassword();
 
   if (!adminPassword) {
-    console.error("ADMIN_PASSWORD environment variable is not set");
+    console.error(
+      "Admin password env var not set. Checked: ADMIN_PASSWORD, ADMIN_LOGIN_PASSWORD, FRATHOUSE_ADMIN_PASSWORD, NEXT_PUBLIC_ADMIN_PASSWORD"
+    );
     return NextResponse.json({ error: "Admin not configured" }, { status: 500 });
   }
 
