@@ -209,7 +209,7 @@ function OrderConfirmationContent() {
         <div className="mb-8">
           <div className="bg-[#1a1111] border-l-4 border-accent p-4 rounded">
             <p className="text-sm">
-              <span className="font-bold">Estimated delivery:</span> 5–7 business days after production. We'll send you another email with tracking info once your order ships.
+              <span className="font-bold">Estimated delivery:</span> 5-7 business days. We'll send you another email with tracking info once your order ships.
             </p>
           </div>
         </div>
