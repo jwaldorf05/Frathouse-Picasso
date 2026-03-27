@@ -78,6 +78,7 @@ describe("/api/checkout route", () => {
     expect(createSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({ checkoutType: "cart" }),
+        success_url: expect.stringContaining("return_to=%2Forder-confirmation"),
       })
     );
   });
@@ -152,6 +153,7 @@ describe("/api/checkout route", () => {
     expect(createSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
         metadata: expect.objectContaining({ checkoutType: "single-item", handle: "stencil-cap" }),
+        success_url: expect.stringContaining("return_to=%2Forder-confirmation"),
       })
     );
   });

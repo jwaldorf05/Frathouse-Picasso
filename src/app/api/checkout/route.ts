@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       }
 
       lineItems = toStripeLineItems(cart);
-      const returnTo = '/?shop=1';
+      const returnTo = '/order-confirmation';
       successUrl = `${origin}/api/checkout/complete?session_id={CHECKOUT_SESSION_ID}&return_to=${encodeURIComponent(returnTo)}`;
       cancelUrl = `${fallbackUrl}&checkout=cancel`;
       metadata = {
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
       const activePrice = getProductPrice(product, selectedSize);
       const unitAmount = parsePriceToCents(activePrice);
       const productUrl = `${origin}/items/${product.handle}?shop=1`;
-      const returnTo = `/items/${product.handle}?shop=1`;
+      const returnTo = "/order-confirmation";
 
       const productMetadata: Record<string, string> = {
         handle: product.handle,

@@ -143,6 +143,9 @@ function OrderConfirmationContent() {
           <p className="text-text-secondary text-base">
             Hi {orderDetails.customerName || 'there'}, thanks for your order.
           </p>
+          <p className="text-text-secondary text-sm mt-2">
+            We received your payment successfully. You should receive a confirmation email shortly with your order details.
+          </p>
         </div>
 
         {/* Order Number */}
