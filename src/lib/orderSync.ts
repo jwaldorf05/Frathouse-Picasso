@@ -11,6 +11,16 @@ interface SyncResult {
   reason?: string;
 }
 
+interface ResolvedAddress {
+  name: string | null;
+  line1: string | null;
+  line2: string | null;
+  city: string | null;
+  state: string | null;
+  postal_code: string | null;
+  country: string | null;
+}
+
 function isMissingColumnError(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
   const err = error as { code?: string; message?: string };
@@ -60,6 +70,28 @@ function getCustomerName(session: Stripe.Checkout.Session): string | null {
   return null;
 }
 
+function resolveAddress(session: Stripe.Checkout.Session): ResolvedAddress {
+  const shippingDetails = (session as any).shipping_details;
+  const collectedShipping = (session as any).collected_information?.shipping_details;
+  const customerDetails = session.customer_details;
+
+  const shippingAddress =
+    shippingDetails?.address ?? collectedShipping?.address ?? customerDetails?.address ?? null;
+
+  const shippingName =
+    shippingDetails?.name ?? collectedShipping?.name ?? customerDetails?.name ?? null;
+
+  return {
+    name: shippingName ?? null,
+    line1: shippingAddress?.line1 ?? null,
+    line2: shippingAddress?.line2 ?? null,
+    city: shippingAddress?.city ?? null,
+    state: shippingAddress?.state ?? null,
+    postal_code: shippingAddress?.postal_code ?? null,
+    country: shippingAddress?.country ?? null,
+  };
+}
+
 async function nextOrderNumber(startOffset = 0): Promise<string> {
   const supabase = getSupabase();
   const { data: lastOrder } = await supabase
@@ -98,7 +130,7 @@ async function createOrderFromSession(
   const customerName = getCustomerName(session);
   const orderEmail = customerEmail ?? `unknown+${session.id}@no-email.invalid`;
   const sessionMeta = session.metadata ?? {};
-  const shipping = (session as any).shipping_details;
+  const address = resolveAddress(session);
 
   let createdOrder: Order | null = null;
   let insertError: any = null;
@@ -113,13 +145,13 @@ async function createOrderFromSession(
       status: "new",
       customer_email: orderEmail,
       customer_name: customerName,
-      shipping_name: shipping?.name ?? null,
-      shipping_address_line1: shipping?.address?.line1 ?? null,
-      shipping_address_line2: shipping?.address?.line2 ?? null,
-      shipping_city: shipping?.address?.city ?? null,
-      shipping_state: shipping?.address?.state ?? null,
-      shipping_postal_code: shipping?.address?.postal_code ?? null,
-      shipping_country: shipping?.address?.country ?? null,
+      shipping_name: address.name,
+      shipping_address_line1: address.line1,
+      shipping_address_line2: address.line2,
+      shipping_city: address.city,
+      shipping_state: address.state,
+      shipping_postal_code: address.postal_code,
+      shipping_country: address.country,
       amount_total: session.amount_total ?? 0,
     };
 
