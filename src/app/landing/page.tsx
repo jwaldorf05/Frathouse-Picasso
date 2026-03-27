@@ -20,7 +20,7 @@ export default function LandingPage() {
 
   const completeLanding = useCallback(() => {
     localStorage.setItem(LANDING_SEEN_KEY, "1");
-    router.replace("/");
+    router.replace("/?collection=All");
   }, [router]);
 
   useEffect(() => {

@@ -95,6 +95,63 @@ export default function ItemDisplayClient({
     setQuantity((previous) => previous + 1);
   };
 
+  const buyNowWithStripe = async () => {
+    if (!canAddToCart || isCheckoutLoading) {
+      return;
+    }
+
+    // Validate color selection if product has color options
+    if (hasColors && !selectedColor) {
+      setCheckoutError('Please select a color before proceeding to checkout.');
+      return;
+    }
+
+    setCheckoutError(null);
+    setIsCheckoutLoading(true);
+
+    try {
+      // Find the stripePriceId for the selected size
+      const selectedSizeOption = product.sizeOptions?.find(
+        (opt) => opt.size === selectedSize
+      );
+      
+      const stripePriceId = selectedSizeOption?.stripePriceId;
+
+      if (!stripePriceId) {
+        throw new Error('This product doesn\'t have a Stripe price ID configured yet. Please contact support.');
+      }
+
+      // Create Stripe checkout session with metadata
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stripePriceId,
+          selectedColor,
+          selectedSize,
+          selectedFormat,
+          quantity,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.url) {
+        throw new Error(data.error || 'Failed to create checkout session');
+      }
+
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : 'Unable to start checkout right now.';
+      setCheckoutError(message);
+      setIsCheckoutLoading(false);
+    }
+  };
+
   const addToCart = async (shouldCheckout: boolean) => {
     if (!canAddToCart || isCartLoading || isCheckoutLoading) {
       return;
@@ -442,12 +499,12 @@ export default function ItemDisplayClient({
               </button>
               <button
                 type="button"
-                disabled={!canAddToCart || isCartLoading || isCheckoutLoading}
-                onClick={() => addToCart(true)}
+                disabled={!canAddToCart || isCheckoutLoading}
+                onClick={buyNowWithStripe}
                 className="w-full rounded-md bg-accent px-5 py-3 min-h-[44px] text-xs font-bold uppercase tracking-[1.3px] text-white transition-colors hover:bg-accent/90 disabled:cursor-not-allowed disabled:opacity-60"
                 id="buy-now-button"
               >
-                {isCheckoutLoading ? "Redirecting..." : "Buy Now"}
+                {isCheckoutLoading ? 'Redirecting...' : 'Buy Now'}
               </button>
             </div>
 

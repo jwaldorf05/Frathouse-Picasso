@@ -6,6 +6,7 @@ export interface ShopNavItem {
 export interface ProductSizeOption {
   size: string;
   price?: string;
+  stripePriceId?: string;
 }
 
 export interface ProductColorOption {
@@ -37,6 +38,8 @@ export interface InventoryProduct {
   materials: string[];
   // Collections this product belongs to
   collections: string[];
+  // Optional Stripe product ID
+  stripeProductId?: string;
   // Optional size matrix. Set `price` only when a size should cost more/less than defaultPrice.
   sizeOptions?: ProductSizeOption[];
   // Optional color options
@@ -85,9 +88,10 @@ export const inventoryProducts: InventoryProduct[] = [
       "Nothing like a little snow to get a party started! Perfect for your your friendly neighborhood cokehead.",
     materials: ["Aluminum street sign blank", "High-grade vinyl graphics", "UV-resistant coating"],
     collections: ["All", "Best Sellers", "Fraternity Collection", "Hottest"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '24" × 24"' },
-      { size: '30" × 30"', price: "$250" },
+      { size: '24" × 24"', stripePriceId: "" },
+      { size: '30" × 30"', price: "$250", stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/EnjoyCocaine/Enjoy_Cocaine_Mockup.png" },
@@ -105,9 +109,10 @@ export const inventoryProducts: InventoryProduct[] = [
       "A warning suitable for any punch bowl, bitch cup or fraternity basement.",
     materials: ["Aluminum street sign blank", "Screen-printed graphics", "Powder-coated finish"],
     collections: ["All", "New Releases", "Fraternity Collection", "Hottest"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 14"' },
-      { size: '12" × 18"', price: "$100" },
+      { size: '10" × 14"', stripePriceId: "" },
+      { size: '12" × 18"', price: "$100", stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/FratFluids/Frat Fluids Mockup.png" },
@@ -125,8 +130,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "Show your pledges who's in charge. A top-tier gift for pledge masters everywhere. Note: we are not liable for the *voluntary activities* that ensue.",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "All-weather construction"],
     collections: ["All", "Fraternity Collection", "Hottest"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '12" × 18"' },
+      { size: '12" × 18"', stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/PledgesLeash/Pledge_Sign_Mockup.jpg" },
@@ -139,14 +145,15 @@ export const inventoryProducts: InventoryProduct[] = [
     defaultPrice: "$75",
     image: "/Product Photos/RageCage/RageCageMockup.png",
     category: "Street Signs",
-    shortDescription: "You have been warned.",
+    shortDescription: "BDSM? No, just a drinking game.",
     description:
       "The pledges knew what they signed up for, so you're not liable right? RIGHT?",
     materials: ["Aluminum street sign blank", "High-impact graphics", "Scratch-resistant coating"],
     collections: ["All", "Best Sellers", "Fraternity Collection", "Hottest"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 14"' },
-      { size: '12" × 18"', price: "$100" },
+      { size: '10" × 14"', stripePriceId: "" },
+      { size: '12" × 18"', price: "$100", stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/RageCage/RageCageMockup.png" },
@@ -156,17 +163,18 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "6",
     handle: "three-way",
     name: "THREE WAY",
-    defaultPrice: "$115",
+    defaultPrice: "$100",
     image: "/Product Photos/ThreeWay/Threeway_Right_Mockup.jpg",
     category: "Street Signs",
-    shortDescription: "Is that a threat or a promise?",
+    shortDescription: "The most confusing intersection in town",
     description:
       "The most confusing intersection in town. Put this in your room to invite guests, or put it up on the street and enjoy the chaos that ensues.",
     materials: ["Aluminum street sign blank", "Reflective directional arrows", "Weatherproof finish"],
     collections: ["All", "New Releases", "Fraternity Collection", "Hottest"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
-      { size: '12" × 36"', price: "$135" },
+      { size: '10" × 30"', stripePriceId: "" },
+      { size: '12" × 36"', price: "$135", stripePriceId: "" },
     ],
     formatOptions: [
       { format: 'Right' },
@@ -209,9 +217,10 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
-      // { size: '12" × 36"', price: "$125" },
+      { size: '10" × 30"', stripePriceId: "" },
+      // { size: '12" × 36"', price: "$125", stripePriceId: "" },
     ],
     colorOptions: [
       { color: 'Blue' },
@@ -234,9 +243,10 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
-      // { size: '12" × 36"', price: "$125" },
+      { size: '10" × 30"', stripePriceId: "" },
+      // { size: '12" × 36"', price: "$125", stripePriceId: "" },
     ],
     colorOptions: [
       { color: 'Blue' },
@@ -259,9 +269,10 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
-      // { size: '12" × 36"', price: "$125" },
+      { size: '10" × 30"', stripePriceId: "" },
+      // { size: '12" × 36"', price: "$125", stripePriceId: "" },
     ],
     colorOptions: [
       { color: 'Blue' },
@@ -284,9 +295,10 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
-      // { size: '12" × 36"', price: "$125" },
+      { size: '10" × 30"', stripePriceId: "" },
+      // { size: '12" × 36"', price: "$125", stripePriceId: "" },
     ],
     colorOptions: [
       { color: 'Blue' },
@@ -309,8 +321,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -334,8 +347,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -359,8 +373,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -384,8 +399,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -409,8 +425,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -434,8 +451,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -459,8 +477,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -484,8 +503,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "What better way is there to show your pride for the best house at Harvard than a sign of questionable legality?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Best Sellers", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
+      { size: '10" × 30"', stripePriceId: "" },
       // { size: '12" × 36"', price: "$125" },
     ],
     colorOptions: [
@@ -529,8 +549,9 @@ export const inventoryProducts: InventoryProduct[] = [
       "Just to make it obvious they're not welcome here.",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
     collections: ["All", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '12" × 12"' },
+      { size: '12" × 12"', stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/NoYalies/NoYaliesMockup.png" },
