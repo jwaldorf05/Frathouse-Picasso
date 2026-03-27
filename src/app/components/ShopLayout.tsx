@@ -600,12 +600,14 @@ function CartPanel({ isOpen, onClose, cartCount }: CartPanelProps) {
                 const product = inventoryProducts.find(p => p.handle === item.handle);
                 return (
                   <div key={item.id} className="flex items-center gap-4 p-4 bg-[#0d0d0d] rounded-lg border border-[#1a1a1a]">
-                    <div className="w-20 h-20 bg-[#111] rounded-md flex-shrink-0 overflow-hidden">
+                    <div className="w-20 h-20 bg-[#111] rounded-md flex-shrink-0 overflow-hidden relative">
                       {product?.image ? (
-                        <img 
-                          src={product.image} 
+                        <Image
+                          src={product.image}
                           alt={item.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="80px"
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-[#1a1a2e] to-[#16213e]" />
@@ -715,10 +717,12 @@ function ProductCard({
       {/* Product image */}
       <div className="aspect-square rounded-lg overflow-hidden mb-3 bg-[#111] relative">
         {product.image ? (
-          <img
+          <Image
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 260px"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">

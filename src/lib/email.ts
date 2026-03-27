@@ -7,7 +7,7 @@ function getResend(): Resend | null {
 }
 
 function getFromEmail(): string {
-  return process.env.RESEND_FROM_EMAIL || "orders@frathousepicasso.com";
+  return process.env.RESEND_FROM_EMAIL || "Frathouse Picasso <orders@frathousepicasso.com>";
 }
 
 function getOwnerEmail(): string {
