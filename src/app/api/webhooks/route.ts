@@ -29,7 +29,12 @@ async function resolveCustomerEmail(
     } catch (error) {
       console.error("Failed to retrieve Stripe customer for email lookup:", error);
     }
-  } else if (session.customer && session.customer.email) {
+  } else if (
+    session.customer &&
+    typeof session.customer !== "string" &&
+    !("deleted" in session.customer) &&
+    session.customer.email
+  ) {
     return session.customer.email;
   }
 
@@ -40,7 +45,12 @@ function resolveCustomerName(session: Stripe.Checkout.Session): string | null {
   const fromDetails = session.customer_details?.name;
   if (fromDetails) return fromDetails;
 
-  if (session.customer && typeof session.customer !== "string" && session.customer.name) {
+  if (
+    session.customer &&
+    typeof session.customer !== "string" &&
+    !("deleted" in session.customer) &&
+    session.customer.name
+  ) {
     return session.customer.name;
   }
 
