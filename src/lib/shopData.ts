@@ -60,7 +60,7 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "1",
     handle: "harvard-tstop",
     name: "HARVARD T STOP",
-    defaultPrice: "$95",
+    defaultPrice: "$105",
     image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png",
     category: "Street Signs",
     shortDescription: "I go to a school in Boston",
@@ -71,7 +71,7 @@ export const inventoryProducts: InventoryProduct[] = [
     stripeProductId: "",
     sizeOptions: [
       { size: '10" × 30"', stripePriceId: "" },
-      { size: '12" × 36"', price: "$125", stripePriceId: "" },
+      { size: '12" × 36"', price: "$135", stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png" },
@@ -593,11 +593,6 @@ export const inventoryProducts: InventoryProduct[] = [
     stripeProductId: "",
     sizeOptions: [
       { size: 'Test Size', stripePriceId: "" },
-    ],
-    colorOptions: [
-      { color: 'Red' },
-      { color: 'Blue' },
-      { color: 'Green' },
     ],
     gallery: [
       { id: "main", title: "Test View", image: null },
