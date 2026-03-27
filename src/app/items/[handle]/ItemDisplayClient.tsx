@@ -45,12 +45,29 @@ export default function ItemDisplayClient({
   const activeFrame = galleryFrames[activeImageIndex] ?? galleryFrames[0];
   const activePrice = getProductPrice(product, selectedSize);
   const checkoutStatus = searchParams.get("checkout");
+  const checkoutSessionId = searchParams.get("session_id");
 
   useEffect(() => {
     if (checkoutStatus === "success") {
       document.cookie = "fhp-cart=; Path=/; Max-Age=0";
     }
   }, [checkoutStatus]);
+
+  useEffect(() => {
+    if (checkoutStatus !== "success" || !checkoutSessionId) {
+      return;
+    }
+
+    void fetch("/api/orders/sync", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ sessionId: checkoutSessionId }),
+    }).catch((error) => {
+      console.error("Failed to sync checkout session into order system:", error);
+    });
+  }, [checkoutStatus, checkoutSessionId]);
 
   // Auto-select when there's only one option
   useEffect(() => {
@@ -121,6 +138,7 @@ export default function ItemDisplayClient({
             },
             body: JSON.stringify({
               stripePriceId,
+              productHandle: product.handle,
               selectedColor,
               selectedSize,
               selectedFormat,

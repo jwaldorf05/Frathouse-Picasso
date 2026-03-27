@@ -70,7 +70,7 @@ export async function POST(request: Request) {
       }
 
       lineItems = toStripeLineItems(cart);
-      successUrl = `${fallbackUrl}&checkout=success`;
+      successUrl = `${fallbackUrl}&checkout=success&session_id={CHECKOUT_SESSION_ID}`;
       cancelUrl = `${fallbackUrl}&checkout=cancel`;
       metadata = {
         checkoutType: "cart",
@@ -128,7 +128,7 @@ export async function POST(request: Request) {
           },
         },
       ];
-      successUrl = `${productUrl}&checkout=success`;
+      successUrl = `${productUrl}&checkout=success&session_id={CHECKOUT_SESSION_ID}`;
       cancelUrl = `${productUrl}&checkout=cancel`;
       metadata = {
         checkoutType: "single-item",
