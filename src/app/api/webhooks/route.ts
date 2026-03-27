@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripeInstance } from "@/lib/stripe";
 import { headers } from "next/headers";
+import { supabase } from "@/lib/supabase";
+import {
+  sendCustomerConfirmation,
+  sendOwnerNotification,
+} from "@/lib/email";
 
 export const dynamic = 'force-dynamic';
 
@@ -77,39 +82,128 @@ export async function POST(request: NextRequest) {
 async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
   console.log("Checkout session completed:", session.id);
 
+  // --- Duplicate guard ---
+  const { data: existing } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("stripe_session_id", session.id)
+    .maybeSingle();
+
+  if (existing) {
+    console.log("Order already recorded for session:", session.id);
+    return;
+  }
+
+  // --- Expand session to get line items + product metadata ---
   const stripe = getStripeInstance();
-  
   const expandedSession = await stripe.checkout.sessions.retrieve(session.id, {
-    expand: ['line_items', 'customer', 'shipping_cost'],
+    expand: ["line_items.data.price.product", "customer"],
   });
 
   const customerEmail = expandedSession.customer_details?.email;
-  const customerName = expandedSession.customer_details?.name;
-  const shippingDetails = expandedSession.shipping_cost;
-  const metadata = expandedSession.metadata || {};
-
-  console.log("Order details:", {
-    sessionId: expandedSession.id,
-    customerEmail,
-    customerName,
-    shippingDetails,
-    metadata,
-    amountTotal: expandedSession.amount_total,
-    currency: expandedSession.currency,
-  });
-
-  const customizationData: Record<string, string> = {};
-  Object.entries(metadata).forEach(([key, value]) => {
-    if (key.startsWith("custom_")) {
-      customizationData[key.replace("custom_", "")] = value;
-    }
-  });
-
-  if (Object.keys(customizationData).length > 0) {
-    console.log("Product customization:", customizationData);
+  if (!customerEmail) {
+    console.error("No customer email in session:", session.id);
+    return;
   }
 
-  console.log("TODO: Save order to database");
-  console.log("TODO: Send confirmation email to:", customerEmail);
-  console.log("TODO: Trigger fulfillment workflow");
+  const customerName = expandedSession.customer_details?.name ?? null;
+  const shipping = expandedSession.shipping_details;
+
+  // --- Generate order number (FP-0001 format) ---
+  const { data: lastOrder } = await supabase
+    .from("orders")
+    .select("order_number")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  let nextNum = 1;
+  if (lastOrder?.order_number) {
+    const parsed = parseInt(lastOrder.order_number.replace("FP-", ""), 10);
+    if (!isNaN(parsed)) nextNum = parsed + 1;
+  }
+  const orderNumber = `FP-${String(nextNum).padStart(4, "0")}`;
+
+  // --- Insert order ---
+  const { data: newOrder, error: orderError } = await supabase
+    .from("orders")
+    .insert({
+      stripe_session_id: session.id,
+      order_number: orderNumber,
+      status: "new",
+      customer_email: customerEmail,
+      customer_name: customerName,
+      shipping_name: shipping?.name ?? null,
+      shipping_address_line1: shipping?.address?.line1 ?? null,
+      shipping_address_line2: shipping?.address?.line2 ?? null,
+      shipping_city: shipping?.address?.city ?? null,
+      shipping_state: shipping?.address?.state ?? null,
+      shipping_postal_code: shipping?.address?.postal_code ?? null,
+      shipping_country: shipping?.address?.country ?? null,
+      amount_total: expandedSession.amount_total ?? 0,
+    })
+    .select()
+    .single();
+
+  if (orderError || !newOrder) {
+    console.error("Failed to insert order:", orderError);
+    return;
+  }
+
+  console.log("✓ Order saved:", orderNumber);
+
+  // --- Insert order items ---
+  const lineItems = expandedSession.line_items?.data ?? [];
+  if (lineItems.length > 0) {
+    const itemRows = lineItems.map((item) => {
+      const product = item.price?.product as Stripe.Product | null;
+      const meta = product?.metadata ?? {};
+      return {
+        order_id: newOrder.id,
+        sign_id: product?.id ?? null,
+        sign_name: product?.name ?? null,
+        dimensions: meta.selectedSize ?? null,
+        selected_color: meta.selectedColor ?? null,
+        selected_format: meta.selectedFormat ?? null,
+        design_file_url: meta.design_file ?? null,
+        quantity: item.quantity ?? 1,
+        unit_price: item.price?.unit_amount ?? 0,
+      };
+    });
+
+    let { error: itemsError } = await supabase.from("order_items").insert(itemRows);
+
+    // Backward-compatible fallback if selected_color/selected_format columns are not present.
+    if (itemsError) {
+      const fallbackRows = itemRows.map(({ selected_color, selected_format, ...rest }) => rest);
+      const fallback = await supabase.from("order_items").insert(fallbackRows);
+      itemsError = fallback.error;
+    }
+
+    if (itemsError) {
+      console.error("Failed to insert order items:", itemsError);
+    } else {
+      console.log("✓ Order items saved:", itemRows.length);
+    }
+  }
+
+  // --- Send emails (never crash the webhook if email fails) ---
+  const { data: orderItems } = await supabase
+    .from("order_items")
+    .select("*")
+    .eq("order_id", newOrder.id);
+
+  try {
+    await sendCustomerConfirmation(newOrder, orderItems ?? []);
+    console.log("✓ Customer confirmation sent to:", customerEmail);
+  } catch (err) {
+    console.error("Failed to send customer confirmation:", err);
+  }
+
+  try {
+    await sendOwnerNotification(newOrder, orderItems ?? []);
+    console.log("✓ Owner notification sent");
+  } catch (err) {
+    console.error("Failed to send owner notification:", err);
+  }
 }
