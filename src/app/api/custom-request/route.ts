@@ -13,6 +13,14 @@ function getResendInstance(): Resend {
   return new Resend(apiKey);
 }
 
+function getFromEmail(): string {
+  return process.env.RESEND_FROM_EMAIL || "Frathouse Picasso <onboarding@resend.dev>";
+}
+
+function getOwnerEmail(): string {
+  return process.env.RESEND_OWNER_EMAIL || process.env.RESEND_FROM_EMAIL || "";
+}
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -116,9 +124,16 @@ export async function POST(request: NextRequest) {
     `;
 
     const resend = getResendInstance();
+    const from = getFromEmail();
+    const ownerEmail = getOwnerEmail();
+
+    if (!ownerEmail) {
+      throw new Error("Missing RESEND_OWNER_EMAIL (or RESEND_FROM_EMAIL) environment variable");
+    }
+
     const { error: resendError } = await resend.emails.send({
-      from: "Frathouse Picasso <onboarding@resend.dev>",
-      to: ["jonathanwaldorf05@gmail.com"],
+      from,
+      to: [ownerEmail],
       replyTo: email,
       subject: `Custom Design Request — ${name}`,
       html: htmlBody,

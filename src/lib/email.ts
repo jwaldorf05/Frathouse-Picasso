@@ -7,11 +7,11 @@ function getResend(): Resend | null {
 }
 
 function getFromEmail(): string {
-  return process.env.RESEND_FROM_EMAIL || "Frathouse Picasso <orders@frathousepicasso.com>";
+  return process.env.RESEND_FROM_EMAIL || "Frathouse Picasso <onboarding@resend.dev>";
 }
 
 function getOwnerEmail(): string {
-  return process.env.RESEND_FROM_EMAIL || "";
+  return process.env.RESEND_OWNER_EMAIL || process.env.RESEND_FROM_EMAIL || "";
 }
 
 function formatAddress(order: Order): string {
@@ -86,7 +86,7 @@ export async function sendCustomerConfirmation(
   const from = getFromEmail();
 
   if (!resend || !from) {
-    console.log("[email] RESEND_FROM_EMAIL not set — logging customer confirmation instead:");
+    console.log("[email] Resend not fully configured — logging customer confirmation instead:");
     console.log(`  To: ${order.customer_email}`);
     console.log(`  Order: ${order.order_number}`);
     return;
@@ -128,7 +128,7 @@ export async function sendCustomerConfirmation(
 
     <div style="background:#1a1a1a;border-left:3px solid #ff4d4d;padding:16px 20px;border-radius:0 6px 6px 0;margin-bottom:24px;">
       <p style="margin:0;color:#ccc;">
-        <strong style="color:#ededed;">Estimated delivery:</strong> 5–7 business days after production.
+        <strong style="color:#ededed;">Estimated delivery:</strong> 5-7 business days.
         We'll send you another email with tracking info once your order ships.
       </p>
     </div>
@@ -153,7 +153,7 @@ export async function sendOwnerNotification(
   const ownerEmail = getOwnerEmail();
 
   if (!resend || !from || !ownerEmail) {
-    console.log("[email] RESEND_FROM_EMAIL not set — logging owner notification instead:");
+    console.log("[email] Resend not fully configured — logging owner notification instead:");
     console.log(`  Order: ${order.order_number} from ${order.customer_email}`);
     console.log(`  Amount: ${formatCents(order.amount_total)}`);
     console.log(`  Shipping: ${formatAddress(order)}`);
@@ -221,7 +221,7 @@ export async function sendShippingNotification(
   const from = getFromEmail();
 
   if (!resend || !from) {
-    console.log("[email] RESEND_FROM_EMAIL not set — logging shipping notification instead:");
+    console.log("[email] Resend not fully configured — logging shipping notification instead:");
     console.log(`  To: ${order.customer_email}, Tracking: ${order.tracking_number}`);
     return;
   }
