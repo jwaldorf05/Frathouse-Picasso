@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { supabase, type Order } from "@/lib/supabase";
+import { getSupabase, type Order } from "@/lib/supabase";
 import { LogoutButton } from "./LogoutButton";
 import { StatusFilter } from "./StatusFilter";
 
@@ -63,6 +63,7 @@ interface PageProps {
 export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const { status } = await searchParams;
   const activeStatus = status && VALID_STATUSES.includes(status) ? status : null;
+  const supabase = getSupabase();
 
   let query = supabase
     .from("orders")
