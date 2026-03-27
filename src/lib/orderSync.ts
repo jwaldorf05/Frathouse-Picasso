@@ -11,6 +11,13 @@ interface SyncResult {
   reason?: string;
 }
 
+function isMissingColumnError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const err = error as { code?: string; message?: string };
+  const message = err.message ?? "";
+  return err.code === "PGRST204" || message.includes("Could not find") || message.includes("column");
+}
+
 function isSessionFinalized(session: Stripe.Checkout.Session): boolean {
   return (
     session.status === "complete" ||
@@ -100,25 +107,46 @@ async function createOrderFromSession(
   for (let attempt = 0; attempt < 4; attempt += 1) {
     const orderNumber = await nextOrderNumber(attempt);
 
-    const result = await supabase
+    const fullInsertPayload = {
+      stripe_session_id: session.id,
+      order_number: orderNumber,
+      status: "new",
+      customer_email: orderEmail,
+      customer_name: customerName,
+      shipping_name: shipping?.name ?? null,
+      shipping_address_line1: shipping?.address?.line1 ?? null,
+      shipping_address_line2: shipping?.address?.line2 ?? null,
+      shipping_city: shipping?.address?.city ?? null,
+      shipping_state: shipping?.address?.state ?? null,
+      shipping_postal_code: shipping?.address?.postal_code ?? null,
+      shipping_country: shipping?.address?.country ?? null,
+      amount_total: session.amount_total ?? 0,
+    };
+
+    const compactInsertPayload = {
+      stripe_session_id: session.id,
+      order_number: orderNumber,
+      status: "new",
+      customer_email: orderEmail,
+      customer_name: customerName,
+      amount_total: session.amount_total ?? 0,
+    };
+
+    let result = await supabase
       .from("orders")
-      .insert({
-        stripe_session_id: session.id,
-        order_number: orderNumber,
-        status: "new",
-        customer_email: orderEmail,
-        customer_name: customerName,
-        shipping_name: shipping?.name ?? null,
-        shipping_address_line1: shipping?.address?.line1 ?? null,
-        shipping_address_line2: shipping?.address?.line2 ?? null,
-        shipping_city: shipping?.address?.city ?? null,
-        shipping_state: shipping?.address?.state ?? null,
-        shipping_postal_code: shipping?.address?.postal_code ?? null,
-        shipping_country: shipping?.address?.country ?? null,
-        amount_total: session.amount_total ?? 0,
-      })
+      .insert(fullInsertPayload)
       .select()
       .single();
+
+    // Backward-compatible fallback for deployments where shipping columns
+    // have not yet been added to the orders table schema.
+    if (result.error && isMissingColumnError(result.error)) {
+      result = await supabase
+        .from("orders")
+        .insert(compactInsertPayload)
+        .select()
+        .single();
+    }
 
     if (result.data) {
       createdOrder = result.data as Order;
