@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Permanent_Marker, DM_Sans } from "next/font/google";
+import { Suspense } from "react";
+import CheckoutSyncClient from "./components/CheckoutSyncClient";
 import "./globals.css";
 
 const permanentMarker = Permanent_Marker({
@@ -44,6 +46,9 @@ export default function RootLayout({
       <body
         className={`${permanentMarker.variable} ${dmSans.variable} antialiased`}
       >
+        <Suspense fallback={null}>
+          <CheckoutSyncClient />
+        </Suspense>
         {children}
       </body>
     </html>
