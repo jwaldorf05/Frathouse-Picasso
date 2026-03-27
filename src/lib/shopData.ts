@@ -557,6 +557,26 @@ export const inventoryProducts: InventoryProduct[] = [
       { id: "main", title: "Main View", image: "/Product Photos/NoYalies/NoYaliesMockup.png" },
     ],
   },
+  {
+    id: "22",
+    handle: "bdsm",
+    name: "BDSM",
+    defaultPrice: "$105",
+    image: "/Product Photos/BDSM/BDSMMockup.png",
+    category: "Street Signs",
+    shortDescription: "Kinky, are we?",
+    description:
+      "Just to make it obvious they're not welcome here.",
+    materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
+    collections: ["All", "Frathouse Collection"],
+    stripeProductId: "",
+    sizeOptions: [
+      { size: '12" × 12"', stripePriceId: "" },
+    ],
+    gallery: [
+      { id: "main", title: "Main View", image: "/Product Photos/BDSM/BDSMMockup.png" },
+    ],
+  },
 ];
 
 export function getProductPrice(
