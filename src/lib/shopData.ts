@@ -568,7 +568,7 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "Just to make it obvious they're not welcome here.",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
-    collections: ["All", "Frathouse Collection"],
+    collections: ["All", "Fraternity Collection"],
     stripeProductId: "",
     sizeOptions: [
       { size: '12" × 12"', stripePriceId: "" },
