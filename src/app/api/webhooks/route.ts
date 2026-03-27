@@ -107,7 +107,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   }
 
   const customerName = expandedSession.customer_details?.name ?? null;
-  const shipping = expandedSession.shipping_details;
+  const shipping = (expandedSession as any).shipping_details;
 
   // --- Generate order number (FP-0001 format) ---
   const { data: lastOrder } = await supabase
