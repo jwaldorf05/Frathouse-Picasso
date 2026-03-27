@@ -110,31 +110,38 @@ export default function ItemDisplayClient({
     setIsCheckoutLoading(true);
 
     try {
-      // Find the stripePriceId for the selected size
-      const selectedSizeOption = product.sizeOptions?.find(
-        (opt) => opt.size === selectedSize
-      );
-      
-      const stripePriceId = selectedSizeOption?.stripePriceId;
+      const selectedSizeOption = product.sizeOptions?.find((opt) => opt.size === selectedSize);
+      const stripePriceId = selectedSizeOption?.stripePriceId?.trim();
 
-      if (!stripePriceId) {
-        throw new Error('This product doesn\'t have a Stripe price ID configured yet. Please contact support.');
-      }
-
-      // Create Stripe checkout session with metadata
-      const response = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          stripePriceId,
-          selectedColor,
-          selectedSize,
-          selectedFormat,
-          quantity,
-        }),
-      });
+      const response = stripePriceId
+        ? await fetch('/api/create-checkout-session', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              stripePriceId,
+              selectedColor,
+              selectedSize,
+              selectedFormat,
+              quantity,
+            }),
+          })
+        : await fetch('/api/checkout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              handle: product.handle,
+              quantity,
+              selectedSize,
+              customization: {
+                ...(selectedColor ? { selectedColor } : {}),
+                ...(selectedFormat ? { selectedFormat } : {}),
+              },
+            }),
+          });
 
       const data = await response.json();
 
