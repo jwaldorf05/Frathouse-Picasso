@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { OrderDetailClient } from "./OrderDetailClient";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +11,7 @@ interface PageProps {
 
 export default async function AdminOrderDetailPage({ params }: PageProps) {
   const { id } = await params;
+  const supabase = getSupabase();
 
   const [orderResult, itemsResult] = await Promise.all([
     supabase.from("orders").select("*").eq("id", id).single(),

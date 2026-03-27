@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import { sendShippingNotification } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +18,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const supabase = getSupabase();
 
   const { data: order, error: orderError } = await supabase
     .from("orders")
@@ -46,6 +47,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const supabase = getSupabase();
 
   let body: {
     status?: string;

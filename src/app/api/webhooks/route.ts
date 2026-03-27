@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripeInstance } from "@/lib/stripe";
 import { headers } from "next/headers";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 import {
   sendCustomerConfirmation,
   sendOwnerNotification,
@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        await handleCheckoutSessionCompleted(session);
+        const supabase = getSupabase();
+        await handleCheckoutSessionCompleted(session, supabase);
         break;
       }
 
@@ -79,7 +80,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutSessionCompleted(
+  session: Stripe.Checkout.Session,
+  supabase: ReturnType<typeof getSupabase>
+) {
   console.log("Checkout session completed:", session.id);
 
   // --- Duplicate guard ---
