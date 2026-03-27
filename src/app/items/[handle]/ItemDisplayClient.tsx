@@ -33,9 +33,6 @@ export default function ItemDisplayClient({
   const [cartMessage, setCartMessage] = useState<string | null>(null);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [isCartLoading, setIsCartLoading] = useState(false);
-  const [discountCode, setDiscountCode] = useState<string>('');
-  const [discountMessage, setDiscountMessage] = useState<string | null>(null);
-  const [discountPercent, setDiscountPercent] = useState<number | null>(null);
 
   const galleryFrames = useMemo<ProductGalleryImage[]>(
     () =>
@@ -107,35 +104,6 @@ export default function ItemDisplayClient({
   const canAddToCart = (!hasSizes || selectedSize !== null) && (!hasColors || selectedColor !== null) && (!hasFormats || selectedFormat !== null);
   const isRedirectingToStripe = isCheckoutLoading;
 
-  const validateDiscount = async () => {
-    if (!discountCode.trim()) {
-      setDiscountMessage(null);
-      setDiscountPercent(null);
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/validate-discount', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: discountCode }),
-      });
-
-      const data = await response.json();
-
-      if (data.valid) {
-        setDiscountMessage(data.message);
-        setDiscountPercent(data.discountPercent);
-      } else {
-        setDiscountMessage(data.message || 'Invalid discount code');
-        setDiscountPercent(null);
-      }
-    } catch (error) {
-      setDiscountMessage('Failed to validate discount code');
-      setDiscountPercent(null);
-    }
-  };
-
   const decreaseQuantity = () => {
     setQuantity((previous) => Math.max(1, previous - 1));
   };
@@ -175,7 +143,6 @@ export default function ItemDisplayClient({
               selectedSize,
               selectedFormat,
               quantity,
-              discountCode: discountCode.trim() || undefined,
             }),
           })
         : await fetch('/api/checkout', {
@@ -542,35 +509,6 @@ export default function ItemDisplayClient({
                   +
                 </button>
               </div>
-            </div>
-
-            {/* Discount Code */}
-            <div className="mt-8">
-              <p className="font-[family-name:var(--font-body)] text-xs tracking-[2px] uppercase text-text-secondary">
-                Discount Code
-              </p>
-              <div className="mt-3 flex gap-2">
-                <input
-                  type="text"
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-                  onBlur={validateDiscount}
-                  placeholder="Enter code"
-                  className="flex-1 rounded-md border border-[#333] bg-[#0d0d0d] px-4 py-2 text-sm text-white placeholder:text-text-secondary focus:border-accent focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={validateDiscount}
-                  className="rounded-md border border-[#333] bg-[#0d0d0d] px-4 py-2 text-xs font-bold uppercase tracking-[1.3px] text-white transition-colors hover:border-accent hover:bg-[#111]"
-                >
-                  Apply
-                </button>
-              </div>
-              {discountMessage && (
-                <p className={`mt-2 text-xs ${discountPercent !== null ? 'text-emerald-400' : 'text-[#ff6b6b]'}`}>
-                  {discountMessage}
-                </p>
-              )}
             </div>
 
             {/* Action Buttons */}

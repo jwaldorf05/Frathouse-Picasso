@@ -47,8 +47,25 @@ export async function POST(request: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        const result = await syncCheckoutSessionById(session.id);
-        console.log("checkout.session.completed sync result:", result);
+        
+        // Retrieve full session with expanded details to capture discount info
+        const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+          expand: [
+            'line_items.data.price.product',
+            'customer',
+            'total_details.breakdown'
+          ],
+        });
+        
+        console.log(`[Webhook] Processing checkout.session.completed: ${session.id}`);
+        console.log(`[Webhook] Session total: $${((fullSession.amount_total || 0) / 100).toFixed(2)}`);
+        
+        if ((fullSession as any).total_details?.amount_discount > 0) {
+          console.log(`[Webhook] Discount applied: $${(((fullSession as any).total_details.amount_discount || 0) / 100).toFixed(2)}`);
+        }
+        
+        const result = await syncCheckoutSessionById(fullSession.id);
+        console.log(`[Webhook] Sync result:`, result);
         break;
       }
 

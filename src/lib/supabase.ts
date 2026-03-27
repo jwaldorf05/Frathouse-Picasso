@@ -37,6 +37,8 @@ export interface Order {
   shipping_postal_code: string | null;
   shipping_country: string | null;
   amount_total: number;
+  discount_amount: number | null;
+  discount_code: string | null;
   supplier_order_id: string | null;
   tracking_number: string | null;
   tracking_url: string | null;

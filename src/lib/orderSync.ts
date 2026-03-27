@@ -132,6 +132,33 @@ async function createOrderFromSession(
   const sessionMeta = session.metadata ?? {};
   const address = resolveAddress(session);
 
+  // Extract discount information from Stripe session
+  const totalDetails = (session as any).total_details;
+  const discountAmount = totalDetails?.amount_discount ?? 0;
+  let discountCode: string | null = null;
+
+  // Get promotion code name from discounts breakdown
+  if (totalDetails?.breakdown?.discounts && Array.isArray(totalDetails.breakdown.discounts)) {
+    const firstDiscount = totalDetails.breakdown.discounts[0];
+    if (firstDiscount?.discount?.promotion_code) {
+      const promoCodeRef = firstDiscount.discount.promotion_code;
+      // If it's an expanded object, get the code property
+      if (typeof promoCodeRef === 'object' && promoCodeRef !== null && 'code' in promoCodeRef) {
+        discountCode = (promoCodeRef as any).code;
+      }
+    } else if (firstDiscount?.discount?.coupon) {
+      const couponRef = firstDiscount.discount.coupon;
+      // If it's an expanded object, get the name or id
+      if (typeof couponRef === 'object' && couponRef !== null) {
+        discountCode = (couponRef as any).name || (couponRef as any).id;
+      }
+    }
+  }
+
+  if (discountAmount > 0) {
+    console.log(`[Order Sync] Discount detected: ${discountCode || 'unknown code'} - $${(discountAmount / 100).toFixed(2)} off`);
+  }
+
   let createdOrder: Order | null = null;
   let insertError: any = null;
 
@@ -153,6 +180,8 @@ async function createOrderFromSession(
       shipping_postal_code: address.postal_code,
       shipping_country: address.country,
       amount_total: session.amount_total ?? 0,
+      discount_amount: discountAmount > 0 ? discountAmount : null,
+      discount_code: discountCode,
     };
 
     const compactInsertPayload = {
@@ -162,6 +191,8 @@ async function createOrderFromSession(
       customer_email: orderEmail,
       customer_name: customerName,
       amount_total: session.amount_total ?? 0,
+      discount_amount: discountAmount > 0 ? discountAmount : null,
+      discount_code: discountCode,
     };
 
     let result = await supabase
