@@ -67,10 +67,11 @@ export const inventoryProducts: InventoryProduct[] = [
     description:
       "More fun than a banner, no?",
     materials: ["Aluminum street sign blank", "Reflective sheeting", "Weather-resistant finish"],
-    collections: ["All", "Best Sellers", "Harvard Collection"],
+    collections: ["All", "Harvard Collection"],
+    stripeProductId: "",
     sizeOptions: [
-      { size: '10" × 30"' },
-      { size: '12" × 36"', price: "$125" },
+      { size: '10" × 30"', stripePriceId: "" },
+      { size: '12" × 36"', price: "$125", stripePriceId: "" },
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/HarvardTStop/HarvardTStopMockup.png" },
@@ -575,6 +576,31 @@ export const inventoryProducts: InventoryProduct[] = [
     ],
     gallery: [
       { id: "main", title: "Main View", image: "/Product Photos/BDSM/BDSMMockup.png" },
+    ],
+  },
+  {
+    id: "999",
+    handle: "test-item",
+    name: "TEST ITEM - DO NOT PURCHASE",
+    defaultPrice: "$0",
+    image: null,
+    category: "Street Signs",
+    shortDescription: "Free test item for cart testing",
+    description:
+      "This is a test product for testing the cart and checkout system. It costs $0 and should not be purchased by real customers.",
+    materials: ["Test material", "Digital only", "No physical product"],
+    collections: ["All"],
+    stripeProductId: "",
+    sizeOptions: [
+      { size: 'Test Size', stripePriceId: "" },
+    ],
+    colorOptions: [
+      { color: 'Red' },
+      { color: 'Blue' },
+      { color: 'Green' },
+    ],
+    gallery: [
+      { id: "main", title: "Test View", image: null },
     ],
   },
 ];
