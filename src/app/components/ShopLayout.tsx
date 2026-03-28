@@ -52,7 +52,7 @@ function MobileHeader({ onMenuClick, cartCount, onCartClick, isMounted }: {
   isMounted: boolean;
 }) {
   return (
-    <header className="md:hidden sticky top-0 left-0 right-0 z-50 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-3">
+    <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a] border-b border-[#1a1a1a] px-4 py-3">
       <div className="flex items-center justify-between">
         {/* Hamburger button - 44x44px touch target */}
         <button
@@ -147,6 +147,11 @@ function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
               ))}
             </div>
           )}
+          
+          {/* Contact Us - 44px min height */}
+          <a href="/contact" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+            Contact Us
+          </a>
         </nav>
       </aside>
     </>
@@ -271,6 +276,14 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
               ))}
             </div>
           )}
+          
+          {/* Contact Us */}
+          <a
+            href="/contact"
+            className="block w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
+          >
+            Contact Us
+          </a>
         </nav>
 
         {/* Cart */}
@@ -929,7 +942,7 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
             }}
           />
         ))}
-        <div className="px-6 md:px-10 pt-6 md:pt-0 relative z-[3]">
+        <div className="px-6 md:px-10 pt-20 md:pt-0 relative z-[3]">
           {/* Collection Title - only show on collection pages */}
           {!isHomepage && (
             <div className="mt-8 mb-6">

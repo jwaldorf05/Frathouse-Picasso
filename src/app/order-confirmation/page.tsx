@@ -136,13 +136,13 @@ function OrderConfirmationContent() {
     <main className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
       {/* Spray Paint Background */}
       <div className="absolute inset-0 pointer-events-none opacity-10">
-        <img src="/stickers/Murder Spray.png" alt="" className="absolute top-10 left-10 w-32 h-32 rotate-12" />
-        <img src="/stickers/Pledge Leash Spray.png" alt="" className="absolute top-40 right-20 w-28 h-28 -rotate-6" />
-        <img src="/stickers/Pong Spray.png" alt="" className="absolute bottom-32 left-16 w-36 h-36 rotate-45" />
-        <img src="/stickers/Radioactive Spray.png" alt="" className="absolute top-1/3 right-10 w-32 h-32 -rotate-12" />
-        <img src="/stickers/SEND Spraypaint.png" alt="" className="absolute bottom-20 right-24 w-40 h-40 rotate-6" />
-        <img src="/stickers/Three Way Spray.png" alt="" className="absolute top-20 right-1/3 w-28 h-28 rotate-90" />
-        <img src="/stickers/Wizard Spraypaint.png" alt="" className="absolute bottom-40 left-1/4 w-32 h-32 -rotate-45" />
+        <img src="/stickers/Murder Spray.png" alt="" className="absolute top-10 left-10 w-32 h-32 object-contain rotate-12" />
+        <img src="/stickers/Pledge Leash Spray.png" alt="" className="absolute top-40 right-20 w-28 h-28 object-contain -rotate-6" />
+        <img src="/stickers/Pong Spray.png" alt="" className="absolute bottom-32 left-16 w-36 h-36 object-contain rotate-45" />
+        <img src="/stickers/Radioactive Spray.png" alt="" className="absolute top-1/3 right-10 w-32 h-32 object-contain -rotate-12" />
+        <img src="/stickers/SEND Spraypaint.png" alt="" className="absolute bottom-20 right-24 w-40 h-40 object-contain rotate-6" />
+        <img src="/stickers/Three Way Spray.png" alt="" className="absolute top-20 right-1/3 w-28 h-28 object-contain rotate-30" />
+        <img src="/stickers/Wizard Spraypaint.png" alt="" className="absolute bottom-40 left-1/4 w-32 h-32 object-contain -rotate-45" />
       </div>
       
       <div className="max-w-3xl mx-auto px-6 py-12 md:py-16 relative z-10">
@@ -238,7 +238,11 @@ function OrderConfirmationContent() {
         {/* Additional Info */}
         <div className="text-center">
           <p className="text-xs text-text-secondary">
-            Questions? Reply to this email and we'll get back to you.
+            Questions?{' '}
+            <Link href="/contact" className="underline hover:text-accent transition-colors">
+              Fill out our contact form
+            </Link>
+            {' '}and we'll get back to you ASAP
           </p>
         </div>
       </div>
