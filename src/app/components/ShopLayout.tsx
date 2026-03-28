@@ -65,8 +65,8 @@ function MobileHeader({ onMenuClick, cartCount, onCartClick, isMounted }: {
           </svg>
         </button>
         
-        {/* Centered logo - clickable to home */}
-        <a href="/?shop=1" className="flex items-center">
+        {/* Centered logo - clickable to All Signs */}
+        <a href="/?collection=All" className="flex items-center">
           <Image
             src="/FP_Borderless.png"
             alt="Frathouse Picasso"
@@ -121,9 +121,9 @@ function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
         
         {/* Navigation */}
         <nav className="flex-1 px-3 relative z-[110] overflow-y-auto">
-          {/* Home - 44px min height */}
-          <a href="/?shop=1" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
-            Home
+          {/* All Signs - 44px min height */}
+          <a href="/?collection=All" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+            All Signs
           </a>
           
           {/* About - 44px min height */}
@@ -230,12 +230,12 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
 
         {/* Nav */}
         <nav className="flex-1 px-3 relative z-[110]">
-          {/* Home */}
+          {/* All Signs */}
           <a
-            href="/?shop=1"
+            href="/?collection=All"
             className="block w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
           >
-            Home
+            All Signs
           </a>
           
           {/* About */}
