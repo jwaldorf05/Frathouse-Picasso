@@ -21,6 +21,23 @@ interface ResolvedAddress {
   country: string | null;
 }
 
+interface DiscountDetails {
+  amount: number;
+  code: string | null;
+}
+
+type OrderItemInsertRow = {
+  order_id: string;
+  sign_id: string | null;
+  sign_name: string | null;
+  dimensions: string | null;
+  selected_color: string | null;
+  selected_format: string | null;
+  design_file_url: string | null;
+  quantity: number;
+  unit_price: number;
+};
+
 function isMissingColumnError(error: unknown): boolean {
   if (!error || typeof error !== "object") return false;
   const err = error as { code?: string; message?: string };
@@ -121,42 +138,28 @@ function getLineItemProduct(item: Stripe.LineItem): Stripe.Product | null {
   return productRef;
 }
 
-async function createOrderFromSession(
-  session: Stripe.Checkout.Session
-): Promise<{ order: Order; items: OrderItem[] }> {
-  const supabase = getSupabase();
-
-  const customerEmail = getCustomerEmail(session);
-  const customerName = getCustomerName(session);
-  const orderEmail = customerEmail ?? `unknown+${session.id}@no-email.invalid`;
-  const sessionMeta = session.metadata ?? {};
-  const address = resolveAddress(session);
-
-  // Extract discount information from Stripe session
+function resolveDiscountDetails(session: Stripe.Checkout.Session): DiscountDetails {
   const totalDetails = (session as any).total_details;
   const discountAmount = totalDetails?.amount_discount ?? 0;
   let discountCode: string | null = null;
 
-  // Validate total_details exists
   if (!totalDetails) {
     console.warn(`[Order Sync] WARNING: Session ${session.id} has no total_details - discount extraction may fail`);
     console.warn(`[Order Sync] Session may need to be retrieved with expand: ['total_details.breakdown']`);
   }
 
-  // Get promotion code name from discounts breakdown
   if (totalDetails?.breakdown?.discounts && Array.isArray(totalDetails.breakdown.discounts)) {
     const firstDiscount = totalDetails.breakdown.discounts[0];
-    
+
     console.log(`[Order Sync] Discount breakdown found:`, {
       discountCount: totalDetails.breakdown.discounts.length,
-      firstDiscountType: firstDiscount?.discount?.promotion_code ? 'promotion_code' : 
-                         firstDiscount?.discount?.coupon ? 'coupon' : 'unknown',
+      firstDiscountType: firstDiscount?.discount?.promotion_code ? "promotion_code" :
+        firstDiscount?.discount?.coupon ? "coupon" : "unknown",
     });
 
     if (firstDiscount?.discount?.promotion_code) {
       const promoCodeRef = firstDiscount.discount.promotion_code;
-      // If it's an expanded object, get the code property
-      if (typeof promoCodeRef === 'object' && promoCodeRef !== null && 'code' in promoCodeRef) {
+      if (typeof promoCodeRef === "object" && promoCodeRef !== null && "code" in promoCodeRef) {
         discountCode = (promoCodeRef as any).code;
         console.log(`[Order Sync] Extracted promotion code: ${discountCode}`);
       } else {
@@ -164,8 +167,7 @@ async function createOrderFromSession(
       }
     } else if (firstDiscount?.discount?.coupon) {
       const couponRef = firstDiscount.discount.coupon;
-      // If it's an expanded object, get the name or id
-      if (typeof couponRef === 'object' && couponRef !== null) {
+      if (typeof couponRef === "object" && couponRef !== null) {
         discountCode = (couponRef as any).name || (couponRef as any).id;
         console.log(`[Order Sync] Extracted coupon code: ${discountCode}`);
       } else {
@@ -178,11 +180,200 @@ async function createOrderFromSession(
   }
 
   if (discountAmount > 0) {
-    console.log(`[Order Sync] ✅ Discount detected: ${discountCode || 'UNKNOWN_CODE'} - $${(discountAmount / 100).toFixed(2)} off`);
+    console.log(`[Order Sync] ✅ Discount detected: ${discountCode || "UNKNOWN_CODE"} - $${(discountAmount / 100).toFixed(2)} off`);
     console.log(`[Order Sync] Will save to database: { discount_amount: ${discountAmount}, discount_code: "${discountCode}" }`);
   } else {
     console.log(`[Order Sync] No discount applied to this order`);
   }
+
+  return {
+    amount: discountAmount,
+    code: discountCode,
+  };
+}
+
+function buildOrderItemRows(session: Stripe.Checkout.Session, orderId: string): OrderItemInsertRow[] {
+  const sessionMeta = session.metadata ?? {};
+
+  return (session.line_items?.data ?? []).map((item: Stripe.LineItem) => {
+    const product = getLineItemProduct(item);
+    const productMeta = product?.metadata ?? {};
+
+    return {
+      order_id: orderId,
+      sign_id: product?.id ?? (typeof item.price?.product === "string" ? item.price.product : null),
+      sign_name: product?.name ?? item.description ?? null,
+      dimensions: productMeta.selectedSize ?? sessionMeta.selectedSize ?? sessionMeta.size ?? null,
+      selected_color: productMeta.selectedColor ?? sessionMeta.selectedColor ?? null,
+      selected_format: productMeta.selectedFormat ?? sessionMeta.selectedFormat ?? null,
+      design_file_url: productMeta.design_file ?? null,
+      quantity: item.quantity ?? 1,
+      unit_price: item.price?.unit_amount ?? 0,
+    };
+  });
+}
+
+async function insertOrderItems(itemRows: OrderItemInsertRow[]): Promise<void> {
+  const supabase = getSupabase();
+
+  if (itemRows.length === 0) {
+    return;
+  }
+
+  let { error: itemsError } = await supabase.from("order_items").insert(itemRows);
+
+  if (itemsError) {
+    const fallbackRows = itemRows.map(({ selected_color: _selectedColor, selected_format: _selectedFormat, ...rest }) => rest);
+    const fallback = await supabase.from("order_items").insert(fallbackRows);
+    itemsError = fallback.error;
+  }
+
+  if (itemsError) {
+    throw new Error(`Failed to insert order items: ${itemsError.message}`);
+  }
+}
+
+async function fetchOrderItems(orderId: string): Promise<OrderItem[]> {
+  const supabase = getSupabase();
+  const { data: items } = await supabase
+    .from("order_items")
+    .select("*")
+    .eq("order_id", orderId);
+
+  return (items ?? []) as OrderItem[];
+}
+
+async function patchExistingOrderFromSession(
+  order: Order,
+  session: Stripe.Checkout.Session
+): Promise<Order> {
+  const supabase = getSupabase();
+  const address = resolveAddress(session);
+  const customerEmail = getCustomerEmail(session);
+  const customerName = getCustomerName(session);
+  const discount = resolveDiscountDetails(session);
+
+  const fullUpdatePayload = {
+    customer_email: order.customer_email.includes("@no-email.invalid") ? (customerEmail ?? order.customer_email) : order.customer_email,
+    customer_name: order.customer_name ?? customerName,
+    shipping_name: order.shipping_name ?? address.name,
+    shipping_address_line1: order.shipping_address_line1 ?? address.line1,
+    shipping_address_line2: order.shipping_address_line2 ?? address.line2,
+    shipping_city: order.shipping_city ?? address.city,
+    shipping_state: order.shipping_state ?? address.state,
+    shipping_postal_code: order.shipping_postal_code ?? address.postal_code,
+    shipping_country: order.shipping_country ?? address.country,
+    amount_total: order.amount_total || session.amount_total || 0,
+    discount_amount: order.discount_amount ?? (discount.amount > 0 ? discount.amount : null),
+    discount_code: order.discount_code ?? discount.code,
+  };
+
+  const compactUpdatePayload = {
+    customer_email: fullUpdatePayload.customer_email,
+    customer_name: fullUpdatePayload.customer_name,
+    amount_total: fullUpdatePayload.amount_total,
+    discount_amount: fullUpdatePayload.discount_amount,
+    discount_code: fullUpdatePayload.discount_code,
+  };
+
+  const orderRecord = order as unknown as Record<string, unknown>;
+
+  const changedEntries = Object.entries(fullUpdatePayload).filter(([key, value]) => value !== orderRecord[key]);
+  if (changedEntries.length === 0) {
+    return order;
+  }
+
+  const updates = Object.fromEntries(changedEntries);
+  let result = await supabase
+    .from("orders")
+    .update(updates)
+    .eq("id", order.id)
+    .select("*")
+    .single();
+
+  if (result.error && isMissingColumnError(result.error)) {
+    const compactUpdates = Object.fromEntries(
+      Object.entries(compactUpdatePayload).filter(([key, value]) => value !== orderRecord[key])
+    );
+
+    if (Object.keys(compactUpdates).length === 0) {
+      return order;
+    }
+
+    result = await supabase
+      .from("orders")
+      .update(compactUpdates)
+      .eq("id", order.id)
+      .select("*")
+      .single();
+  }
+
+  if (result.error) {
+    throw new Error(`Failed to update existing order: ${result.error.message}`);
+  }
+
+  return result.data as Order;
+}
+
+async function hydrateExistingOrderFromSession(
+  order: Order,
+  session: Stripe.Checkout.Session
+): Promise<{ order: Order; items: OrderItem[] }> {
+  const patchedOrder = await patchExistingOrderFromSession(order, session);
+  let items = await fetchOrderItems(patchedOrder.id);
+
+  if (items.length === 0) {
+    const itemRows = buildOrderItemRows(session, patchedOrder.id);
+    await insertOrderItems(itemRows);
+    items = await fetchOrderItems(patchedOrder.id);
+  }
+
+  return {
+    order: patchedOrder,
+    items,
+  };
+}
+
+async function deliverOrderEmails(
+  session: Stripe.Checkout.Session,
+  order: Order,
+  items: OrderItem[]
+): Promise<void> {
+  const customerEmail = getCustomerEmail(session) ?? order.customer_email;
+
+  if (customerEmail && customerEmail !== order.customer_email) {
+    order.customer_email = customerEmail;
+  }
+
+  if (customerEmail) {
+    try {
+      await sendCustomerConfirmation(order, items, {
+        idempotencyKey: `customer-confirmation-${session.id}`,
+      });
+    } catch (error) {
+      console.error("Customer confirmation email failed:", error);
+    }
+  }
+
+  try {
+    await sendOwnerNotification(order, items, {
+      idempotencyKey: `owner-notification-${session.id}`,
+    });
+  } catch (error) {
+    console.error("Owner notification email failed:", error);
+  }
+}
+
+async function createOrderFromSession(
+  session: Stripe.Checkout.Session
+): Promise<{ order: Order; items: OrderItem[] }> {
+  const supabase = getSupabase();
+
+  const customerEmail = getCustomerEmail(session);
+  const customerName = getCustomerName(session);
+  const orderEmail = customerEmail ?? `unknown+${session.id}@no-email.invalid`;
+  const address = resolveAddress(session);
+  const discount = resolveDiscountDetails(session);
 
   let createdOrder: Order | null = null;
   let insertError: any = null;
@@ -205,8 +396,8 @@ async function createOrderFromSession(
       shipping_postal_code: address.postal_code,
       shipping_country: address.country,
       amount_total: session.amount_total ?? 0,
-      discount_amount: discountAmount > 0 ? discountAmount : null,
-      discount_code: discountCode,
+      discount_amount: discount.amount > 0 ? discount.amount : null,
+      discount_code: discount.code,
     };
 
     const compactInsertPayload = {
@@ -216,8 +407,8 @@ async function createOrderFromSession(
       customer_email: orderEmail,
       customer_name: customerName,
       amount_total: session.amount_total ?? 0,
-      discount_amount: discountAmount > 0 ? discountAmount : null,
-      discount_code: discountCode,
+      discount_amount: discount.amount > 0 ? discount.amount : null,
+      discount_code: discount.code,
     };
 
     let result = await supabase
@@ -264,46 +455,13 @@ async function createOrderFromSession(
     throw new Error(`Failed to insert order: ${insertError?.message ?? "unknown error"}`);
   }
 
-  const lineItems = session.line_items?.data ?? [];
-  const itemRows = lineItems.map((item) => {
-    const product = getLineItemProduct(item);
-    const productMeta = product?.metadata ?? {};
-
-    return {
-      order_id: createdOrder!.id,
-      sign_id: product?.id ?? (typeof item.price?.product === "string" ? item.price.product : null),
-      sign_name: product?.name ?? item.description ?? null,
-      dimensions: productMeta.selectedSize ?? sessionMeta.selectedSize ?? sessionMeta.size ?? null,
-      selected_color: productMeta.selectedColor ?? sessionMeta.selectedColor ?? null,
-      selected_format: productMeta.selectedFormat ?? sessionMeta.selectedFormat ?? null,
-      design_file_url: productMeta.design_file ?? null,
-      quantity: item.quantity ?? 1,
-      unit_price: item.price?.unit_amount ?? 0,
-    };
-  });
-
-  if (itemRows.length > 0) {
-    let { error: itemsError } = await supabase.from("order_items").insert(itemRows);
-
-    if (itemsError) {
-      const fallbackRows = itemRows.map(({ selected_color, selected_format, ...rest }) => rest);
-      const fallback = await supabase.from("order_items").insert(fallbackRows);
-      itemsError = fallback.error;
-    }
-
-    if (itemsError) {
-      throw new Error(`Failed to insert order items: ${itemsError.message}`);
-    }
-  }
-
-  const { data: items } = await supabase
-    .from("order_items")
-    .select("*")
-    .eq("order_id", createdOrder.id);
+  const itemRows = buildOrderItemRows(session, createdOrder.id);
+  await insertOrderItems(itemRows);
+  const items = await fetchOrderItems(createdOrder.id);
 
   return {
     order: createdOrder,
-    items: (items ?? []) as OrderItem[],
+    items,
   };
 }
 
@@ -313,21 +471,12 @@ export async function syncCheckoutSessionById(sessionId: string): Promise<SyncRe
 
   const { data: existing } = await supabase
     .from("orders")
-    .select("id, order_number")
+    .select("*")
     .eq("stripe_session_id", sessionId)
     .maybeSingle();
 
-  if (existing) {
-    return {
-      ok: true,
-      created: false,
-      alreadyExists: true,
-      orderNumber: existing.order_number,
-    };
-  }
-
   const session = await stripe.checkout.sessions.retrieve(sessionId, {
-    expand: ["line_items.data.price.product", "customer"],
+    expand: ["line_items.data.price.product", "customer", "total_details.breakdown"],
   });
 
   if (!isSessionFinalized(session)) {
@@ -339,22 +488,20 @@ export async function syncCheckoutSessionById(sessionId: string): Promise<SyncRe
     };
   }
 
+  if (existing) {
+    const hydrated = await hydrateExistingOrderFromSession(existing as Order, session);
+    await deliverOrderEmails(session, hydrated.order, hydrated.items);
+
+    return {
+      ok: true,
+      created: false,
+      alreadyExists: true,
+      orderNumber: hydrated.order.order_number,
+    };
+  }
+
   const { order, items } = await createOrderFromSession(session);
-
-  const customerEmail = getCustomerEmail(session);
-  if (customerEmail) {
-    try {
-      await sendCustomerConfirmation(order, items);
-    } catch (error) {
-      console.error("Customer confirmation email failed:", error);
-    }
-  }
-
-  try {
-    await sendOwnerNotification(order, items);
-  } catch (error) {
-    console.error("Owner notification email failed:", error);
-  }
+  await deliverOrderEmails(session, order, items);
 
   return {
     ok: true,

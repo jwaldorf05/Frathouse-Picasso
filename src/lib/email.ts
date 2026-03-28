@@ -1,9 +1,18 @@
-import { Resend } from "resend";
 import type { Order, OrderItem } from "@/lib/supabase";
 
-function getResend(): Resend | null {
-  if (!process.env.RESEND_API_KEY) return null;
-  return new Resend(process.env.RESEND_API_KEY);
+interface EmailSendOptions {
+  idempotencyKey?: string;
+}
+
+interface ResendEmailPayload {
+  from: string;
+  to: string | string[];
+  subject: string;
+  html: string;
+}
+
+function getResendApiKey(): string | null {
+  return process.env.RESEND_API_KEY || null;
 }
 
 function getFromEmail(): string {
@@ -29,6 +38,33 @@ function formatAddress(order: Order): string {
 
 function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
+}
+
+async function sendResendEmail(
+  payload: ResendEmailPayload,
+  options?: EmailSendOptions
+): Promise<void> {
+  const apiKey = getResendApiKey();
+
+  if (!apiKey) {
+    throw new Error("Missing RESEND_API_KEY environment variable");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      ...(options?.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}),
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Resend send failed (${response.status}): ${errorBody}`);
+  }
 }
 
 function itemsTable(items: OrderItem[]): string {
@@ -80,12 +116,13 @@ function baseHtml(title: string, body: string): string {
 
 export async function sendCustomerConfirmation(
   order: Order,
-  items: OrderItem[]
+  items: OrderItem[],
+  options?: EmailSendOptions
 ): Promise<void> {
-  const resend = getResend();
+  const apiKey = getResendApiKey();
   const from = getFromEmail();
 
-  if (!resend || !from) {
+  if (!apiKey || !from) {
     console.log("[email] Resend not fully configured — logging customer confirmation instead:");
     console.log(`  To: ${order.customer_email}`);
     console.log(`  Order: ${order.order_number}`);
@@ -136,23 +173,24 @@ export async function sendCustomerConfirmation(
     <p style="color:#666;font-size:13px;">Questions? Reply to this email and we'll get back to you.</p>
   `;
 
-  await resend.emails.send({
+  await sendResendEmail({
     from,
     to: order.customer_email,
     subject: `Order Confirmed – ${order.order_number}`,
     html: baseHtml(`Order Confirmed – ${order.order_number}`, body),
-  });
+  }, options);
 }
 
 export async function sendOwnerNotification(
   order: Order,
-  items: OrderItem[]
+  items: OrderItem[],
+  options?: EmailSendOptions
 ): Promise<void> {
-  const resend = getResend();
+  const apiKey = getResendApiKey();
   const from = getFromEmail();
   const ownerEmail = getOwnerEmail();
 
-  if (!resend || !from || !ownerEmail) {
+  if (!apiKey || !from || !ownerEmail) {
     console.log("[email] Resend not fully configured — logging owner notification instead:");
     console.log(`  Order: ${order.order_number} from ${order.customer_email}`);
     console.log(`  Amount: ${formatCents(order.amount_total)}`);
@@ -206,21 +244,22 @@ export async function sendOwnerNotification(
     <div style="background:#111;border:1px solid #333;border-radius:6px;padding:20px;margin-bottom:24px;font-family:monospace;font-size:14px;color:#ccc;line-height:1.8;white-space:pre-wrap;">${addressText}</div>
   `;
 
-  await resend.emails.send({
+  await sendResendEmail({
     from,
     to: ownerEmail,
     subject: `New Order – ${order.order_number} from ${order.customer_name || order.customer_email}`,
     html: baseHtml(`New Order – ${order.order_number}`, body),
-  });
+  }, options);
 }
 
 export async function sendShippingNotification(
   order: Order,
+  options?: EmailSendOptions,
 ): Promise<void> {
-  const resend = getResend();
+  const apiKey = getResendApiKey();
   const from = getFromEmail();
 
-  if (!resend || !from) {
+  if (!apiKey || !from) {
     console.log("[email] Resend not fully configured — logging shipping notification instead:");
     console.log(`  To: ${order.customer_email}, Tracking: ${order.tracking_number}`);
     return;
@@ -257,10 +296,10 @@ export async function sendShippingNotification(
     <p style="color:#666;font-size:13px;">Questions about your shipment? Reply to this email and we'll help you out.</p>
   `;
 
-  await resend.emails.send({
+  await sendResendEmail({
     from,
     to: order.customer_email,
     subject: `Your Order ${order.order_number} Has Shipped!`,
     html: baseHtml(`Your Order ${order.order_number} Has Shipped!`, body),
-  });
+  }, options);
 }
