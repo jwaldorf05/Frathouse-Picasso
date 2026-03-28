@@ -578,26 +578,26 @@ export const inventoryProducts: InventoryProduct[] = [
       { id: "main", title: "Main View", image: "/Product Photos/BDSM/BDSMMockup.png" },
     ],
   },
-  {
-    id: "999",
-    handle: "test-item",
-    name: "TEST ITEM - DO NOT PURCHASE",
-    defaultPrice: "$0",
-    image: null,
-    category: "Street Signs",
-    shortDescription: "Free test item for cart testing",
-    description:
-      "This is a test product for testing the cart and checkout system. It costs $0 and should not be purchased by real customers.",
-    materials: ["Test material", "Digital only", "No physical product"],
-    collections: ["All"],
-    stripeProductId: "",
-    sizeOptions: [
-      { size: 'Test Size', stripePriceId: "" },
-    ],
-    gallery: [
-      { id: "main", title: "Test View", image: null },
-    ],
-  },
+  // {
+  //   id: "999",
+  //   handle: "test-item",
+  //   name: "TEST ITEM - DO NOT PURCHASE",
+  //   defaultPrice: "$0",
+  //   image: null,
+  //   category: "Street Signs",
+  //   shortDescription: "Free test item for cart testing",
+  //   description:
+  //     "This is a test product for testing the cart and checkout system. It costs $0 and should not be purchased by real customers.",
+  //   materials: ["Test material", "Digital only", "No physical product"],
+  //   collections: ["All"],
+  //   stripeProductId: "",
+  //   sizeOptions: [
+  //     { size: 'Test Size', stripePriceId: "" },
+  //   ],
+  //   gallery: [
+  //     { id: "main", title: "Test View", image: null },
+  //   ],
+  // },
 ];
 
 export function getProductPrice(
