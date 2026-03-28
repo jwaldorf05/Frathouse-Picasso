@@ -345,19 +345,42 @@ async function deliverOrderEmails(
     order.customer_email = customerEmail;
   }
 
+  console.log("[Order Sync] Preparing email delivery", {
+    sessionId: session.id,
+    orderNumber: order.order_number,
+    customerEmail: order.customer_email,
+    itemCount: items.length,
+  });
+
   if (customerEmail) {
     try {
-      await sendCustomerConfirmation(order, items, {
+      const customerEmailId = await sendCustomerConfirmation(order, items, {
         idempotencyKey: `customer-confirmation-${session.id}`,
+      });
+      console.log("[Order Sync] Customer confirmation email sent", {
+        sessionId: session.id,
+        orderNumber: order.order_number,
+        customerEmail: order.customer_email,
+        resendEmailId: customerEmailId ?? null,
       });
     } catch (error) {
       console.error("Customer confirmation email failed:", error);
     }
+  } else {
+    console.error("Customer confirmation email skipped: no customer email found", {
+      sessionId: session.id,
+      orderNumber: order.order_number,
+    });
   }
 
   try {
-    await sendOwnerNotification(order, items, {
+    const ownerEmailId = await sendOwnerNotification(order, items, {
       idempotencyKey: `owner-notification-${session.id}`,
+    });
+    console.log("[Order Sync] Owner notification email sent", {
+      sessionId: session.id,
+      orderNumber: order.order_number,
+      resendEmailId: ownerEmailId ?? null,
     });
   } catch (error) {
     console.error("Owner notification email failed:", error);

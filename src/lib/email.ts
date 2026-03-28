@@ -11,12 +11,17 @@ interface ResendEmailPayload {
   html: string;
 }
 
+interface ResendEmailResponse {
+  id?: string;
+}
+
 function getResendApiKey(): string | null {
   return process.env.RESEND_API_KEY || null;
 }
 
 function getFromEmail(): string {
-  return process.env.RESEND_FROM_EMAIL || "Frathouse Picasso <onboarding@resend.dev>";
+  const configuredFrom = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+  return configuredFrom.includes("<") ? configuredFrom : `Frathouse Picasso <${configuredFrom}>`;
 }
 
 function getOwnerEmail(): string {
@@ -40,10 +45,21 @@ function formatCents(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
+function isDeliverableEmail(email: string | null | undefined): email is string {
+  if (!email) return false;
+
+  const normalized = email.trim().toLowerCase();
+  if (!normalized || normalized.endsWith("@no-email.invalid")) {
+    return false;
+  }
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized);
+}
+
 async function sendResendEmail(
   payload: ResendEmailPayload,
   options?: EmailSendOptions
-): Promise<void> {
+): Promise<ResendEmailResponse> {
   const apiKey = getResendApiKey();
 
   if (!apiKey) {
@@ -65,6 +81,8 @@ async function sendResendEmail(
     const errorBody = await response.text();
     throw new Error(`Resend send failed (${response.status}): ${errorBody}`);
   }
+
+  return (await response.json()) as ResendEmailResponse;
 }
 
 function itemsTable(items: OrderItem[]): string {
@@ -118,15 +136,16 @@ export async function sendCustomerConfirmation(
   order: Order,
   items: OrderItem[],
   options?: EmailSendOptions
-): Promise<void> {
+): Promise<string | undefined> {
   const apiKey = getResendApiKey();
   const from = getFromEmail();
 
-  if (!apiKey || !from) {
-    console.log("[email] Resend not fully configured — logging customer confirmation instead:");
-    console.log(`  To: ${order.customer_email}`);
-    console.log(`  Order: ${order.order_number}`);
-    return;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!isDeliverableEmail(order.customer_email)) {
+    throw new Error(`Customer confirmation recipient is invalid: ${order.customer_email || "missing"}`);
   }
 
   const addressHtml = formatAddress(order).replace(/\n/g, "<br>");
@@ -173,29 +192,31 @@ export async function sendCustomerConfirmation(
     <p style="color:#666;font-size:13px;">Questions? Reply to this email and we'll get back to you.</p>
   `;
 
-  await sendResendEmail({
+  const result = await sendResendEmail({
     from,
     to: order.customer_email,
     subject: `Order Confirmed – ${order.order_number}`,
     html: baseHtml(`Order Confirmed – ${order.order_number}`, body),
   }, options);
+
+  return result.id;
 }
 
 export async function sendOwnerNotification(
   order: Order,
   items: OrderItem[],
   options?: EmailSendOptions
-): Promise<void> {
+): Promise<string | undefined> {
   const apiKey = getResendApiKey();
   const from = getFromEmail();
   const ownerEmail = getOwnerEmail();
 
-  if (!apiKey || !from || !ownerEmail) {
-    console.log("[email] Resend not fully configured — logging owner notification instead:");
-    console.log(`  Order: ${order.order_number} from ${order.customer_email}`);
-    console.log(`  Amount: ${formatCents(order.amount_total)}`);
-    console.log(`  Shipping: ${formatAddress(order)}`);
-    return;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!isDeliverableEmail(ownerEmail)) {
+    throw new Error(`Owner notification recipient is invalid: ${ownerEmail || "missing"}`);
   }
 
   const addressText = formatAddress(order);
@@ -244,25 +265,29 @@ export async function sendOwnerNotification(
     <div style="background:#111;border:1px solid #333;border-radius:6px;padding:20px;margin-bottom:24px;font-family:monospace;font-size:14px;color:#ccc;line-height:1.8;white-space:pre-wrap;">${addressText}</div>
   `;
 
-  await sendResendEmail({
+  const result = await sendResendEmail({
     from,
     to: ownerEmail,
     subject: `New Order – ${order.order_number} from ${order.customer_name || order.customer_email}`,
     html: baseHtml(`New Order – ${order.order_number}`, body),
   }, options);
+
+  return result.id;
 }
 
 export async function sendShippingNotification(
   order: Order,
   options?: EmailSendOptions,
-): Promise<void> {
+): Promise<string | undefined> {
   const apiKey = getResendApiKey();
   const from = getFromEmail();
 
-  if (!apiKey || !from) {
-    console.log("[email] Resend not fully configured — logging shipping notification instead:");
-    console.log(`  To: ${order.customer_email}, Tracking: ${order.tracking_number}`);
-    return;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!isDeliverableEmail(order.customer_email)) {
+    throw new Error(`Shipping notification recipient is invalid: ${order.customer_email || "missing"}`);
   }
 
   const trackingSection = order.tracking_number
@@ -296,10 +321,12 @@ export async function sendShippingNotification(
     <p style="color:#666;font-size:13px;">Questions about your shipment? Reply to this email and we'll help you out.</p>
   `;
 
-  await sendResendEmail({
+  const result = await sendResendEmail({
     from,
     to: order.customer_email,
     subject: `Your Order ${order.order_number} Has Shipped!`,
     html: baseHtml(`Your Order ${order.order_number} Has Shipped!`, body),
   }, options);
+
+  return result.id;
 }

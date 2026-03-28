@@ -64,7 +64,14 @@ export async function POST(request: NextRequest) {
           console.log(`[Webhook] Discount applied: $${(((fullSession as any).total_details.amount_discount || 0) / 100).toFixed(2)}`);
         }
         
-        const result = await syncCheckoutSessionById(fullSession.id);
+        let result = await syncCheckoutSessionById(fullSession.id);
+
+        if (!result.ok && result.reason === "Session not finalized yet") {
+          console.warn(`[Webhook] Session ${fullSession.id} not finalized on first attempt, retrying once...`);
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          result = await syncCheckoutSessionById(fullSession.id);
+        }
+
         console.log(`[Webhook] Sync result:`, result);
         break;
       }
