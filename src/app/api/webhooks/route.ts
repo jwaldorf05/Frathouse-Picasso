@@ -64,12 +64,17 @@ export async function POST(request: NextRequest) {
           console.log(`[Webhook] Discount applied: $${(((fullSession as any).total_details.amount_discount || 0) / 100).toFixed(2)}`);
         }
         
-        let result = await syncCheckoutSessionById(fullSession.id);
+        const result = await syncCheckoutSessionById(fullSession.id);
 
         if (!result.ok && result.reason === "Session not finalized yet") {
           console.warn(`[Webhook] Session ${fullSession.id} not finalized on first attempt, retrying once...`);
           await new Promise((resolve) => setTimeout(resolve, 2000));
-          result = await syncCheckoutSessionById(fullSession.id);
+          const retryResult = await syncCheckoutSessionById(fullSession.id);
+          console.log(`[Webhook] Retry sync result:`, retryResult);
+        } else if (result.alreadyExists) {
+          console.log(`[Webhook] Order ${result.orderNumber} already exists - no emails sent (preventing duplicates)`);
+        } else if (result.created) {
+          console.log(`[Webhook] New order ${result.orderNumber} created - confirmation emails sent`);
         }
 
         console.log(`[Webhook] Sync result:`, result);

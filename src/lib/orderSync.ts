@@ -513,7 +513,9 @@ export async function syncCheckoutSessionById(sessionId: string): Promise<SyncRe
 
   if (existing) {
     const hydrated = await hydrateExistingOrderFromSession(existing as Order, session);
-    await deliverOrderEmails(session, hydrated.order, hydrated.items);
+    
+    // Do NOT send emails for existing orders to prevent duplicates on webhook retries
+    console.log(`[Order Sync] Order already exists: ${hydrated.order.order_number} - skipping email delivery`);
 
     return {
       ok: true,
@@ -524,6 +526,8 @@ export async function syncCheckoutSessionById(sessionId: string): Promise<SyncRe
   }
 
   const { order, items } = await createOrderFromSession(session);
+  
+  // Only send emails for newly created orders
   await deliverOrderEmails(session, order, items);
 
   return {
