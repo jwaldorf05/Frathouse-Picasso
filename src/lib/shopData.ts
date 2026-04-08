@@ -562,7 +562,7 @@ export const inventoryProducts: InventoryProduct[] = [
     id: "22",
     handle: "bdsm",
     name: "BDSM",
-    defaultPrice: "$105",
+    defaultPrice: "$60",
     image: "/Product Photos/BDSM/BDSMMockup.png",
     category: "Street Signs",
     shortDescription: "Kinky, are we?",
