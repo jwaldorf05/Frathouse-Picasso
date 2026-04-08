@@ -104,13 +104,9 @@ export default function ProcurementPage() {
 
         {/* Header */}
         <div className="mb-16 relative z-10">
-          <Image
-            src="/FP_Borderless.png"
-            alt="Frathouse Picasso"
-            width={200}
-            height={67}
-            className="w-[180px] h-auto mb-12"
-          />
+          <h1 className="font-[family-name:var(--font-body)] font-bold text-5xl md:text-6xl mb-12 text-white">
+            PROCUREMENT
+          </h1>
           
           {/* Step 1: Text Left, Image Right */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-16">
@@ -119,7 +115,7 @@ export default function ProcurementPage() {
                 Step 1, take a photo of a sign
               </h2>
             </div>
-            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] overflow-hidden flex items-center justify-center">
+            <div className="aspect-[4/3] overflow-hidden flex items-center justify-center">
               <Image
                 src="/images/PhotoSign_Transparent.png"
                 alt="Take a photo of a sign"
@@ -132,7 +128,7 @@ export default function ProcurementPage() {
 
           {/* Step 2: Image Left, Text Right */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-16">
-            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] overflow-hidden flex items-center justify-center order-2 md:order-1">
+            <div className="aspect-[4/3] overflow-hidden flex items-center justify-center order-2 md:order-1">
               <Image
                 src="/images/SignBountyMap_Transparent.png"
                 alt="Send us the sign address"
@@ -155,7 +151,7 @@ export default function ProcurementPage() {
                 Step 3, the sign mysteriously shows up at your door
               </h2>
             </div>
-            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] overflow-hidden flex items-center justify-center">
+            <div className="aspect-[4/3] overflow-hidden flex items-center justify-center">
               <Image
                 src="/images/FP_Box_Transparent.png"
                 alt="Sign shows up at your door"
