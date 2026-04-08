@@ -148,6 +148,16 @@ function MobileNavDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
             </div>
           )}
           
+          {/* Custom Design - 44px min height */}
+          <a href="/custom" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+            Custom Design
+          </a>
+          
+          {/* Procurement - 44px min height */}
+          <a href="/procurement" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
+            Procurement
+          </a>
+          
           {/* Contact Us - 44px min height */}
           <a href="/contact" className="block w-full text-left px-3 py-3 min-h-[44px] flex items-center rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]">
             Contact Us
@@ -276,6 +286,22 @@ function Sidebar({ visible, cartCount, onCartClick, isMounted }: SidebarProps) {
               ))}
             </div>
           )}
+          
+          {/* Custom Design */}
+          <a
+            href="/custom"
+            className="block w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
+          >
+            Custom Design
+          </a>
+          
+          {/* Procurement */}
+          <a
+            href="/procurement"
+            className="block w-full text-left px-3 py-3 rounded-md font-[family-name:var(--font-body)] text-sm tracking-[1.5px] uppercase transition-colors text-[#999] hover:text-white hover:bg-[#1e1e1e]"
+          >
+            Procurement
+          </a>
           
           {/* Contact Us */}
           <a

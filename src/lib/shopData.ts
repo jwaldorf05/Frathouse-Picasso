@@ -631,7 +631,6 @@ export const collectionItems: ShopNavItem[] = [
   { label: "Fraternity Collection", href: "/?shop=1&collection=fraternity" },
   { label: "Harvard Collection", href: "/?shop=1&collection=harvard" },
   { label: "Metro Collection", href: "/?shop=1&collection=metro" },
-  { label: "Custom Design", href: "/custom" },
   { label: "Merch", href: "/merch" },
   { label: "Stickers", href: "/stickers" },
 ];
