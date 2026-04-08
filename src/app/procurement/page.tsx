@@ -12,6 +12,7 @@ export default function ProcurementPage() {
     name: "",
     email: "",
     description: "",
+    signAddress: "",
     width: "",
     length: "",
     unit: "in" as "in" | "cm",
@@ -36,6 +37,7 @@ export default function ProcurementPage() {
       formDataToSend.append("name", formData.name);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("description", formData.description);
+      formDataToSend.append("signAddress", formData.signAddress);
       if (formData.width) formDataToSend.append("width", formData.width);
       if (formData.length) formDataToSend.append("length", formData.length);
       formDataToSend.append("unit", formData.unit);
@@ -58,7 +60,7 @@ export default function ProcurementPage() {
       }
 
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", description: "", width: "", length: "", unit: "in" });
+      setFormData({ name: "", email: "", description: "", signAddress: "", width: "", length: "", unit: "in" });
       setFiles(null);
     } catch (error) {
       setSubmitStatus("error");
@@ -117,19 +119,27 @@ export default function ProcurementPage() {
                 Step 1, take a photo of a sign
               </h2>
             </div>
-            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] flex items-center justify-center">
-              <svg className="w-16 h-16 text-[#333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] overflow-hidden flex items-center justify-center">
+              <Image
+                src="/images/PhotoSign_Transparent.png"
+                alt="Take a photo of a sign"
+                width={800}
+                height={600}
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
 
           {/* Step 2: Image Left, Text Right */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-16">
-            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] flex items-center justify-center order-2 md:order-1">
-              <svg className="w-16 h-16 text-[#333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] overflow-hidden flex items-center justify-center order-2 md:order-1">
+              <Image
+                src="/images/SignBountyMap_Transparent.png"
+                alt="Send us the sign address"
+                width={800}
+                height={600}
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="order-1 md:order-2">
               <h2 className="font-[family-name:var(--font-body)] font-bold text-3xl md:text-4xl text-white leading-tight">
@@ -145,10 +155,14 @@ export default function ProcurementPage() {
                 Step 3, the sign mysteriously shows up at your door
               </h2>
             </div>
-            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] flex items-center justify-center">
-              <svg className="w-16 h-16 text-[#333]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
+            <div className="bg-[#111] border border-[#333] rounded-lg aspect-[4/3] overflow-hidden flex items-center justify-center">
+              <Image
+                src="/images/FP_Box_Transparent.png"
+                alt="Sign shows up at your door"
+                width={800}
+                height={600}
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
         </div>
@@ -210,26 +224,26 @@ export default function ProcurementPage() {
             />
           </div>
 
-          {/* Description */}
+          {/* Sign Address */}
           <div>
-            <label htmlFor="description" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
-              Design Description
+            <label htmlFor="signAddress" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
+              Sign Address
             </label>
-            <textarea
-              id="description"
+            <input
+              type="text"
+              id="signAddress"
               required
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              rows={6}
-              className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors resize-none"
-              placeholder="Describe your design idea in detail..."
+              value={formData.signAddress}
+              onChange={(e) => setFormData({ ...formData, signAddress: e.target.value })}
+              className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
+              placeholder="Enter the address or location of the sign"
             />
           </div>
 
-          {/* Sign Dimensions */}
+          {/* Approximate Sign Dimensions */}
           <div>
             <label className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
-              Sign Dimensions (Optional)
+              Approximate Sign Dimensions (Optional)
             </label>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -282,7 +296,7 @@ export default function ProcurementPage() {
           {/* File Upload */}
           <div>
             <label htmlFor="files" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
-              Reference Images (Optional)
+              Sign Image
             </label>
             <input
               type="file"
