@@ -663,4 +663,5 @@ export const footerNavItems: ShopNavItem[] = [
   { label: "All", href: "/?shop=1&collection=all" },
   { label: "Fraternity Collection", href: "/?shop=1&collection=fraternity" },
   { label: "Harvard Collection", href: "/?shop=1&collection=harvard" },
+  { label: "Wall Mounting Guide", href: "/wall-mounting-guide" },
 ];

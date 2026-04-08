@@ -11,8 +11,8 @@ export default function ProcurementPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    description: "",
     signAddress: "",
+    coordinates: "",
     width: "",
     length: "",
     unit: "in" as "in" | "cm",
@@ -36,8 +36,8 @@ export default function ProcurementPage() {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
       formDataToSend.append("email", formData.email);
-      formDataToSend.append("description", formData.description);
       formDataToSend.append("signAddress", formData.signAddress);
+      if (formData.coordinates) formDataToSend.append("coordinates", formData.coordinates);
       if (formData.width) formDataToSend.append("width", formData.width);
       if (formData.length) formDataToSend.append("length", formData.length);
       formDataToSend.append("unit", formData.unit);
@@ -60,7 +60,7 @@ export default function ProcurementPage() {
       }
 
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", description: "", signAddress: "", width: "", length: "", unit: "in" });
+      setFormData({ name: "", email: "", signAddress: "", coordinates: "", width: "", length: "", unit: "in" });
       setFiles(null);
     } catch (error) {
       setSubmitStatus("error");
@@ -233,6 +233,22 @@ export default function ProcurementPage() {
               onChange={(e) => setFormData({ ...formData, signAddress: e.target.value })}
               className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
               placeholder="Enter the address or location of the sign"
+              autoComplete="street-address"
+            />
+          </div>
+
+          {/* Coordinates */}
+          <div>
+            <label htmlFor="coordinates" className="block text-sm font-[family-name:var(--font-body)] font-bold uppercase tracking-wider mb-2">
+              Coordinates (Optional)
+            </label>
+            <input
+              type="text"
+              id="coordinates"
+              value={formData.coordinates}
+              onChange={(e) => setFormData({ ...formData, coordinates: e.target.value })}
+              className="w-full bg-[#111] border border-[#333] rounded-md px-4 py-3 text-white focus:outline-none focus:border-accent transition-colors"
+              placeholder="e.g., 42.3601° N, 71.0589° W"
             />
           </div>
 
@@ -333,7 +349,7 @@ export default function ProcurementPage() {
 
           {/* Disclaimer */}
           <p className="text-xs text-text-secondary text-center mt-4">
-            We reserve the right to reject any order for reasons including but not limited to copyright, legal, or logistical reasons.
+            When you place a procurement request, we will send you a price quote. We reserve the right to reject any order for reasons including but not limited to copyright, legal, or logistical reasons.
           </p>
         </form>
       </div>
