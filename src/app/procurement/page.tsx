@@ -330,6 +330,11 @@ export default function ProcurementPage() {
             )}
             {isSubmitting ? "Sending..." : "Submit Request"}
           </button>
+
+          {/* Disclaimer */}
+          <p className="text-xs text-text-secondary text-center mt-4">
+            We reserve the right to reject any order for reasons including but not limited to copyright, legal, or logistical reasons.
+          </p>
         </form>
       </div>
     </main>
