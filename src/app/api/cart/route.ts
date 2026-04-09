@@ -6,6 +6,7 @@ import {
   readCartFromCookieHeader,
   serializeCartCookie,
 } from "@/lib/cart";
+import { rateLimit, getClientIdentifier, formatTimeRemaining, RATE_LIMITS } from "@/lib/rateLimit";
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,21 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting - 100 requests per minute
+  const clientId = getClientIdentifier(request);
+  const rateLimitResult = await rateLimit(clientId, RATE_LIMITS.CART);
+
+  if (!rateLimitResult.success) {
+    const timeRemaining = formatTimeRemaining(rateLimitResult.resetTime);
+    return NextResponse.json(
+      { 
+        error: `Too many cart operations. Please try again in ${timeRemaining}.`,
+        retryAfter: rateLimitResult.resetTime,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = (await request.json()) as AddCartItemBody;
     const { handle, quantity, selectedSize } = body;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
+import { rateLimit, getClientIdentifier, formatTimeRemaining, RATE_LIMITS } from "@/lib/rateLimit";
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,21 @@ function getOwnerEmail(): string {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting - 10 requests per hour
+  const clientId = getClientIdentifier(request);
+  const rateLimitResult = await rateLimit(clientId, RATE_LIMITS.CUSTOM_REQUEST);
+
+  if (!rateLimitResult.success) {
+    const timeRemaining = formatTimeRemaining(rateLimitResult.resetTime);
+    return NextResponse.json(
+      { 
+        error: `Too many form submissions. Please try again in ${timeRemaining}.`,
+        retryAfter: rateLimitResult.resetTime,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const formData = await request.formData();
 

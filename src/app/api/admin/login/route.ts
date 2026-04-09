@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
+import { rateLimit, getClientIdentifier, formatTimeRemaining, RATE_LIMITS } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,21 @@ function getAdminPassword(): string | null {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting - 5 attempts per 15 minutes
+  const clientId = getClientIdentifier(request);
+  const rateLimitResult = await rateLimit(clientId, RATE_LIMITS.ADMIN_LOGIN);
+
+  if (!rateLimitResult.success) {
+    const timeRemaining = formatTimeRemaining(rateLimitResult.resetTime);
+    return NextResponse.json(
+      { 
+        error: `Too many login attempts. Please try again in ${timeRemaining}.`,
+        retryAfter: rateLimitResult.resetTime,
+      },
+      { status: 429 }
+    );
+  }
+
   let body: { password?: string };
   try {
     body = (await request.json()) as { password?: string };

@@ -1,11 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { rateLimit, getClientIdentifier, formatTimeRemaining, RATE_LIMITS } from '@/lib/rateLimit';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-08-27.basil',
 });
 
 export async function POST(request: NextRequest) {
+  // Rate limiting - 20 attempts per 15 minutes
+  const clientId = getClientIdentifier(request);
+  const rateLimitResult = await rateLimit(clientId, RATE_LIMITS.CHECKOUT);
+
+  if (!rateLimitResult.success) {
+    const timeRemaining = formatTimeRemaining(rateLimitResult.resetTime);
+    return NextResponse.json(
+      { 
+        error: `Too many checkout attempts. Please try again in ${timeRemaining}.`,
+        retryAfter: rateLimitResult.resetTime,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const requestUrl = new URL(request.url);
     const origin = requestUrl.origin;

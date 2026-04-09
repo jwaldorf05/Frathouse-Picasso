@@ -1,7 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { inventoryProducts } from "@/lib/shopData";
+import { rateLimit, getClientIdentifier, formatTimeRemaining, RATE_LIMITS } from "@/lib/rateLimit";
 
 export async function GET(request: NextRequest) {
+  // Rate limiting - 200 requests per minute
+  const clientId = getClientIdentifier(request);
+  const rateLimitResult = await rateLimit(clientId, RATE_LIMITS.PRODUCTS);
+
+  if (!rateLimitResult.success) {
+    const timeRemaining = formatTimeRemaining(rateLimitResult.resetTime);
+    return NextResponse.json(
+      { 
+        error: `Too many requests. Please try again in ${timeRemaining}.`,
+        retryAfter: rateLimitResult.resetTime,
+      },
+      { status: 429 }
+    );
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query")?.trim().toLowerCase() ?? "";
