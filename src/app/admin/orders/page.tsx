@@ -65,6 +65,15 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const { status } = await searchParams;
   const activeStatus = status && VALID_STATUSES.includes(status) ? status : null;
 
+  // Capture the current time for "Last Updated" display
+  const lastUpdated = new Date().toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
   // Reconcile recent Stripe sessions on admin load to backfill missed webhook deliveries.
   try {
     await reconcileRecentStripeSessions(40);
@@ -108,7 +117,12 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
               / Orders
             </span>
           </div>
-          <LogoutButton />
+          <div className="flex items-center gap-4">
+            <span style={{ color: "var(--text-muted)" }} className="text-xs">
+              Last updated: <span style={{ color: "var(--text-secondary)" }}>{lastUpdated}</span>
+            </span>
+            <LogoutButton />
+          </div>
         </div>
       </header>
 
