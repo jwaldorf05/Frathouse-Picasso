@@ -1062,12 +1062,12 @@ export default function ShopLayout({ visible, collection, showHeroBanner = true,
             <p className="font-[family-name:var(--font-body)] text-text-muted text-xs">
               &copy; {new Date().getFullYear()} Frathouse Picasso. All rights reserved.
             </p>
-            <div className="flex gap-4 font-mono">
-              <a href="/privacy" className="text-[#00ff00]/60 text-[10px] hover:text-[#00ff00] transition-colors tracking-tight">
-                [PRIVACY_PROTOCOL]
+            <div className="flex gap-6">
+              <a href="/privacy" className="font-[family-name:var(--font-body)] text-text-muted text-xs hover:text-white transition-colors">
+                Privacy Policy
               </a>
-              <a href="/terms" className="text-[#00ff00]/60 text-[10px] hover:text-[#00ff00] transition-colors tracking-tight">
-                [TERMS_OF_SERVICE]
+              <a href="/terms" className="font-[family-name:var(--font-body)] text-text-muted text-xs hover:text-white transition-colors">
+                Terms of Service
               </a>
               <a href="/shipping-returns" className="font-[family-name:var(--font-body)] text-text-muted text-xs hover:text-white transition-colors">
                 Shipping & Returns
