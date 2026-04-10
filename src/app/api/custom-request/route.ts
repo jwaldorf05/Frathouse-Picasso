@@ -18,8 +18,22 @@ function getFromEmail(): string {
   return process.env.RESEND_FROM_EMAIL || "Frathouse Picasso <onboarding@resend.dev>";
 }
 
-function getOwnerEmail(): string {
-  return process.env.RESEND_OWNER_EMAIL || process.env.RESEND_FROM_EMAIL || "";
+function getOwnerEmail(): string | string[] {
+  const ownerEmail = process.env.RESEND_OWNER_EMAIL || "";
+  
+  // If no owner email is set, log a warning
+  if (!ownerEmail) {
+    console.warn("⚠️ RESEND_OWNER_EMAIL not set. Form submissions will not be delivered.");
+    console.warn("   Add RESEND_OWNER_EMAIL=your-email@gmail.com to your environment variables.");
+    return "";
+  }
+  
+  // Support comma-separated list of emails
+  if (ownerEmail.includes(",")) {
+    return ownerEmail.split(",").map(e => e.trim()).filter(Boolean);
+  }
+  
+  return ownerEmail;
 }
 
 export async function POST(request: NextRequest) {
@@ -176,13 +190,16 @@ export async function POST(request: NextRequest) {
     const from = getFromEmail();
     const ownerEmail = getOwnerEmail();
 
-    if (!ownerEmail) {
-      throw new Error("Missing RESEND_OWNER_EMAIL (or RESEND_FROM_EMAIL) environment variable");
+    if (!ownerEmail || (Array.isArray(ownerEmail) && ownerEmail.length === 0)) {
+      throw new Error("Missing RESEND_OWNER_EMAIL environment variable");
     }
+
+    // Convert to array format for Resend API
+    const toEmails = Array.isArray(ownerEmail) ? ownerEmail : [ownerEmail];
 
     const { error: resendError } = await resend.emails.send({
       from,
-      to: [ownerEmail],
+      to: toEmails,
       replyTo: email,
       subject: `${requestType} Request — ${name}`,
       html: htmlBody,

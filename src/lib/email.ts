@@ -24,8 +24,22 @@ function getFromEmail(): string {
   return configuredFrom.includes("<") ? configuredFrom : `Frathouse Picasso <${configuredFrom}>`;
 }
 
-function getOwnerEmail(): string {
-  return process.env.RESEND_OWNER_EMAIL || process.env.RESEND_FROM_EMAIL || "";
+function getOwnerEmail(): string | string[] {
+  const ownerEmail = process.env.RESEND_OWNER_EMAIL || "";
+  
+  // If no owner email is set, log a warning
+  if (!ownerEmail) {
+    console.warn("⚠️ RESEND_OWNER_EMAIL not set. Emails will not be delivered to owner.");
+    console.warn("   Add RESEND_OWNER_EMAIL=your-email@gmail.com to your environment variables.");
+    return "";
+  }
+  
+  // Support comma-separated list of emails
+  if (ownerEmail.includes(",")) {
+    return ownerEmail.split(",").map(e => e.trim()).filter(Boolean);
+  }
+  
+  return ownerEmail;
 }
 
 function formatAddress(order: Order): string {
@@ -202,7 +216,7 @@ export async function sendCustomerConfirmation(
   return result.id;
 }
 
-export async function sendOwnerNotification(
+export async function sendOwnerOrderNotification(
   order: Order,
   items: OrderItem[],
   options?: EmailSendOptions
@@ -215,8 +229,19 @@ export async function sendOwnerNotification(
     throw new Error("RESEND_API_KEY is not configured");
   }
 
-  if (!isDeliverableEmail(ownerEmail)) {
-    throw new Error(`Owner notification recipient is invalid: ${ownerEmail || "missing"}`);
+  // Validate owner email(s)
+  if (!ownerEmail || (Array.isArray(ownerEmail) && ownerEmail.length === 0)) {
+    throw new Error("Owner notification recipient is not configured (RESEND_OWNER_EMAIL missing)");
+  }
+
+  // Validate each email if it's an array
+  if (Array.isArray(ownerEmail)) {
+    const invalidEmails = ownerEmail.filter(email => !isDeliverableEmail(email));
+    if (invalidEmails.length > 0) {
+      throw new Error(`Invalid owner email addresses: ${invalidEmails.join(", ")}`);
+    }
+  } else if (!isDeliverableEmail(ownerEmail)) {
+    throw new Error(`Owner notification recipient is invalid: ${ownerEmail}`);
   }
 
   const addressText = formatAddress(order);

@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 import { getStripeInstance } from "@/lib/stripe";
 import { getSupabase, type Order, type OrderItem } from "@/lib/supabase";
-import { sendCustomerConfirmation, sendOwnerNotification } from "@/lib/email";
+import { sendCustomerConfirmation, sendOwnerOrderNotification } from "@/lib/email";
 
 interface SyncResult {
   ok: boolean;
@@ -374,7 +374,7 @@ async function deliverOrderEmails(
   }
 
   try {
-    const ownerEmailId = await sendOwnerNotification(order, items, {
+    const ownerEmailId = await sendOwnerOrderNotification(order, items, {
       idempotencyKey: `owner-notification-${session.id}`,
     });
     console.log("[Order Sync] Owner notification email sent", {
