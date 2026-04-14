@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { sendShippingNotification, sendDeliveryNotification } from "@/lib/email";
+import { sendShippingNotification, sendDeliveryNotification, sendCancellationNotification } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +119,17 @@ export async function PATCH(
       console.log("✓ Delivery notification sent for order:", updatedOrder.order_number);
     } catch (err) {
       console.error("Failed to send delivery notification:", err);
+      // Don't fail the response — the order was updated successfully
+    }
+  }
+
+  // Send cancellation notification when status transitions to "cancelled"
+  if (statusChanged && body.status === "cancelled") {
+    try {
+      await sendCancellationNotification(updatedOrder);
+      console.log("✓ Cancellation notification sent for order:", updatedOrder.order_number);
+    } catch (err) {
+      console.error("Failed to send cancellation notification:", err);
       // Don't fail the response — the order was updated successfully
     }
   }

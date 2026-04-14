@@ -399,3 +399,56 @@ export async function sendDeliveryNotification(
 
   return result.id;
 }
+
+export async function sendCancellationNotification(
+  order: Order,
+  options?: EmailSendOptions,
+): Promise<string | undefined> {
+  const apiKey = getResendApiKey();
+  const from = getFromEmail();
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!isDeliverableEmail(order.customer_email)) {
+    throw new Error(`Cancellation notification recipient is invalid: ${order.customer_email || "missing"}`);
+  }
+
+  const body = `
+    <h2 style="color:#ededed;margin:0 0 8px;">Order Cancelled</h2>
+    <p style="color:#999;margin:0 0 24px;">Hi ${order.customer_name || "there"} — your order has been cancelled.</p>
+
+    <div style="background:#111;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Order Number</div>
+      <div style="font-size:20px;font-weight:700;color:#ff4d4d;">${order.order_number}</div>
+    </div>
+
+    <div style="background:#1a1a1a;border-left:3px solid #6b7280;padding:16px 20px;border-radius:0 6px 6px 0;margin-bottom:24px;">
+      <p style="margin:0;color:#ccc;">
+        <strong style="color:#6b7280;">✕ Cancelled</strong><br/>
+        This order has been cancelled. If you didn't request this cancellation or have any questions, please reach out to us.
+      </p>
+    </div>
+
+    <div style="background:#111;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
+      <p style="margin:0 0 8px;color:#ccc;font-size:14px;">
+        <strong style="color:#ededed;">What happens next?</strong>
+      </p>
+      <p style="margin:0;color:#999;font-size:13px;">
+        If you were charged for this order, you'll receive a full refund within 5-7 business days. The refund will be credited to your original payment method.
+      </p>
+    </div>
+
+    <p style="color:#666;font-size:13px;">Have questions about this cancellation? Reply to this email and we'll help you out.</p>
+  `;
+
+  const result = await sendResendEmail({
+    from,
+    to: order.customer_email,
+    subject: `Your Order ${order.order_number} Has Been Cancelled`,
+    html: baseHtml(`Your Order ${order.order_number} Has Been Cancelled`, body),
+  }, options);
+
+  return result.id;
+}
