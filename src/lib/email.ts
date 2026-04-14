@@ -355,3 +355,47 @@ export async function sendShippingNotification(
 
   return result.id;
 }
+
+export async function sendDeliveryNotification(
+  order: Order,
+  options?: EmailSendOptions,
+): Promise<string | undefined> {
+  const apiKey = getResendApiKey();
+  const from = getFromEmail();
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+
+  if (!isDeliverableEmail(order.customer_email)) {
+    throw new Error(`Delivery notification recipient is invalid: ${order.customer_email || "missing"}`);
+  }
+
+  const body = `
+    <h2 style="color:#ededed;margin:0 0 8px;">Your Order Has Been Delivered! 🎉</h2>
+    <p style="color:#999;margin:0 0 24px;">Hey ${order.customer_name || "there"} — your order has been delivered!</p>
+
+    <div style="background:#111;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
+      <div style="font-size:13px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Order Number</div>
+      <div style="font-size:20px;font-weight:700;color:#ff4d4d;">${order.order_number}</div>
+    </div>
+
+    <div style="background:#1a1a1a;border-left:3px solid #10b981;padding:16px 20px;border-radius:0 6px 6px 0;margin-bottom:24px;">
+      <p style="margin:0;color:#ccc;">
+        <strong style="color:#10b981;">✓ Delivered</strong><br/>
+        We hope you love your order! If you have any issues or questions, don't hesitate to reach out.
+      </p>
+    </div>
+
+    <p style="color:#666;font-size:13px;">Enjoy your new gear! If you have any concerns about your order, reply to this email and we'll make it right.</p>
+  `;
+
+  const result = await sendResendEmail({
+    from,
+    to: order.customer_email,
+    subject: `Your Order ${order.order_number} Has Been Delivered!`,
+    html: baseHtml(`Your Order ${order.order_number} Has Been Delivered!`, body),
+  }, options);
+
+  return result.id;
+}

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/supabase";
-import { sendShippingNotification } from "@/lib/email";
+import { sendShippingNotification, sendDeliveryNotification } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -98,14 +98,27 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
   }
 
-  // Send shipping notification when status transitions to "shipped"
+  // Send notifications when status transitions
   const statusChanged = body.status && body.status !== currentOrder.status;
+  
+  // Send shipping notification when status transitions to "shipped"
   if (statusChanged && body.status === "shipped") {
     try {
       await sendShippingNotification(updatedOrder);
       console.log("✓ Shipping notification sent for order:", updatedOrder.order_number);
     } catch (err) {
       console.error("Failed to send shipping notification:", err);
+      // Don't fail the response — the order was updated successfully
+    }
+  }
+
+  // Send delivery notification when status transitions to "delivered"
+  if (statusChanged && body.status === "delivered") {
+    try {
+      await sendDeliveryNotification(updatedOrder);
+      console.log("✓ Delivery notification sent for order:", updatedOrder.order_number);
+    } catch (err) {
+      console.error("Failed to send delivery notification:", err);
       // Don't fail the response — the order was updated successfully
     }
   }
