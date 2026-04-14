@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Permanent_Marker, DM_Sans } from "next/font/google";
 import { Suspense } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import CheckoutSyncClient from "./components/CheckoutSyncClient";
 import "./globals.css";
 
@@ -50,6 +51,7 @@ export default function RootLayout({
           <CheckoutSyncClient />
         </Suspense>
         {children}
+        <Analytics />
       </body>
     </html>
   );

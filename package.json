@@ -19,6 +19,7 @@
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
     "@upstash/ratelimit": "^2.0.8",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/kv": "^3.0.0",
     "embla-carousel-react": "^8.6.0",
     "gsap": "^3.14.2",
