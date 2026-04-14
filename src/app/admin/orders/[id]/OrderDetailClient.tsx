@@ -160,6 +160,33 @@ export function OrderDetailClient({ order: initialOrder, items }: OrderDetailCli
             <Field label="Total" value={<span style={{ color: "var(--foreground)", fontWeight: 600 }}>{formatCents(order.amount_total)}</span>} />
             <Field label="Stripe Session" value={<span style={{ color: "var(--text-muted)", fontSize: "11px", wordBreak: "break-all" }}>{order.stripe_session_id}</span>} />
           </div>
+          
+          {/* Discount section */}
+          {order.discount_amount && order.discount_amount > 0 && (
+            <div style={{ borderTop: "1px solid #222", marginTop: "16px", paddingTop: "16px" }}>
+              <div style={{ color: "var(--text-muted)" }} className="text-xs mb-2">
+                DISCOUNT APPLIED
+              </div>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                <div>
+                  <div style={{ color: "var(--text-muted)" }} className="text-xs mb-0.5">
+                    Code
+                  </div>
+                  <div style={{ color: "#10b981", fontWeight: 600 }} className="text-sm">
+                    {order.discount_code || "UNKNOWN"}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: "var(--text-muted)" }} className="text-xs mb-0.5">
+                    Amount Saved
+                  </div>
+                  <div style={{ color: "#10b981", fontWeight: 600 }} className="text-sm">
+                    -{formatCents(order.discount_amount)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </Section>
 
         {/* Items */}

@@ -26,13 +26,14 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
   const { status } = await searchParams;
   const activeStatus = status && VALID_STATUSES.includes(status) ? status : null;
 
-  // Capture the current time for "Last Updated" display
+  // Capture the current time for "Last Updated" display (EST timezone)
   const lastUpdated = new Date().toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
+    timeZone: "America/New_York",
   });
 
   // Note: Removed slow reconcileRecentStripeSessions() call that was causing 1+ second lag.

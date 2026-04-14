@@ -54,7 +54,9 @@ interface StatusBadgeProps {
 function StatusBadge({ order, onStatusChange }: StatusBadgeProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [updating, setUpdating] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<"bottom" | "top">("bottom");
   const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -66,6 +68,23 @@ function StatusBadge({ order, onStatusChange }: StatusBadgeProps) {
     if (showMenu) {
       document.addEventListener("mousedown", handleClickOutside);
       return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showMenu]);
+
+  // Calculate dropdown position when menu opens
+  useEffect(() => {
+    if (showMenu && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      const dropdownHeight = 240; // Approximate height of 6 items
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceAbove = buttonRect.top;
+
+      // If not enough space below but more space above, show above
+      if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+        setDropdownPosition("top");
+      } else {
+        setDropdownPosition("bottom");
+      }
     }
   }, [showMenu]);
 
@@ -89,6 +108,7 @@ function StatusBadge({ order, onStatusChange }: StatusBadgeProps) {
   return (
     <div className="relative inline-block" ref={menuRef}>
       <button
+        ref={buttonRef}
         onClick={() => setShowMenu(!showMenu)}
         onContextMenu={(e) => {
           e.preventDefault();
@@ -113,8 +133,14 @@ function StatusBadge({ order, onStatusChange }: StatusBadgeProps) {
             background: "#1a1a1a",
             border: "1px solid #333",
             boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+            maxHeight: "240px",
+            overflowY: "auto",
+            ...(dropdownPosition === "top" 
+              ? { bottom: "100%", marginBottom: "4px" } 
+              : { top: "100%", marginTop: "4px" }
+            ),
           }}
-          className="absolute left-0 top-full mt-1 rounded-md py-1 z-50 min-w-[160px]"
+          className="absolute left-0 rounded-md py-1 z-50 min-w-[160px]"
         >
           {STATUS_OPTIONS.map((option) => (
             <button
@@ -150,6 +176,11 @@ interface OrdersTableClientProps {
 export function OrdersTableClient({ orders: initialOrders }: OrdersTableClientProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const router = useRouter();
+
+  // Update orders when the prop changes (e.g., when filters are applied)
+  useEffect(() => {
+    setOrders(initialOrders);
+  }, [initialOrders]);
 
   async function handleStatusChange(orderId: string, newStatus: Order["status"]) {
     const res = await fetch(`/api/admin/orders/${orderId}`, {
