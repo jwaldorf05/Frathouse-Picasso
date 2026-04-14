@@ -4,6 +4,7 @@ import { getSupabase, type Order } from "@/lib/supabase";
 import { LogoutButton } from "./LogoutButton";
 import { StatusFilter } from "./StatusFilter";
 import { OrdersTableClient } from "./OrdersTableClient";
+import { AdminNav } from "../AdminNav";
 
 export const dynamic = "force-dynamic";
 
@@ -64,24 +65,22 @@ export default async function AdminOrdersPage({ searchParams }: PageProps) {
         style={{ background: "var(--surface)", borderBottom: "1px solid #1e1e1e" }}
         className="sticky top-0 z-10"
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between mb-4">
             <h1
               style={{ fontFamily: "var(--font-marker), cursive", color: "var(--foreground)" }}
               className="text-xl"
             >
               Frathouse Picasso
             </h1>
-            <span style={{ color: "var(--text-muted)" }} className="text-sm">
-              / Orders
-            </span>
+            <div className="flex items-center gap-4">
+              <span style={{ color: "var(--text-muted)" }} className="text-xs">
+                Last updated: <span style={{ color: "var(--text-secondary)" }}>{lastUpdated}</span>
+              </span>
+              <LogoutButton />
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <span style={{ color: "var(--text-muted)" }} className="text-xs">
-              Last updated: <span style={{ color: "var(--text-secondary)" }}>{lastUpdated}</span>
-            </span>
-            <LogoutButton />
-          </div>
+          <AdminNav />
         </div>
       </header>
 
