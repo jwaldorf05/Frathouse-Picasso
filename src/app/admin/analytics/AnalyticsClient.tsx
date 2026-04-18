@@ -22,8 +22,8 @@ export function AnalyticsClient({ orders, items }: { orders: Order[]; items: any
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
 
   useEffect(() => {
-    // Calculate analytics from orders
-    const validOrders = orders.filter(o => o.status !== 'cancelled');
+    // Calculate analytics from orders (exclude cancelled and test orders)
+    const validOrders = orders.filter(o => o.status !== 'cancelled' && o.status !== 'test_order');
     
     // Total Revenue
     const totalRevenue = validOrders.reduce((sum, o) => sum + o.amount_total, 0);

@@ -26,7 +26,7 @@ export interface Order {
   id: string;
   stripe_session_id: string;
   order_number: string;
-  status: "new" | "processing" | "sent_to_supplier" | "shipped" | "delivered" | "cancelled";
+  status: "new" | "processing" | "sent_to_supplier" | "shipped" | "delivered" | "cancelled" | "test_order";
   customer_email: string;
   customer_name: string | null;
   shipping_name: string | null;

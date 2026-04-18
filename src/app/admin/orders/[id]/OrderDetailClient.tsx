@@ -11,6 +11,7 @@ const STATUS_OPTIONS: { value: Order["status"]; label: string }[] = [
   { value: "shipped", label: "Shipped" },
   { value: "delivered", label: "Delivered" },
   { value: "cancelled", label: "Cancelled" },
+  { value: "test_order", label: "Test Order" },
 ];
 
 const STATUS_COLORS: Record<Order["status"], string> = {
@@ -20,6 +21,7 @@ const STATUS_COLORS: Record<Order["status"], string> = {
   shipped: "#8b5cf6",
   delivered: "#10b981",
   cancelled: "#6b7280",
+  test_order: "#a855f7",
 };
 
 function formatDate(iso: string): string {

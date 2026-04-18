@@ -11,6 +11,7 @@ const VALID_STATUSES = [
   "shipped",
   "delivered",
   "cancelled",
+  "test_order",
 ];
 
 export async function GET(

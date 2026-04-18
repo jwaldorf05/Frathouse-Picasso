@@ -16,6 +16,7 @@ const STATUS_LABELS: Record<Order["status"], string> = {
   shipped: "Shipped",
   delivered: "Delivered",
   cancelled: "Cancelled",
+  test_order: "Test Order",
 };
 
 const VALID_STATUSES = Object.keys(STATUS_LABELS);
